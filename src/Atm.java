@@ -15,9 +15,9 @@ public class Atm {
 	private JTextField txtFriendId;
 	private JTextField txtAccountId;
 
-	/**
-	 * Launch the application.
-	 */
+	// ====================================================================
+	// Launch Application
+	// ====================================================================
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -31,23 +31,24 @@ public class Atm {
 		});
 	}
 
-	/**
-	 * Create the application.
-	 */
+	// ====================================================================
+	// Create Application
+	// ====================================================================
 	public Atm(String pin) {
 		initialize(pin);
 	}
 
-	/**
-	 * Initialize the contents of the frame.
-	 */
+	// ====================================================================
+	// Init Contents of Frame
+	// ====================================================================
 	private void initialize(String pin) {
 		frame = new JFrame();
 		frame.setBounds(100, 100, 492, 321);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 				
-		JComboBox originAccountComboBox = new JComboBox();
+		String[] originAccounts = Customer.getAssocAccounts(pin);
+		JComboBox originAccountComboBox = new JComboBox(originAccounts);
 		originAccountComboBox.setBounds(386, 20, 52, 27);
 		frame.getContentPane().add(originAccountComboBox);
 		
@@ -98,9 +99,9 @@ public class Atm {
 		frame.getContentPane().add(btnPayFriend);
 	
 		
-		// ==============================================
+		// ====================================================================
 		// Action Listeners
-		// ==============================================
+		// ====================================================================
 		String originAccount = (String)originAccountComboBox.getSelectedItem();
         String totalAmount = txtEnterAmount.getText();
         String friendID = txtFriendId.getText();
