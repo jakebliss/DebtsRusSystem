@@ -60,12 +60,12 @@ public class Authenticate extends JFrame {
 			public void actionPerformed(ActionEvent arg0) {
 				String pin = textField.getText();
 				
-				boolean authenticated = authenticatePin(pin);
+				boolean authenticated = authenticatePin(Integer.parseInt(pin));
 				
 			    if(authenticated) {
 			    	JOptionPane.showMessageDialog(frame, "Authentication was successful.");
-			    	Atm atm = new Atm(pin);
-			    	atm.main();
+			    	String[] args = {pin};
+			    	Atm.main(args);
 			    	close();
 			    } else {
 			    	JOptionPane.showMessageDialog(frame, "Pin is invalid. Please try again or contact customer support.");
@@ -83,8 +83,7 @@ public class Authenticate extends JFrame {
 		this.dispose();
 	}
 	
-	private boolean authenticatePin(String pin) {
-		//TODO: Implement
-		return false;
+	private boolean authenticatePin(int pin) {
+		return Customer.verifyPin(pin);
 	}
 }

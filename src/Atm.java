@@ -1,9 +1,7 @@
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 import javax.swing.JComboBox;
 import javax.swing.JButton;
 import javax.swing.JTextField;
@@ -22,7 +20,7 @@ public class Atm {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					Atm window = new Atm("");
+					Atm window = new Atm(Integer.parseInt(args[0]));
 					window.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -34,20 +32,20 @@ public class Atm {
 	// ====================================================================
 	// Create Application
 	// ====================================================================
-	public Atm(String pin) {
+	public Atm(int pin) {
 		initialize(pin);
 	}
 
 	// ====================================================================
-	// Init Contents of Frame
+	// Initialize Contents of Frame
 	// ====================================================================
-	private void initialize(String pin) {
+	private void initialize(int pin) {
 		frame = new JFrame();
 		frame.setBounds(100, 100, 492, 321);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 				
-		String[] originAccounts = Customer.getAssocAccounts(pin);
+		Account[] originAccounts = Customer.getAssocAccounts(pin);
 		JComboBox originAccountComboBox = new JComboBox(originAccounts);
 		originAccountComboBox.setBounds(386, 20, 52, 27);
 		frame.getContentPane().add(originAccountComboBox);
@@ -104,7 +102,7 @@ public class Atm {
 		// ====================================================================
 		String originAccount = (String)originAccountComboBox.getSelectedItem();
         String totalAmount = txtEnterAmount.getText();
-        String friendID = txtFriendId.getText();
+        String friendId = txtFriendId.getText();
         String targetAccount = txtAccountId.getText();
         
 		btnDeposit.addActionListener(new ActionListener() {
