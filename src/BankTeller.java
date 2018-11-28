@@ -8,6 +8,7 @@ import javax.swing.JTextField;
 import javax.swing.JList;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
+import javax.swing.JComboBox;
 
 public class BankTeller {
 
@@ -15,17 +16,18 @@ public class BankTeller {
 	private JTextField txtAccountId;
 	private JTextField txtCustomerId;
 	private JTable table;
-	private JButton btnNewButton;
+	private JButton btnGenerateDTER;
 	private JButton btnCustomerReport;
 	private JButton btnAddInterest;
 	private JButton btnCreateAccount, btnSubmitCheckTransaction;
-	private JTextField textField_3;
 	private JButton btnDeleteClosedAccountsAndCustomers, btnGenerateMonthlyStatement;
-	private JButton btnDeleteTransactions, btnListClosedAccount;
-	private JTable table_5;
-	private JTextField textField;
+	private JButton btnDeleteTransactions, btnListClosedAccounts;
+	private JTextField txtBankName;
 	private JTextField txtAmount;
 	private JTextField txtInterest;
+	private JTextField txtInitialBalance;
+	private JTextField txtOwners;
+	private JComboBox comboBoxAccountType;
 
 	// ====================================================================
 	// Launch Application
@@ -83,7 +85,7 @@ public class BankTeller {
 		btnSubmitCheckTransaction.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				
-				if(Account.submitCheckTransaction(originAccount, totalAmount)) {
+				if(Account.checkTransaction(originAccount, totalAmount)) {
 					//TODO: on success
 				} else {
 					//TODO: on failure
@@ -91,51 +93,99 @@ public class BankTeller {
 			}
 		});
 		
+		// ====================================================================
+		// List Closed Accounts
+		// ====================================================================
+		btnListClosedAccounts = new JButton("List Closed Accounts");
+		btnListClosedAccounts.setBounds(567, 63, 177, 29);
+		frame.getContentPane().add(btnListClosedAccounts);
+		
+		btnListClosedAccounts.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				
+				String[] accounts = Account.listClosedAccounts();
+				if(accounts != null){
+					//TODO: populate table with accounts
+				} else {
+					//TODO: on failure
+				}
+			}
+		});
+		
+		// ====================================================================
+		// Generate DTER
+		// ====================================================================
+		btnGenerateDTER = new JButton("Generate DTER");
+		btnGenerateDTER.setBounds(627, 104, 117, 29);
+		frame.getContentPane().add(btnGenerateDTER);
+		
+		btnGenerateDTER.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				
+				Customer[] customers = Customer.getDTER();
+				if(customers != null){
+					//TODO: populate table with customers info
+				} else {
+					//TODO: on failure
+				}
+			}
+		});
 		
 		// ====================================================================
 		// Generate Monthly Statement
 		// ====================================================================
 		btnGenerateMonthlyStatement = new JButton("Generate Monthly Statement");
-		btnGenerateMonthlyStatement.setBounds(475, 157, 222, 29);
+		btnGenerateMonthlyStatement.setBounds(375, 22, 222, 29);
 		frame.getContentPane().add(btnGenerateMonthlyStatement);
 		
 		txtCustomerId = new JTextField();
 		txtCustomerId.setText("Customer Id");
-		txtCustomerId.setBounds(716, 22, 130, 26);
+		txtCustomerId.setBounds(743, 22, 130, 26);
 		frame.getContentPane().add(txtCustomerId);
 		txtCustomerId.setColumns(10);
 		
-		// ====================================================================
-		// List Closed Accounts
-		// ====================================================================
-		btnListClosedAccount = new JButton("List Closed Accounts");
-		btnListClosedAccount.setBounds(537, 75, 177, 29);
-		frame.getContentPane().add(btnListClosedAccount);
-		
-		// ====================================================================
-		// Generate DTER
-		// ====================================================================
-		btnNewButton = new JButton("Generate DTER");
-		btnNewButton.setBounds(565, 116, 117, 29);
-		frame.getContentPane().add(btnNewButton);
+		String customerId = txtCustomerId.getText();
+		btnGenerateMonthlyStatement.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				
+				Transaction[] transactions = Customer.getMonthlyStatement(customerId);
+				if(transactions != null){
+					//TODO: populate table with transaction info
+				} else {
+					//TODO: on failure
+				}
+			}
+		});
 		
 		// ====================================================================
 		// Customer Report
 		// ====================================================================
 		btnCustomerReport = new JButton("Customer Report");
-		btnCustomerReport.setBounds(537, 22, 177, 29);
+		btnCustomerReport.setBounds(596, 22, 148, 29);
 		frame.getContentPane().add(btnCustomerReport);
 		
+		btnCustomerReport.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				
+				String[] accounts = Account.getCustomerReport(customerId);
+				if(accounts != null){
+					//TODO: populate table with accounts
+				} else {
+					//TODO: on failure
+				}
+			}
+		});
 		
-		table_5 = new JTable();
-		table_5.setBounds(632, 261, 1, 1);
-		frame.getContentPane().add(table_5);
+		// Output Table for List Closed Accounts, Generate DTER, and Customer Report
+		table = new JTable();
+		table.setBounds(632, 261, 1, 1);
+		frame.getContentPane().add(table);
 		
 		// ====================================================================
 		// Add Interest
 		// ====================================================================
 		btnAddInterest = new JButton("Add Interest");
-		btnAddInterest.setBounds(64, 261, 117, 29);
+		btnAddInterest.setBounds(63, 291, 117, 29);
 		frame.getContentPane().add(btnAddInterest);
 		
 		btnAddInterest.addActionListener(new ActionListener() {
@@ -151,7 +201,7 @@ public class BankTeller {
 		
 		txtInterest = new JTextField();
 		txtInterest.setText("Interest");
-		txtInterest.setBounds(224, 261, 130, 26);
+		txtInterest.setBounds(224, 291, 130, 26);
 		frame.getContentPane().add(txtInterest);
 		txtInterest.setColumns(10);
 	    
@@ -174,15 +224,42 @@ public class BankTeller {
 		btnCreateAccount.setBounds(39, 116, 148, 29);
 		frame.getContentPane().add(btnCreateAccount);
 		
-		textField_3 = new JTextField();
-		textField_3.setBounds(224, 116, 130, 26);
-		frame.getContentPane().add(textField_3);
-		textField_3.setColumns(10);
+		comboBoxAccountType = new JComboBox();
+		comboBoxAccountType.setBounds(223, 117, 52, 27);
+		frame.getContentPane().add(comboBoxAccountType);
 		
-		textField = new JTextField();
-		textField.setBounds(224, 157, 130, 26);
-		frame.getContentPane().add(textField);
-		textField.setColumns(10);
+		txtBankName = new JTextField();
+		txtBankName.setText("Bank Name");
+		txtBankName.setBounds(224, 157, 130, 26);
+		frame.getContentPane().add(txtBankName);
+		txtBankName.setColumns(10);
+		
+		txtInitialBalance = new JTextField();
+		txtInitialBalance.setText("Initial Balance");
+		txtInitialBalance.setBounds(224, 195, 130, 26);
+		frame.getContentPane().add(txtInitialBalance);
+		txtInitialBalance.setColumns(10);
+		
+		txtOwners = new JTextField();
+		txtOwners.setText("Owners");
+		txtOwners.setBounds(224, 233, 130, 26);
+		frame.getContentPane().add(txtOwners);
+		txtOwners.setColumns(10);
+		
+		String accountType = (String)comboBoxAccountType.getSelectedItem();
+		String bankName = txtBankName.getText();
+		String initialBalance = txtInitialBalance.getText();
+		String owners = txtOwners.getText();
+		btnCreateAccount.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				
+				if(Account.create(accountType, bankName, initialBalance, owners)) {
+					//TODO: on success
+				} else {
+					//TODO: on failure
+				}
+			}
+		});
 		
 		// ====================================================================
 		// Delete Closed Accounts and Customers
@@ -207,8 +284,8 @@ public class BankTeller {
 		// ====================================================================
 		btnDeleteTransactions = new JButton("Delete Transactions");
 		btnDeleteTransactions.setBounds(39, 353, 202, 29);
-		frame.getContentPane().add(btnDeleteTransactions);	
-		
+		frame.getContentPane().add(btnDeleteTransactions);
+
 		btnDeleteTransactions.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				
