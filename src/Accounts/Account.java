@@ -1,5 +1,6 @@
+package Accounts;
 
-public class Account {
+abstract public class Account {
 	private int mID; 
 	private double mBalance; 
 	private boolean mStatus; 
