@@ -1,6 +1,6 @@
 package Accounts;
 
-public class PocketAccount extends Account{
+public class PocketAccount extends AccountNew{
 	
 	public PocketAccount(double balance) {
 		super(balance);

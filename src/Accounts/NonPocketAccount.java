@@ -1,6 +1,6 @@
 package Accounts;
 
-public class NonPocketAccount extends Account{
+public class NonPocketAccount extends AccountNew{
 	private String mType;
 	
 	public NonPocketAccount(double balance) {

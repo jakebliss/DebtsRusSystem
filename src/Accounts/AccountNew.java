@@ -1,11 +1,11 @@
 package Accounts;
 
-abstract public class Account {
+abstract public class AccountNew {
 	private int mID; 
 	private double mBalance; 
 	private boolean mStatus; 
 	
-	public Account(double balance) {
+	public AccountNew(double balance) {
 		//Get ID from database 
 		mBalance = balance; 
 		mStatus = true; 
