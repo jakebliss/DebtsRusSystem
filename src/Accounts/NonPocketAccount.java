@@ -15,11 +15,14 @@ public class NonPocketAccount extends Account{
 
 	// Add money to the checking or savings account balance.
 	public boolean deposit(double amount) {
+		if(amount < 0) {
+			return false; 
+		}
 		String sAmount = Double.toString(amount); 
 		try{
-		      String sql = "UPDATE Accounts A SET A.balance = A.balance + " + sAmount + " WHERE A.aid = " + this.getID();
-		      ResultSet rs = mStmt.executeQuery(sql);
-		      rs.close();
+		     String sql = "UPDATE Accounts A SET A.balance = A.balance + " + sAmount + " WHERE A.aid = " + this.getID();
+		     ResultSet rs = mStmt.executeQuery(sql);
+		     rs.close();
 		  	return true; 
 		   }catch(SQLException se){
 		      //Handle errors for JDBC
@@ -34,11 +37,15 @@ public class NonPocketAccount extends Account{
 	
 	// Subtract money from the checking or savings account balance.
 	public boolean withdraw(double amount) {
+		if(amount < 0) {
+			return false; 
+		}
+		
 		String sAmount = Double.toString(amount); 
 		try{
-		      String sql = "UPDATE Accounts A SET A.balance = A.balance - " + sAmount + " WHERE A.aid = " + this.getID();
-		      ResultSet rs = mStmt.executeQuery(sql);
-		      rs.close();
+		     String sql = "UPDATE Accounts A SET A.balance = A.balance - " + sAmount + " WHERE A.aid = " + this.getID();
+		     ResultSet rs = mStmt.executeQuery(sql);
+		     rs.close();
 		  	return true; 
 		   }catch(SQLException se){
 		      //Handle errors for JDBC
@@ -56,7 +63,28 @@ public class NonPocketAccount extends Account{
 	// If the transfer was requested by a customer, she or he must be an owner of both accounts. 
 	// Furthermore, the amount to be moved should not exceed $2,000.
 	public boolean transfer(double amount, String destID) {
-		return true; 
+		if (amount < 0 || amount > 2000 || destID.length() < 5) {
+			return false; 
+		}
+		String sAmount = Double.toString(amount); 
+		try{
+			  // TODO: Verify the accounts belong to same customer. 
+		      String dsql = "UPDATE Accounts A SET A.balance = A.balance + " + sAmount + " WHERE A.aid = " + this.getID();
+		      ResultSet drs = mStmt.executeQuery(dsql);
+		      String wsql = "UPDATE Accounts A SET A.balance = A.balance - " + sAmount + " WHERE A.aid = " + destID;
+		      ResultSet wrs = mStmt.executeQuery(wsql);
+		      drs.close();
+		      wrs.close();
+		  	return true; 
+		   }catch(SQLException se){
+		      //Handle errors for JDBC
+		      se.printStackTrace();
+		      return false; 
+		   }catch(Exception e){
+		      //Handle errors for Class.forName
+		      e.printStackTrace();
+		      return false; 
+		   }
 	}
 	
 	// Subtract money from one savings or checking account and add it to another. 
