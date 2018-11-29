@@ -1,21 +1,54 @@
 package Accounts;
 
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import Testing.TestDriver;
+import java.sql.*;
+
 public class NonPocketAccount extends Account{
 	private String mType;
 	
-	public NonPocketAccount(double balance) {
-		super(balance);
+	public NonPocketAccount(Connection conn, Statement stmt, double balance) {
+		super(conn, stmt, balance);
 		// TODO Auto-generated constructor stub
 	}
 
 	// Add money to the checking or savings account balance.
 	public boolean deposit(double amount) {
-		return true; 
+		String sAmount = Double.toString(amount); 
+		try{
+		      String sql = "UPDATE Accounts A SET A.balance = A.balance + " + sAmount + " WHERE A.aid = " + this.getID();
+		      ResultSet rs = mStmt.executeQuery(sql);
+		      rs.close();
+		  	return true; 
+		   }catch(SQLException se){
+		      //Handle errors for JDBC
+		      se.printStackTrace();
+		      return false; 
+		   }catch(Exception e){
+		      //Handle errors for Class.forName
+		      e.printStackTrace();
+		      return false; 
+		   }
 	}
 	
 	// Subtract money from the checking or savings account balance.
 	public boolean withdraw(double amount) {
-		return true; 
+		String sAmount = Double.toString(amount); 
+		try{
+		      String sql = "UPDATE Accounts A SET A.balance = A.balance - " + sAmount + " WHERE A.aid = " + this.getID();
+		      ResultSet rs = mStmt.executeQuery(sql);
+		      rs.close();
+		  	return true; 
+		   }catch(SQLException se){
+		      //Handle errors for JDBC
+		      se.printStackTrace();
+		      return false; 
+		   }catch(Exception e){
+		      //Handle errors for Class.forName
+		      e.printStackTrace();
+		      return false; 
+		   }
 	}
 	
 	// Subtract money from one savings or checking account and add it to another. 

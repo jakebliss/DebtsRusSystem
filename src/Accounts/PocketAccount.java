@@ -1,9 +1,12 @@
 package Accounts;
 
+import java.sql.*;
+
 public class PocketAccount extends Account{
 	
-	public PocketAccount(double balance) {
-		super(balance);
+	public PocketAccount(Connection conn, Statement stmt, double balance) {
+		super(conn, stmt, balance);
+		
 	}
 
 	// Move a speciﬁed amount of money from the linked checking/savings account to the pocket account.

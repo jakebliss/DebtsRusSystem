@@ -1,17 +1,23 @@
 package Accounts;
+import java.sql.*;
 
 abstract public class Account {
-	private int mID; 
+	private String mID; 
 	private double mBalance; 
 	private boolean mStatus; 
+	protected Connection mConn;
+	protected Statement mStmt; 
 	
-	public Account(double balance) {
+	public Account(Connection conn, Statement stmt, double balance) {
 		//Get ID from database 
+		mID = "'werwer'"; 
 		mBalance = balance; 
 		mStatus = true; 
+		mStmt = stmt; 
+		mConn = conn; 
 	}
 	
-	public int getID() { return mID; }
+	public String getID() { return mID; }
 	
 	public double getBalance() { return mBalance; } 
 	
