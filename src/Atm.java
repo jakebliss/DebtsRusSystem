@@ -68,43 +68,18 @@ public class Atm {
 		frame.getContentPane().add(txtAccountId);
 		txtAccountId.setColumns(10);
 		
-		JButton btnDeposit = new JButton("Deposit");
-		btnDeposit.setBounds(6, 19, 117, 29);
-		frame.getContentPane().add(btnDeposit);
 		
-		JButton btnTopup = new JButton("Top-Up");
-		btnTopup.setBounds(6, 113, 117, 29);
-		frame.getContentPane().add(btnTopup);
-		
-		JButton btnWithdrawal = new JButton("Withdrawal");
-		btnWithdrawal.setBounds(6, 52, 117, 29);
-		frame.getContentPane().add(btnWithdrawal);
-		
-		JButton btnPurchase = new JButton("Purchase");
-		btnPurchase.setBounds(6, 83, 117, 29);
-		frame.getContentPane().add(btnPurchase);
-		
-		JButton btnTransfer = new JButton("Transfer");
-		btnTransfer.setBounds(6, 165, 117, 29);
-		frame.getContentPane().add(btnTransfer);
-		
-		JButton btnWire = new JButton("Wire");
-		btnWire.setBounds(6, 194, 117, 29);
-		frame.getContentPane().add(btnWire);
-		
-		JButton btnPayFriend = new JButton("Pay Friend");
-		btnPayFriend.setBounds(6, 241, 117, 29);
-		frame.getContentPane().add(btnPayFriend);
-	
-		
-		// ====================================================================
-		// Action Listeners
-		// ====================================================================
 		String originAccount = (String)originAccountComboBox.getSelectedItem();
         String totalAmount = txtEnterAmount.getText();
         String friendId = txtFriendId.getText();
         String targetAccount = txtAccountId.getText();
-        
+		// ====================================================================
+		// Deposit
+		// ====================================================================
+		JButton btnDeposit = new JButton("Deposit");
+		btnDeposit.setBounds(6, 19, 117, 29);
+		frame.getContentPane().add(btnDeposit);
+		
 		btnDeposit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				
@@ -115,6 +90,12 @@ public class Atm {
 				}
 			}
 		});
+		// ====================================================================
+		// Top-Up
+		// ====================================================================
+		JButton btnTopup = new JButton("Top-Up");
+		btnTopup.setBounds(6, 99, 117, 29);
+		frame.getContentPane().add(btnTopup);
 		
 		btnTopup.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -126,6 +107,12 @@ public class Atm {
 				}
 			}
 		});
+		// ====================================================================
+		// Withdrawal
+		// ====================================================================
+		JButton btnWithdrawal = new JButton("Withdrawal");
+		btnWithdrawal.setBounds(6, 46, 117, 29);
+		frame.getContentPane().add(btnWithdrawal);
 		
 		btnWithdrawal.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -137,6 +124,12 @@ public class Atm {
 				}
 			}
 		});
+		// ====================================================================
+		// Purchase
+		// ====================================================================
+		JButton btnPurchase = new JButton("Purchase");
+		btnPurchase.setBounds(6, 73, 117, 29);
+		frame.getContentPane().add(btnPurchase);
 		
 		btnPurchase.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -148,6 +141,12 @@ public class Atm {
 				}
 			}
 		});
+		// ====================================================================
+		// Transfer
+		// ====================================================================
+		JButton btnTransfer = new JButton("Transfer");
+		btnTransfer.setBounds(6, 165, 117, 29);
+		frame.getContentPane().add(btnTransfer);
 		
 		btnTransfer.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -159,7 +158,30 @@ public class Atm {
 				}
 			}
 		});
+		// ====================================================================
+		// Collect
+		// ====================================================================
+		JButton btnCollect = new JButton("Collect");
+		btnCollect.setBounds(6, 127, 117, 29);
+		frame.getContentPane().add(btnCollect);
 		
+		btnCollect.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				
+				if(Account.collect(originAccount, totalAmount)) {
+					//TODO: on success
+				} else {
+					//TODO: on failure
+				}
+			}
+		});
+		// ====================================================================
+		// Wire
+		// ====================================================================
+		JButton btnWire = new JButton("Wire");
+		btnWire.setBounds(6, 194, 117, 29);
+		frame.getContentPane().add(btnWire);
+	
 		btnWire.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				
@@ -170,6 +192,12 @@ public class Atm {
 				}
 			}
 		});
+		// ====================================================================
+		// Pay Friend
+		// ====================================================================
+		JButton btnPayFriend = new JButton("Pay Friend");
+		btnPayFriend.setBounds(6, 241, 117, 29);
+		frame.getContentPane().add(btnPayFriend);
 		
 		btnPayFriend.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
