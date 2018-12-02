@@ -1,6 +1,9 @@
 package Accounts;
 
 import java.sql.*;
+import java.util.ArrayList;
+
+import Customers.Customer;
 
 public class PocketAccount extends Account{
 	
@@ -8,7 +11,11 @@ public class PocketAccount extends Account{
 		super(conn, stmt, balance);
 		
 	}
-
+	
+	public PocketAccount(String oid, boolean status, double balance) {
+		super(oid, status, balance);
+	}
+	
 	// Move a speciﬁed amount of money from the linked checking/savings account to the pocket account.
 	public boolean topUp(int sourceID, double amount) {
 		return true;
