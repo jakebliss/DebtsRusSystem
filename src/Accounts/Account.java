@@ -10,7 +10,7 @@ abstract public class Account {
 	
 	public Account(Connection conn, Statement stmt, double balance) {
 		//Get ID from database 
-		mID = "'werwer'"; 
+		mID = "'123456'"; 
 		mBalance = balance; 
 		mStatus = true; 
 		mStmt = stmt; 

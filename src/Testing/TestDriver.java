@@ -2,6 +2,8 @@ package Testing;
 import Accounts.Account;
 import Accounts.NonPocketAccount;
 import Accounts.PocketAccount;
+import Customers.Customer; 
+import Verifications.Verification; 
 
 import java.sql.*;
 
@@ -30,9 +32,15 @@ public class TestDriver {
 		      //STEP 4: Execute a query
 		      System.out.println("Creating statement...");
 		      
+		      Customer customer = new Customer("GE325DESIEN", "jake", "123 Jane Street", 1234);
+		      Verification ver = new Verification(customer, stmt, conn); 
 		      NonPocketAccount npAccount = new NonPocketAccount(conn, stmt, 100); 
-		      if(npAccount.withdraw(100)); 
-		      	System.out.println("update successful");
+		      if(ver.verifyTransfer(npAccount, "werwer"))
+		    	  System.out.println("verification successful");
+		    
+//		      if(npAccount.transfer(500, "werwer")); 
+//		      	System.out.println("update successful");
+		      
 		      	
 //		      //STEP 5: Extract data from result set
 //		      while(rs.next()){

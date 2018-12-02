@@ -2,11 +2,17 @@ package Accounts;
 
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+
 import Testing.TestDriver;
 import java.sql.*;
 
 public class NonPocketAccount extends Account{
 	private String mType;
+	DateFormat mDateFormat = new SimpleDateFormat("yyyy/MM/dd");
 	
 	public NonPocketAccount(Connection conn, Statement stmt, double balance) {
 		super(conn, stmt, balance);
@@ -20,9 +26,19 @@ public class NonPocketAccount extends Account{
 		}
 		String sAmount = Double.toString(amount); 
 		try{
-		     String sql = "UPDATE Accounts A SET A.balance = A.balance + " + sAmount + " WHERE A.aid = " + this.getID();
-		     ResultSet rs = mStmt.executeQuery(sql);
-		     rs.close();
+			 String transactionID = "testid15"; 
+			 Date date = new Date();
+			 
+		     String updateBal = "UPDATE Accounts A SET A.balance = A.balance + " + sAmount + " WHERE A.aid = " + this.getID();
+		     String insertTrans = "INSERT INTO transactions " + "(tid, amount, tdate, type, sourceid) VALUES (" 
+		    		 + "'" + transactionID + "'," + amount + ","+ "TO_DATE('" + mDateFormat.format(date)
+		    		 + "', 'YYYY/MM/DD')" + "," + "'D'" + "," + this.getID() + ")";
+		     
+		     System.out.println(updateBal);
+		     ResultSet updateRs = mStmt.executeQuery(updateBal);
+		     ResultSet insertRs = mStmt.executeQuery(insertTrans);
+		     updateRs.close();
+		     insertRs.close(); 
 		  	return true; 
 		   }catch(SQLException se){
 		      //Handle errors for JDBC
@@ -43,9 +59,18 @@ public class NonPocketAccount extends Account{
 		
 		String sAmount = Double.toString(amount); 
 		try{
-		     String sql = "UPDATE Accounts A SET A.balance = A.balance - " + sAmount + " WHERE A.aid = " + this.getID();
-		     ResultSet rs = mStmt.executeQuery(sql);
-		     rs.close();
+			 String transactionID = "testid"; 
+			 Date date = new Date();
+			 
+		     String updateBal = "UPDATE Accounts A SET A.balance = A.balance - " + sAmount + 
+		    		 " WHERE A.aid = " + this.getID();
+		     String insertTrans = "INSERT INTO transactions " + "(tid, amount, tdate, type, sourceid) VALUES (" 
+		    		 + "'" + transactionID + "'," + amount + ","+ "TO_DATE('" + mDateFormat.format(date)
+		    		 + "', 'YYYY/MM/DD')" + "," + "'W'" + "," + this.getID() + ")";
+		     ResultSet updateRs = mStmt.executeQuery(updateBal);
+		     ResultSet insertRs = mStmt.executeQuery(insertTrans); 
+		     updateRs.close();
+		     insertRs.close(); 
 		  	return true; 
 		   }catch(SQLException se){
 		      //Handle errors for JDBC
@@ -68,14 +93,38 @@ public class NonPocketAccount extends Account{
 		}
 		String sAmount = Double.toString(amount); 
 		try{
+			  String transactionID = "testid20"; 
+			  Date date = new Date();
+			  
 			  // TODO: Verify the accounts belong to same customer. 
-		      String dsql = "UPDATE Accounts A SET A.balance = A.balance + " + sAmount + " WHERE A.aid = " + this.getID();
-		      ResultSet drs = mStmt.executeQuery(dsql);
-		      String wsql = "UPDATE Accounts A SET A.balance = A.balance - " + sAmount + " WHERE A.aid = " + destID;
+			  
+
+		     
+		      
+			  
+		      String dsql = "UPDATE Accounts A SET A.balance = A.balance + " + sAmount + " WHERE A.aid = '" + destID + "'";
+		      String wsql = "UPDATE Accounts B SET B.balance = B.balance - " + sAmount + " WHERE B.aid = " + this.getID(); 
+		      String insertTrans = "INSERT INTO transactions " + "(tid, amount, tdate, type, sourceid, destid) VALUES (" 
+			    		 + "'" + transactionID + "'," + amount + ","+ "TO_DATE('" + mDateFormat.format(date)
+			    		 + "', 'YYYY/MM/DD')" + "," + "'T'" + "," + this.getID() + ",'" + destID + "')";
+		      
+		      System.out.println(srcOG); 
+//		      System.out.println(dsql);
+//		      System.out.println(wsql);
+//		      System.out.println(insertTrans); 
+		      
+
+		      
 		      ResultSet wrs = mStmt.executeQuery(wsql);
-		      drs.close();
 		      wrs.close();
-		  	return true; 
+		      
+		      ResultSet drs = mStmt.executeQuery(dsql);
+		      drs.close();
+		      
+		      ResultSet insertRs = mStmt.executeQuery(insertTrans); 
+		      insertRs.close(); 
+		      
+		      return true; 
 		   }catch(SQLException se){
 		      //Handle errors for JDBC
 		      se.printStackTrace();
