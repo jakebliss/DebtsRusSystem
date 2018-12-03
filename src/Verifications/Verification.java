@@ -20,6 +20,33 @@ public class Verification {
 		mConn = conn; 
 	}
 	
+	public boolean accountOpen (String accountID) {
+		try {
+			String selStatus = "SELECT status FROM Accounts WHERE aid = '" + accountID + "'";
+			ResultSet statusRs = mStmt.executeQuery(selStatus);
+			
+			String status = ""; 
+			
+	    	while (statusRs.next()) {
+	    	  status = statusRs.getString("status");
+	    	}
+	    	
+	    	if(status.equals("O")) {
+	    		return true; 
+	    	}
+	    	
+	    	return false; 
+		} catch(SQLException se){
+		    //Handle errors for JDBC
+		    se.printStackTrace();
+		    return false; 
+		}catch(Exception e){
+		    //Handle errors for Class.forName
+		    e.printStackTrace();
+		    return false; 
+		}
+	}
+	
 	public boolean verifyTransfer(Account srcAccount, String destAccountID) {
 		try {
 			  // Get the owner group of the accounts

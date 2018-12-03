@@ -16,10 +16,10 @@ public class NonPocketAccount extends Account{
 	
 	public NonPocketAccount(Connection conn, Statement stmt, double balance) {
 		super(conn, stmt, balance);
-		// TODO Auto-generated constructor stub
 	}
 
 	// Add money to the checking or savings account balance.
+	// Precondition: Account is open
 	public boolean deposit(double amount) {
 		if(amount < 0) {
 			return false; 
@@ -39,6 +39,7 @@ public class NonPocketAccount extends Account{
 		     ResultSet insertRs = mStmt.executeQuery(insertTrans);
 		     updateRs.close();
 		     insertRs.close(); 
+		     this.setBalance(this.getBalance() + amount);
 		  	return true; 
 		   }catch(SQLException se){
 		      //Handle errors for JDBC
@@ -52,6 +53,7 @@ public class NonPocketAccount extends Account{
 	}
 	
 	// Subtract money from the checking or savings account balance.
+	// Precondition: Account is open
 	public boolean withdraw(double amount) {
 		if(amount < 0 || this.getBalance() - amount < 0) {
 			return false; 
@@ -67,11 +69,13 @@ public class NonPocketAccount extends Account{
 		     String insertTrans = "INSERT INTO transactions " + "(tid, amount, tdate, type, sourceid) VALUES (" 
 		    		 + "'" + transactionID + "'," + amount + ","+ "TO_DATE('" + mDateFormat.format(date)
 		    		 + "', 'YYYY/MM/DD')" + "," + "'W'" + "," + this.getID() + ")";
+		     
 		     ResultSet updateRs = mStmt.executeQuery(updateBal);
 		     ResultSet insertRs = mStmt.executeQuery(insertTrans); 
 		     updateRs.close();
 		     insertRs.close(); 
-		  	return true; 
+		     this.setBalance(this.getBalance() - amount); 
+		  	 return true; 
 		   }catch(SQLException se){
 		      //Handle errors for JDBC
 		      se.printStackTrace();
@@ -87,6 +91,7 @@ public class NonPocketAccount extends Account{
 	// A transfer can only occur between two accounts that have at least one owner in common. 
 	// If the transfer was requested by a customer, she or he must be an owner of both accounts. 
 	// Furthermore, the amount to be moved should not exceed $2,000.
+	// Preconditions: Account is open, owner has verified already 
 	public boolean transfer(double amount, String destID) {
 		if (amount < 0 || amount > 2000 || destID.length() < 5 || this.getBalance() - amount < 0) {
 			return false; 
@@ -95,8 +100,6 @@ public class NonPocketAccount extends Account{
 		try{
 			  String transactionID = "testid20"; 
 			  Date date = new Date();
-			  
-			  // TODO: Verify the accounts belong to same customer. 
 			  
 
 		      String dsql = "UPDATE Accounts A SET A.balance = A.balance + " + sAmount + " WHERE A.aid = '" + destID + "'";
@@ -121,6 +124,8 @@ public class NonPocketAccount extends Account{
 		      ResultSet insertRs = mStmt.executeQuery(insertTrans); 
 		      insertRs.close(); 
 		      
+		      this.setBalance(this.getBalance() - amount); 
+		      
 		      return true; 
 		   }catch(SQLException se){
 		      //Handle errors for JDBC
@@ -136,6 +141,7 @@ public class NonPocketAccount extends Account{
 	// Subtract money from one savings or checking account and add it to another. 
 	// The customer that requests this action must be an owner of the account from which the money is subtracted. 
 	// There is a 2% fee for this action.
+	// Precondition: Accounts are open, owner verified already
 	public boolean wire(double amount, String destID) {
 		double fee = amount * .02; 
 		if (amount < 0 || this.getBalance() - amount - fee < 0) {
@@ -168,6 +174,9 @@ public class NonPocketAccount extends Account{
 		      
 		      ResultSet insertRs = mStmt.executeQuery(insertTrans); 
 		      insertRs.close(); 
+		      
+		      this.setBalance(this.getBalance() - amount - fee); 
+		      
 		      return true; 
 		   }catch(SQLException se){
 			      //Handle errors for JDBC
@@ -189,6 +198,7 @@ public class NonPocketAccount extends Account{
 	}
 	
 	// Subtract money from the checking account. Associated with a check transaction is a check number.
+	// Preconditions: Account is open
 	public boolean writeCheck(double amount) {
 		if(amount < 0 || this.mType != "C" || this.getBalance() - amount < 0) {
 			return false; 
@@ -210,6 +220,7 @@ public class NonPocketAccount extends Account{
 		     ResultSet insertRs = mStmt.executeQuery(insertTrans); 
 		     updateRs.close();
 		     insertRs.close(); 
+		     this.setBalance(this.getBalance() - amount); 
 		  	return true; 
 		   }catch(SQLException se){
 		      //Handle errors for JDBC
