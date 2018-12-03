@@ -53,7 +53,7 @@ public class NonPocketAccount extends Account{
 	
 	// Subtract money from the checking or savings account balance.
 	public boolean withdraw(double amount) {
-		if(amount < 0) {
+		if(amount < 0 || this.getBalance() - amount < 0) {
 			return false; 
 		}
 		
@@ -88,7 +88,7 @@ public class NonPocketAccount extends Account{
 	// If the transfer was requested by a customer, she or he must be an owner of both accounts. 
 	// Furthermore, the amount to be moved should not exceed $2,000.
 	public boolean transfer(double amount, String destID) {
-		if (amount < 0 || amount > 2000 || destID.length() < 5) {
+		if (amount < 0 || amount > 2000 || destID.length() < 5 || this.getBalance() - amount < 0) {
 			return false; 
 		}
 		String sAmount = Double.toString(amount); 
