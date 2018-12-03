@@ -99,16 +99,13 @@ public class NonPocketAccount extends Account{
 			  // TODO: Verify the accounts belong to same customer. 
 			  
 
-		     
-		      
-			  
 		      String dsql = "UPDATE Accounts A SET A.balance = A.balance + " + sAmount + " WHERE A.aid = '" + destID + "'";
 		      String wsql = "UPDATE Accounts B SET B.balance = B.balance - " + sAmount + " WHERE B.aid = " + this.getID(); 
 		      String insertTrans = "INSERT INTO transactions " + "(tid, amount, tdate, type, sourceid, destid) VALUES (" 
 			    		 + "'" + transactionID + "'," + amount + ","+ "TO_DATE('" + mDateFormat.format(date)
 			    		 + "', 'YYYY/MM/DD')" + "," + "'T'" + "," + this.getID() + ",'" + destID + "')";
 		      
-		      System.out.println(srcOG); 
+//		      System.out.println(srcOG); 
 //		      System.out.println(dsql);
 //		      System.out.println(wsql);
 //		      System.out.println(insertTrans); 
@@ -140,7 +137,47 @@ public class NonPocketAccount extends Account{
 	// The customer that requests this action must be an owner of the account from which the money is subtracted. 
 	// There is a 2% fee for this action.
 	public boolean wire(double amount, String destID) {
-		return true; 
+		double fee = amount * .02; 
+		if (amount < 0 || this.getBalance() - amount - fee < 0) {
+			return false; 
+		}
+		String sAmount = Double.toString(amount); 
+		String sAdjustedAmount = Double.toString(amount + fee); 
+		try{
+			  String transactionID = "testid20"; 
+			  Date date = new Date();
+			  
+			  // TODO: Verify the accounts belong to same customer. 			  
+
+		      String dsql = "UPDATE Accounts A SET A.balance = A.balance + " + sAmount + " WHERE A.aid = '" + destID + "'";
+		      String wsql = "UPDATE Accounts B SET B.balance = B.balance - " + sAdjustedAmount + " WHERE B.aid = " + this.getID(); 
+		      String insertTrans = "INSERT INTO transactions " + "(tid, amount, tdate, type, sourceid, destid) VALUES (" 
+			    		 + "'" + transactionID + "'," + amount + ","+ "TO_DATE('" + mDateFormat.format(date)
+			    		 + "', 'YYYY/MM/DD')" + "," + "'R'" + "," + this.getID() + ",'" + destID + "')";
+		      
+//		      System.out.println(srcOG); 
+//		      System.out.println(dsql);
+//		      System.out.println(wsql);
+//		      System.out.println(insertTrans); 	
+		      
+		      ResultSet wrs = mStmt.executeQuery(wsql);
+		      wrs.close();
+		      
+		      ResultSet drs = mStmt.executeQuery(dsql);
+		      drs.close();
+		      
+		      ResultSet insertRs = mStmt.executeQuery(insertTrans); 
+		      insertRs.close(); 
+		      return true; 
+		   }catch(SQLException se){
+			      //Handle errors for JDBC
+			      se.printStackTrace();
+			      return false; 
+			   }catch(Exception e){
+			      //Handle errors for Class.forName
+			      e.printStackTrace();
+			      return false; 
+			   } 
 	}
 	
 	// Add money to the checking or savings account. 
@@ -152,7 +189,36 @@ public class NonPocketAccount extends Account{
 	}
 	
 	// Subtract money from the checking account. Associated with a check transaction is a check number.
-	public boolean writeCheck() {
-		return true; 
+	public boolean writeCheck(double amount) {
+		if(amount < 0 || this.mType != "C" || this.getBalance() - amount < 0) {
+			return false; 
+		}
+		
+		String sAmount = Double.toString(amount); 
+		try{
+			 String transactionID = "testid"; 
+			 Date date = new Date();
+			 
+			 // TODO: associate check number with transaction
+			 
+		     String updateBal = "UPDATE Accounts A SET A.balance = A.balance - " + sAmount + 
+		    		 " WHERE A.aid = " + this.getID();
+		     String insertTrans = "INSERT INTO transactions " + "(tid, amount, tdate, type, sourceid) VALUES (" 
+		    		 + "'" + transactionID + "'," + amount + ","+ "TO_DATE('" + mDateFormat.format(date)
+		    		 + "', 'YYYY/MM/DD')" + "," + "'H'" + "," + this.getID() + ")";
+		     ResultSet updateRs = mStmt.executeQuery(updateBal);
+		     ResultSet insertRs = mStmt.executeQuery(insertTrans); 
+		     updateRs.close();
+		     insertRs.close(); 
+		  	return true; 
+		   }catch(SQLException se){
+		      //Handle errors for JDBC
+		      se.printStackTrace();
+		      return false; 
+		   }catch(Exception e){
+		      //Handle errors for Class.forName
+		      e.printStackTrace();
+		      return false; 
+		   }
 	}
  }
