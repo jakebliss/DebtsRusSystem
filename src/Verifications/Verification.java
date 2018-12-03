@@ -23,21 +23,24 @@ public class Verification {
 	public boolean verifyTransfer(Account srcAccount, String destAccountID) {
 		try {
 			  // Get the owner group of the accounts
-			  String srcOG = "SELECT oid FROM Owns WHERE aid = " + srcAccount.getID();
+			  String srcOG = "select 'Hello' X from dual"; 
+			  //String srcOG = "SELECT oid FROM Owns WHERE aid = " + srcAccount.getID();
 			  String destOG = "SELECT oid FROM Owns WHERE aid = '" + destAccountID + "'";
 			  
 			  System.out.println(srcOG);
 			  System.out.println(destOG);
 			  
 		      ResultSet srcRs = mStmt.executeQuery(srcOG);
-		      
 		      ResultSet destRs = mStmt.executeQuery(destOG); 
+		      
+		      
 		      	      
 		      String sourceOid = null; 
 		      String destOid = null; 
 		      
-		      if(srcRs != null && destRs != null) {
+		      
 		    	  while (srcRs.next()) {
+		    		  System.out.println(srcRs.getString("X"));
 		    		  sourceOid = srcRs.getString("oid");
 		    	  }
 		    	  while (destRs.next()) {
@@ -68,8 +71,7 @@ public class Verification {
 				      if(sExistRs != null && dExistRs != null) {
 				    	  return true; 
 				      }
-			      }
-		      }   
+			      } 
 		}catch(SQLException se){
 		    //Handle errors for JDBC
 		    se.printStackTrace();
