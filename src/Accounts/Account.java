@@ -30,4 +30,20 @@ abstract public class Account {
 	public void setStatus(boolean status) {
 		mStatus = status; 
 	}
+	
+	public void closeAccount() {
+		try {
+			String close = "UPDATE Accounts A SET A.status = 'C' WHERE A.aid = '" + this.getID() + "'";
+			ResultSet updateRs = mStmt.executeQuery(close);
+		    updateRs.close(); 
+			this.mStatus = false; 
+		} catch(SQLException se){
+		      //Handle errors for JDBC
+		      se.printStackTrace();
+		}catch(Exception e){
+		      //Handle errors for Class.forName
+		      e.printStackTrace();
+		}
+
+	}
 }
