@@ -110,7 +110,7 @@ public class Customer {
  	           System.out.print(", name: " + name);
  	           System.out.print(", address: " + address);
  	           
- 	           customers.add(new Customer(taxId, name, address, pin);
+ 	           customers.add(new Customer(taxId, name, address, pin));
  	        }
  	        rs.close();
  	        
