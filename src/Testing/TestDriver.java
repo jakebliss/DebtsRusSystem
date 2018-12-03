@@ -32,7 +32,7 @@ public class TestDriver {
 		      //STEP 4: Execute a query
 		      System.out.println("Creating statement...");
 		      
-		      Customer customer = new Customer("GE325DESIEN", "jake", "123 Jane Street", 1234);
+		      Customer customer = new Customer("GE325DESIEN", "jake", "123 Jane Street", "1234");
 		      Verification ver = new Verification(customer, stmt, conn); 
 		      NonPocketAccount npAccount = new NonPocketAccount(conn, stmt, 100); 
 		      if(ver.verifyTransfer(npAccount, "werwer"))

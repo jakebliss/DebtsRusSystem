@@ -3,9 +3,9 @@ package Customers;
 
 public class Customer {
     private String mName, mAddress, mTaxID;
-    int mPin;
+    String mPin;
     
-    public Customer (String taxID, String name, String address, int pin) {
+    public Customer (String taxID, String name, String address, String pin) {
     	mName = name; 
     	mAddress = address; 
     	mTaxID = taxID; 
@@ -18,9 +18,9 @@ public class Customer {
     	//TODO: Update Pin from database for customer with oldPin
     }
     
-    public static boolean verifyPin(int pin) {
+    public static boolean verifyPin(String pin) {
     	//TODO: Query DB to see if pin has a customer linked to it. And return true if it does.
-    	return 1234 == pin;
+    	return pin.equals("1234");
     }
     
 //    public static Account[] getAssocAccounts(int pin) {
