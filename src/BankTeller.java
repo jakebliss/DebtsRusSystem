@@ -13,6 +13,7 @@ import javax.swing.table.DefaultTableModel;
 import Customers.Customer;
 
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JComboBox;
@@ -197,7 +198,7 @@ public class BankTeller {
 		});
 		
 		// ====================================================================
-		// Delete Closed Accounts And Customers
+		// Add Interest
 		// ====================================================================
 		btnAddInterest = new JButton("Add Interest");
 		btnAddInterest.setBounds(82, 312, 117, 29);
@@ -206,20 +207,10 @@ public class BankTeller {
 		btnAddInterest.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				
-				if(Account.deleteClosedAccountsAndCustomers()) {
-					//TODO: on success
+				if(Account.addInterest()) {
+					// on success
 				} else {
-					//TODO: on failure
-				}
-			}
-		});
-		btnAddInterest.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				
-				if(Account.addInterest(interest)) {
-					//TODO: on success
-				} else {
-					//TODO: on failure
+			    	JOptionPane.showMessageDialog(frame, "[Warning] Add interest only allowed Once a month.");
 				}
 			}
 		});

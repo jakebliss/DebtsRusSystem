@@ -81,7 +81,7 @@ abstract public class Account {
 		      //Handle errors for JDBC
 		      se.printStackTrace();
 		}catch(Exception e){
-X		      //Handle errors for Class.forName
+		      //Handle errors for Class.forName
 		      e.printStackTrace();
 		}
 	} 
@@ -106,4 +106,44 @@ X		      //Handle errors for Class.forName
 	public int calculateFinalBalance(ArrayList<Transaction> transactions) {
 		return 0;
 	}
+	
+	public static float getAccountInterstRate(String Type) {
+		return 0.0;
+    }
+    
+    public static boolean addInterest() {
+    	if(interestAlreadyAddedThisMonth()) {
+    		return false;
+    	}
+    	
+    	ArrayList<Account> accounts = getAllOpenAccounts();
+    	for(Account account : accounts) {
+    		account.accrueInterest();
+    	}
+    	
+    	return true;
+    }
+    
+    private static boolean interestAlreadyAddedThisMonth() {
+    	return false;
+    }
+    
+    private static ArrayList<Account> getAllOpenAccounts() {
+    	ArrayList<Account> accounts = new ArrayList<Account>();
+    	
+    	return accounts;
+    }
+    
+    private boolean accrueInterest() {
+    	float interestRate = this.getMonthlyInterestRate();
+    	float averageDailyBalance = thsi.getAvarageDailyBalance();
+    	float interest = interestRate*averageDailyBalance;
+    	this.addToBalance(interest);
+    }
+    
+    private void addToBalance(float interest) {
+    	// Add to Account Balance
+    	// Add Transaction To DB
+    }
+    
 }
