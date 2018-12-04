@@ -10,6 +10,7 @@ import javax.swing.JButton;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
+import Accounts.Account;
 import Customers.Customer;
 
 import javax.swing.JList;
@@ -17,6 +18,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JComboBox;
+import javax.swing.JLabel;
 
 public class BankTeller {
 
@@ -35,6 +37,11 @@ public class BankTeller {
 	private JTextField txtInitialBalance;
 	private JTextField txtOwners;
 	private JComboBox comboBoxAccountType;
+	private JLabel label;
+	private JTextField txtNewInterestRate;
+	private JTextField txtTaxid;
+	private JTextField txtName;
+	private JTextField txtAddress;
 
 	// ====================================================================
 	// Launch Application
@@ -64,7 +71,7 @@ public class BankTeller {
 	// ====================================================================
 	private void initialize() {
 		frame = new JFrame();
-		frame.setBounds(100, 100, 879, 451);
+		frame.setBounds(100, 100, 879, 865);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 		
@@ -87,10 +94,10 @@ public class BankTeller {
 		frame.getContentPane().add(txtAmount);
 		txtAmount.setColumns(10);
 		
-		String originAccount = txtAccountId.getText();
-		String totalAmount = txtAmount.getText();
 		btnSubmitCheckTransaction.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				String originAccount = txtAccountId.getText();
+				String totalAmount = txtAmount.getText();
 				
 				if(Account.checkTransaction(originAccount, totalAmount)) {
 					//TODO: on success
@@ -160,9 +167,10 @@ public class BankTeller {
 		frame.getContentPane().add(txtCustomerId);
 		txtCustomerId.setColumns(10);
 		
-		String taxId = txtCustomerId.getText();
 		btnGenerateMonthlyStatement.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				String taxId = txtCustomerId.getText();
+
 				DefaultTableModel model = (DefaultTableModel) table.getModel();
 				model.setRowCount(0);
 				
@@ -185,10 +193,12 @@ public class BankTeller {
 		
 		btnCustomerReport.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				String taxId = txtCustomerId.getText();
+
 				DefaultTableModel model = (DefaultTableModel) table.getModel();
 				model.setRowCount(0);
 				
-				String[] accounts = Account.getCustomerReport(customerId);
+				String[] accounts = Account.getCustomerReport(taxId);
 				if(accounts != null){
 					//TODO: populate table with accounts
 				} else {
@@ -244,12 +254,12 @@ public class BankTeller {
 		frame.getContentPane().add(txtOwners);
 		txtOwners.setColumns(10);
 		
-		String accountType = (String)comboBoxAccountType.getSelectedItem();
-		String bankName = txtBankName.getText();
-		String initialBalance = txtInitialBalance.getText();
-		String owners = txtOwners.getText();
 		btnCreateAccount.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				String accountType = (String)comboBoxAccountType.getSelectedItem();
+				String bankName = txtBankName.getText();
+				String initialBalance = txtInitialBalance.getText();
+				String owners = txtOwners.getText();
 				
 				if(Account.create(accountType, bankName, initialBalance, owners)) {
 					//TODO: on success
@@ -283,7 +293,11 @@ public class BankTeller {
 		btnDeleteTransactions = new JButton("Delete Transactions");
 		btnDeleteTransactions.setBounds(39, 353, 202, 29);
 		frame.getContentPane().add(btnDeleteTransactions);
-
+		
+		label = new JLabel("");
+		label.setBounds(331, 477, 61, 16);
+		frame.getContentPane().add(label);
+		
 		btnDeleteTransactions.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				
@@ -294,5 +308,82 @@ public class BankTeller {
 				}
 			}
 		});
+		// ====================================================================
+		// Change Interest
+		// ====================================================================
+		String[] BankAccountTypes = {"Interest Checking", "Student Checking", "Savings", "PocketAccounts"};
+		JComboBox comboBoxBankAccountType = new JComboBox(BankAccountTypes);
+		comboBoxBankAccountType.setBounds(165, 477, 52, 27);
+		frame.getContentPane().add(comboBoxBankAccountType);
+		
+		txtNewInterestRate = new JTextField();
+		txtNewInterestRate.setText("New Interest Rate");
+		txtNewInterestRate.setBounds(23, 477, 130, 26);
+		frame.getContentPane().add(txtNewInterestRate);
+		txtNewInterestRate.setColumns(10);
+		
+		JButton btnChangeInterestRate = new JButton("Change Interest Rate");
+		btnChangeInterestRate.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				String bankAccountType = (String) comboBoxBankAccountType.getSelectedItem();
+				String interestRate = txtNewInterestRate.getText();
+				
+				if(Account.changeInterestRate(bankAccountType, interestRate)) {
+					// on success
+				} else {
+					// on fail
+				}
+				
+			}
+		});
+		btnChangeInterestRate.setBounds(227, 477, 165, 29);
+		frame.getContentPane().add(btnChangeInterestRate);
+		
+
+		
+		// ====================================================================
+		// Customer Creation
+		// ====================================================================
+		JLabel lblCustomerCreation = new JLabel("Customer Creation");
+		lblCustomerCreation.setBounds(23, 557, 164, 16);
+		frame.getContentPane().add(lblCustomerCreation);
+		
+		txtTaxid = new JTextField();
+		txtTaxid.setText("taxID");
+		txtTaxid.setBounds(39, 597, 130, 26);
+		frame.getContentPane().add(txtTaxid);
+		txtTaxid.setColumns(10);
+		
+		txtName = new JTextField();
+		txtName.setText("Name");
+		txtName.setBounds(39, 635, 130, 26);
+		frame.getContentPane().add(txtName);
+		txtName.setColumns(10);
+		
+		txtAddress = new JTextField();
+		txtAddress.setText("Address");
+		txtAddress.setBounds(39, 673, 130, 26);
+		frame.getContentPane().add(txtAddress);
+		txtAddress.setColumns(10);
+		
+		JButton btnCreate = new JButton("Create");
+		btnCreate.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				String taxId = txtTaxid.getText();
+				String name = txtName.getText();
+				String address = txtAddress.getText();
+				
+				if(Customer.create(taxId, name, address)) {
+					// on success
+				} else {
+					// on fail
+				}
+				
+			}
+		});
+		btnCreate.setBounds(49, 711, 117, 29);
+		frame.getContentPane().add(btnCreate);
 	}
 }
