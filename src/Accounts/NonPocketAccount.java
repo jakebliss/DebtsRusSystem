@@ -25,7 +25,7 @@ public class NonPocketAccount extends Account{
 		    while (typeRs.next()) {
 		    	mType = typeRs.getString("type");
 			}
-		    	
+		    
 		    typeRs.close();
 		} catch(SQLException se){
 		      //Handle errors for JDBC

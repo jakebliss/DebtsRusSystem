@@ -1,10 +1,22 @@
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+
 import javax.swing.JFrame;
 import javax.swing.JComboBox;
 import javax.swing.JButton;
 import javax.swing.JTextField;
+
+import Accounts.Account;
+import Accounts.NonPocketAccount;
+import Accounts.PocketAccount;
+import Customers.Customer;
+import Verifications.Verification;
 
 public class Atm {
 
@@ -12,41 +24,76 @@ public class Atm {
 	private JTextField txtEnterAmount;
 	private JTextField txtFriendId;
 	private JTextField txtAccountId;
+	private Customer mCustomer; 
+	
+	// ====================================================================
+	// Initialize DB
+	// ====================================================================
 
+	 // JDBC driver name and database URL
+	   static final String JDBC_DRIVER = "oracle.jdbc.driver.OracleDriver";  
+	   static final String DB_URL = "jdbc:oracle:thin:@cloud-34-133.eci.ucsb.edu:1521:XE";
+
+	   //  Database credentials
+	   static final String USERNAME = "zakarybliss";
+	   static final String PASSWORD = "password";
+	   static Connection conn = null;
+	   static Statement stmt = null; 
+	  
+		     
 	// ====================================================================
 	// Launch Application
 	// ====================================================================
 	public static void main(String[] args) {
+	   try{
+		      //STEP 2: Register JDBC driver
+		      Class.forName(JDBC_DRIVER);
+
+		      //STEP 3: Open a connection
+		      System.out.println("Connecting to a selected database...");
+		      conn = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
+		      stmt = conn.createStatement();
+		      System.out.println("Connected database successfully..."); 
+		      
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					Atm window = new Atm(Integer.parseInt(args[0]));
+					Atm window = new Atm(1234, "GE325DESIEN");
 					window.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
 		});
+	   } catch(SQLException se){
+		    //Handle errors for JDBC
+		    se.printStackTrace();
+	   }catch(Exception e){
+		    //Handle errors for Class.forName
+		    e.printStackTrace();
+	   }
 	}
 
 	// ====================================================================
 	// Create Application
 	// ====================================================================
-	public Atm(int pin) {
-		initialize(pin);
+	public Atm(int pin, String taxID) {
+		initialize(pin, taxID);
 	}
 
 	// ====================================================================
 	// Initialize Contents of Frame
 	// ====================================================================
-	private void initialize(int pin) {
+	private void initialize(int pin, String taxID) {
 		frame = new JFrame();
 		frame.setBounds(100, 100, 492, 321);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
+		mCustomer = new Customer(stmt, conn, taxID, String.valueOf(pin)); 
 				
-		Account[] originAccounts = Customer.getAssocAccounts(pin);
-		JComboBox originAccountComboBox = new JComboBox(originAccounts);
+		ArrayList<Account> originAccounts = mCustomer.getAllAssocPrimAccounts();
+		JComboBox originAccountComboBox = new JComboBox(originAccounts.toArray());
+		//JComboBox destAccountComboBox = new JComboBox(d)
 		originAccountComboBox.setBounds(386, 20, 52, 27);
 		frame.getContentPane().add(originAccountComboBox);
 		
@@ -69,10 +116,11 @@ public class Atm {
 		txtAccountId.setColumns(10);
 		
 		
-		String originAccount = (String)originAccountComboBox.getSelectedItem();
         String totalAmount = txtEnterAmount.getText();
         String friendId = txtFriendId.getText();
         String targetAccount = txtAccountId.getText();
+        Verification verification = new Verification(stmt, conn);
+        
 		// ====================================================================
 		// Deposit
 		// ====================================================================
@@ -82,11 +130,15 @@ public class Atm {
 		
 		btnDeposit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				
-				if(Account.deposit(originAccount, totalAmount)) {
-					//TODO: on success
-				} else {
-					//TODO: on failure
+				String accountID = (String)originAccountComboBox.getSelectedItem(); 
+				NonPocketAccount npAccount = new NonPocketAccount(conn, stmt, accountID); 	
+				if (verification.isNonPocketAccount(accountID) &&
+						verification.accountOpen(accountID)) {
+					if(npAccount.deposit(Double.parseDouble(totalAmount))) {
+						//TODO: on success
+					} else {
+						//TODO: on failure
+					}
 				}
 			}
 		});
@@ -99,11 +151,15 @@ public class Atm {
 		
 		btnTopup.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				
-				if(Account.topUp(originAccount, totalAmount)) {
-					//TODO: on success
-				} else {
-					//TODO: on failure
+				String accountID = (String) originAccountComboBox.getSelectedItem(); 
+				PocketAccount npAccount = new PocketAccount(conn, stmt, accountID); 	
+				if (verification.isPocketAccount(accountID) &&
+						verification.accountOpen(accountID)) {
+					if(npAccount.topUp(Double.parseDouble(totalAmount))) {
+						//TODO: on success
+					} else {
+						//TODO: on failure
+					}
 				}
 			}
 		});
@@ -116,11 +172,15 @@ public class Atm {
 		
 		btnWithdrawal.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				
-				if(Account.withdrawal(originAccount, totalAmount)) {
-					//TODO: on success
-				} else {
-					//TODO: on failure
+				String accountID = (String) originAccountComboBox.getSelectedItem(); 
+				NonPocketAccount npAccount = new NonPocketAccount(conn, stmt, accountID); 	
+				if (verification.isNonPocketAccount(accountID) &&
+						verification.accountOpen(accountID)) {
+					if(npAccount.withdraw(Double.parseDouble(totalAmount))) {
+						//TODO: on success
+					} else {
+						//TODO: on failure
+					}
 				}
 			}
 		});
@@ -133,11 +193,15 @@ public class Atm {
 		
 		btnPurchase.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				
-				if(Account.purchase(originAccount, totalAmount)) {
-					//TODO: on success
-				} else {
-					//TODO: on failure
+				String accountID = (String)originAccountComboBox.getSelectedItem(); 
+				PocketAccount npAccount = new PocketAccount(conn, stmt, accountID); 	
+				if (verification.isPocketAccount(accountID) &&
+						verification.accountOpen(accountID)) {
+					if(npAccount.purchase(Double.parseDouble(totalAmount))) {
+						//TODO: on success
+					} else {
+						//TODO: on failure
+					}
 				}
 			}
 		});
@@ -150,11 +214,20 @@ public class Atm {
 		
 		btnTransfer.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				String accountID = (String) originAccountComboBox.getSelectedItem(); 
+				String destAccountID = txtAccountId.getText();
 				
-				if(Account.transfer(originAccount, targetAccount, totalAmount)) {
-					//TODO: on success
-				} else {
-					//TODO: on failure
+				NonPocketAccount npAccount = new NonPocketAccount(conn, stmt, accountID); 	
+				if (verification.isNonPocketAccount(accountID) &&
+						verification.isNonPocketAccount(destAccountID) && 
+						verification.accountOpen(accountID) && 
+						verification.accountOpen(destAccountID) && 
+						verification.verifyTransfer(npAccount, destAccountID, taxID)) {
+					if(npAccount.transfer(Double.parseDouble(totalAmount), destAccountID)) {
+						//TODO: on success
+					} else {
+						//TODO: on failure
+					}
 				}
 			}
 		});
@@ -167,11 +240,15 @@ public class Atm {
 		
 		btnCollect.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				
-				if(Account.collect(originAccount, totalAmount)) {
-					//TODO: on success
-				} else {
-					//TODO: on failure
+				String accountID = (String)originAccountComboBox.getSelectedItem(); 
+				PocketAccount npAccount = new PocketAccount(conn, stmt, accountID); 	
+				if (verification.isPocketAccount(accountID) &&
+						verification.accountOpen(accountID)) {
+					if(npAccount.collect(Double.parseDouble(totalAmount))) {
+						//TODO: on success
+					} else {
+						//TODO: on failure
+					}
 				}
 			}
 		});
@@ -184,11 +261,19 @@ public class Atm {
 	
 		btnWire.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				String accountID = (String) originAccountComboBox.getSelectedItem(); 
+				String destAccountID = txtAccountId.getText();
 				
-				if(Account.wire(originAccount, targetAccount, totalAmount)) {
-					//TODO: on success
-				} else {
-					//TODO: on failure
+				NonPocketAccount npAccount = new NonPocketAccount(conn, stmt, accountID); 	
+				if (verification.isNonPocketAccount(accountID) &&
+						verification.isNonPocketAccount(destAccountID) &&
+						verification.accountOpen(accountID) &&
+						verification.accountOpen(destAccountID)) {
+					if(npAccount.transfer(Double.parseDouble(totalAmount), destAccountID)) {
+						//TODO: on success
+					} else {
+						//TODO: on failure
+					}
 				}
 			}
 		});
@@ -201,11 +286,18 @@ public class Atm {
 		
 		btnPayFriend.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				
-				if(Account.payFriend(originAccount, friendId, totalAmount)) {
-					//TODO: on success
-				} else {
-					//TODO: on failure
+				String accountID = (String)originAccountComboBox.getSelectedItem(); 
+				String destAccountID = txtFriendId.getText();
+				PocketAccount pAccount = new PocketAccount(conn, stmt, accountID); 	
+				if (verification.isPocketAccount(accountID) &&
+						verification.isPocketAccount(destAccountID) && 
+						verification.accountOpen(accountID) && 
+						verification.accountOpen(destAccountID)) {
+					if(pAccount.payFriend(Double.parseDouble(totalAmount), destAccountID)){
+						//TODO: on success
+					} else {
+						//TODO: on failure
+					}
 				}
 			}
 		});

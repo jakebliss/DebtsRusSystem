@@ -10,12 +10,10 @@ import java.sql.Statement;
 import Accounts.Account; 
 
 public class Verification {
-	Customer mCustomer; 
 	protected Connection mConn;
 	protected Statement mStmt; 
 	
-	public Verification (Customer customer, Statement stmt, Connection conn) {
-		mCustomer = customer; 
+	public Verification ( Statement stmt, Connection conn) { 
 		mStmt = stmt; 
 		mConn = conn; 
 	}
@@ -47,10 +45,8 @@ public class Verification {
 		}
 	}
 	
-	public boolean verifyTransfer(Account srcAccount, String destAccountID) {
+	public boolean verifyTransfer(Account srcAccount, String destAccountID, String taxID) {
 		try {
-			  // Get the owner group of the accounts
-			  //String srcOG = "select 'Hello' X from dual"; 
 			  String srcOG = "SELECT oid FROM Owns WHERE aid = " + srcAccount.getID();
 			  String destOG = "SELECT oid FROM Owns WHERE aid = '" + destAccountID + "'";
 			  
@@ -86,7 +82,7 @@ public class Verification {
 		    		  boolean valSrc = false; 
 		    		  boolean valDest = false; 
 		    		  
-		    		  String existSrc = "SELECT oid FROM Sec_Owns WHERE taxid = '" + mCustomer.getTaxID()
+		    		  String existSrc = "SELECT oid FROM Sec_Owns WHERE taxid = '" + taxID
 		    		  	+ "' AND oid = '" + sourceOid + "'"; 
 		    		  
 		    		  System.out.println(existSrc);
@@ -99,7 +95,7 @@ public class Verification {
 				      
 				      sExistRs.close(); 
 		    		  
-		    		  String existDest = "SELECT oid FROM Sec_Owns WHERE taxid = '" + mCustomer.getTaxID()
+		    		  String existDest = "SELECT oid FROM Sec_Owns WHERE taxid = '" + taxID
 		    		  	+ "' AND oid = '" + destOid + "'"; 
 		    		  
 		    		  System.out.println(existDest);
@@ -131,6 +127,32 @@ public class Verification {
 	public boolean isPocketAccount (String accountID) {
 		try {
 			  String existsStmt = "SELECT aid FROM Pkt_accounts WHERE aid = '" + accountID + "'";
+			  
+			  System.out.println(existsStmt);
+			  
+		      ResultSet existRs = mStmt.executeQuery(existsStmt);
+		      		      	     		      
+		      while(existRs.next()){
+                  return true; 
+		      }
+		      
+		      existRs.close();
+		      
+		}catch(SQLException se){
+		    //Handle errors for JDBC
+		    se.printStackTrace();
+		    return false; 
+		}catch(Exception e){
+		    //Handle errors for Class.forName
+		    e.printStackTrace();
+		    return false; 
+		}
+		return false; 
+	}
+	
+	public boolean isNonPocketAccount (String accountID) {
+		try {
+			  String existsStmt = "SELECT aid FROM Non_pkt_accounts WHERE aid = '" + accountID + "'";
 			  
 			  System.out.println(existsStmt);
 			  

@@ -11,12 +11,32 @@ import java.util.*;
 public class Customer {
 
     private String mName, mAddress, mTaxID, mPin;
+    private ArrayList <Account> secOwnList; 
+    private ArrayList <Account> primOwnList; 
     
-    public Customer (String taxID, String name, String address, String pin) {
-    	mName = name; 
-    	mAddress = address; 
+    public Customer (Statement stmt, Connection conn, String taxID, String pin) {
+    	//Get ID from database 
     	mTaxID = taxID; 
-    	mPin = pin; 
+    	mPin  = pin; 
+    			
+    	try {
+    			String selName = "SELECT name, address FROM customers WHERE taxid = '" + mTaxID + "'"; 
+    			ResultSet selRs = stmt.executeQuery(selName); 
+    		
+    	    	while (selRs.next()) {
+    		    	  mName = selRs.getString("name");
+    		    	  mAddress = selRs.getString("address"); 
+    		    }
+    	    	
+    	    	selRs.close();
+    	    	
+    			} catch(SQLException se){
+    			      //Handle errors for JDBC
+    			      se.printStackTrace();
+    			}catch(Exception e){
+    			      //Handle errors for Class.forName
+    			      e.printStackTrace();
+    			}
     }
     
     public String getTaxID() { return mTaxID; } 
@@ -39,16 +59,16 @@ public class Customer {
     // accounts of which the customer is the primary owner exceeds $100,000, a message should be included
     // in the statement to warn the customer that the limit of the insurance has been reached.
     
-    public static ArrayList<String> getMonthlyStatement(String taxId) {
-    	ArrayList<Account> accounts = getAllAssocPrimAccounts(taxId);
+    public ArrayList<String> getMonthlyStatement() {
+    	ArrayList<Account> accounts = getAllAssocPrimAccounts();
     	ArrayList<String> monthlyStatement = new ArrayList<String>();
     	int sumOfBalances = 0;
     	
-    	for(Account account : accounts) {
-	    	ArrayList<Customer> customers = account.getOwners();
-	    	ArrayList<Transaction> transactions = account.getListOfLastMonthsTransactions();
-	    	int initialBalance = account.calculateInitialBalance(transactions);
-	    	int finalBalance = account.calculateFinalBalance(transactions);
+    	for(Account a : primOwnList) {
+	    	ArrayList<Customer> customers = a.getOwners();
+	    	ArrayList<Transaction> transactions = a.getListOfLastMonthsTransactions();
+	    	int initialBalance = a.calculateInitialBalance(transactions);
+	    	int finalBalance = a.calculateFinalBalance(transactions);
 	    	sumOfBalances += finalBalance;
     	}
     	
@@ -68,7 +88,7 @@ public class Customer {
         ArrayList<Customer> customers = getAllCustomers();
         
         for(Customer customer : customers) {
-            ArrayList<Account> accounts = getAllAssocPrimAccounts(customer.getTaxID()); 
+            ArrayList<Account> accounts = customer.getAllAssocPrimAccounts(); 
             int sum = 0;
             
             for(Account account : accounts) {
@@ -134,9 +154,9 @@ public class Customer {
 	    return null;
     }
     
-    public static ArrayList<Account> getAllAssocPrimAccounts(String taxId) {
-    	ArrayList<Account> primPocketAccounts = getAssocPrimPocketAccounts(taxId);
-    	ArrayList<Account> primNonPocketAccounts = getAssocPrimNonPocketAccounts(taxId);
+    public ArrayList<Account> getAllAssocPrimAccounts() {
+    	ArrayList<Account> primPocketAccounts = getAssocPrimPocketAccounts();
+    	ArrayList<Account> primNonPocketAccounts = getAssocPrimNonPocketAccounts();
     	ArrayList<Account> primAccounts = new ArrayList<Account>();
     	
     	primAccounts.addAll(primPocketAccounts);
@@ -145,7 +165,7 @@ public class Customer {
     	return primAccounts;
     }
     
-    public static ArrayList<Account> getAssocPrimPocketAccounts(String taxId) {
+    public ArrayList<Account> getAssocPrimPocketAccounts() {
     	Statement stmt = null;
     	Connection conn = null;
 	    try {
@@ -155,9 +175,9 @@ public class Customer {
 	    	
 	        stmt = conn.createStatement();
             ArrayList<Account> accounts = new ArrayList<Account>();
- 	        String sql = "SELECT O.aid, O.balance, O.status" +
+ 	        String sql = "SELECT O.aid, O.balance, O.status " +
 	        		     "FROM Prim_Owns PO, Owner_Groups OG, PKT_Accounts PA, Owns O" +
-	        		     "WHERE " + taxId + " = PO.taxID" +
+	        		     "WHERE " + mTaxID + " = PO.taxID" +
 	        		     "AND PO.oid = OG.oid" + 
 	        		     "AND OG.oid = O.oid" +
 	        		     "AND O.aid = PA.aid";
@@ -179,7 +199,7 @@ public class Customer {
 	        	   status = false;
 	           }
 	           
-	           accounts.add(new PocketAccount(oid, status, balance));
+	           accounts.add(new PocketAccount(conn, stmt, oid));
 	        }
 	        rs.close();
 	        
@@ -202,7 +222,7 @@ public class Customer {
 	    return null;
     }
     
-    public static ArrayList<Account> getAssocPrimNonPocketAccounts(String taxId) {
+    public ArrayList<Account> getAssocPrimNonPocketAccounts() {
     	Statement stmt = null;
     	Connection conn = null;
 	    try {
@@ -214,7 +234,7 @@ public class Customer {
             ArrayList<Account> accounts = new ArrayList<Account>();
  	        String sql = "SELECT O.aid, O.balance, O.status" +
        		             "FROM Prim_Owns PO, Owner_Groups OG, NON_PKT_Accounts NPA, Owns O" +
-       		             "WHERE " + taxId + " = PO.taxID" +
+       		             "WHERE " + mTaxID + " = PO.taxID" +
        		             "AND PO.oid = OG.oid" + 
        		             "AND OG.oid = O.oid" +
        		             "AND O.aid = NPA.aid";

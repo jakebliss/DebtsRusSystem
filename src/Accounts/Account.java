@@ -81,7 +81,7 @@ abstract public class Account {
 		      //Handle errors for JDBC
 		      se.printStackTrace();
 		}catch(Exception e){
-X		      //Handle errors for Class.forName
+		      //Handle errors for Class.forName
 		      e.printStackTrace();
 		}
 	} 
