@@ -1,6 +1,7 @@
 package Customers;
 
 import java.sql.Connection;
+
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -13,6 +14,7 @@ import java.util.Date;
 
 import Accounts.Account;
 import Accounts.NonPocketAccount;
+import Bank.Bank;
 import JDBCdriver.JDBCdriver;
 
 public class Transaction {
@@ -32,52 +34,6 @@ public class Transaction {
 		mTargetActId = targetActId;
 	}
 	
-	private static Date getCurrentDate() {
-		Statement stmt = null;
-    	Connection conn = null;
-        Date currDate = null;
-
-	    try {
-	    	Class.forName(JDBCdriver.JDBC_DRIVER);
-	    	
-	    	conn = DriverManager.getConnection(JDBCdriver.DB_URL, JDBCdriver.USERNAME, JDBCdriver.PASSWORD);
-	    	
-	        stmt = conn.createStatement();
-
- 	        String sql = "SELECT B.currentDate" +
- 	                     "FROM BANK";
-	        
-	        ResultSet rs = stmt.executeQuery(sql);
-	        
-	        while(rs.next()){
-	           //Retrieve by column name
-	           currDate  = rs.getDate("currDate");
-
-	           //Display values
-	           System.out.print("Curr Date: " + currDate);
-
-	        }
-	        rs.close();
-	        
-	        return currDate;
-	        
-	     }catch(SQLException se){
-	        //Handle errors for JDBC
-	        se.printStackTrace();
-	     }catch(Exception e){
-	        //Handle errors for Class.forName
-	        e.printStackTrace();
-	     }finally{
-	        try{
-	           if(conn!=null)
-	              conn.close();
-	        }catch(SQLException se){
-	           se.printStackTrace();
-	        }//end finally try
-	     }//end try
-		return currDate;
-	}
-	
     public static boolean deleteTransactions() {
     	Statement stmt = null;
     	Connection conn = null;
@@ -90,7 +46,7 @@ public class Transaction {
             
     		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
     		Calendar cal = Calendar.getInstance();
-    		cal.setTime(getCurrentDate());
+    		cal.setTime(Bank.getCurrentDate());
     		int month = cal.get(Calendar.MONTH);
     		int year = cal.get(Calendar.YEAR);
             Date boundDate = sdf.parse("01/" + month + "/" + year);
