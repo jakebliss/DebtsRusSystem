@@ -1,10 +1,15 @@
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+
 import javax.swing.JFrame;
 import javax.swing.JComboBox;
 import javax.swing.JButton;
 import javax.swing.JTextField;
+
+import Accounts.Account;
+import Customers.Customer;
 
 public class Atm {
 
@@ -20,7 +25,7 @@ public class Atm {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					Atm window = new Atm(Integer.parseInt(args[0]));
+					Atm window = new Atm(args[1]);
 					window.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -32,21 +37,21 @@ public class Atm {
 	// ====================================================================
 	// Create Application
 	// ====================================================================
-	public Atm(int pin) {
-		initialize(pin);
+	public Atm(String taxId) {
+		initialize(taxId);
 	}
 
 	// ====================================================================
 	// Initialize Contents of Frame
 	// ====================================================================
-	private void initialize(int pin) {
+	private void initialize(String taxId) {
 		frame = new JFrame();
 		frame.setBounds(100, 100, 492, 321);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 				
-		Account[] originAccounts = Customer.getAssocAccounts(pin);
-		JComboBox originAccountComboBox = new JComboBox(originAccounts);
+		ArrayList<String> originAccounts = Customer.getAllAssocAccounts(taxId);
+		JComboBox originAccountComboBox = new JComboBox(originAccounts.toArray());
 		originAccountComboBox.setBounds(386, 20, 52, 27);
 		frame.getContentPane().add(originAccountComboBox);
 		
@@ -68,11 +73,6 @@ public class Atm {
 		frame.getContentPane().add(txtAccountId);
 		txtAccountId.setColumns(10);
 		
-		
-		String originAccount = (String)originAccountComboBox.getSelectedItem();
-        String totalAmount = txtEnterAmount.getText();
-        String friendId = txtFriendId.getText();
-        String targetAccount = txtAccountId.getText();
 		// ====================================================================
 		// Deposit
 		// ====================================================================
@@ -82,6 +82,10 @@ public class Atm {
 		
 		btnDeposit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				String originAccount = (String)originAccountComboBox.getSelectedItem();
+		        String totalAmount = txtEnterAmount.getText();
+		        String friendId = txtFriendId.getText();
+		        String targetAccount = txtAccountId.getText();
 				
 				if(Account.deposit(originAccount, totalAmount)) {
 					//TODO: on success
@@ -99,6 +103,10 @@ public class Atm {
 		
 		btnTopup.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				String originAccount = (String)originAccountComboBox.getSelectedItem();
+		        String totalAmount = txtEnterAmount.getText();
+		        String friendId = txtFriendId.getText();
+		        String targetAccount = txtAccountId.getText();
 				
 				if(Account.topUp(originAccount, totalAmount)) {
 					//TODO: on success
@@ -116,6 +124,8 @@ public class Atm {
 		
 		btnWithdrawal.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				String originAccount = (String)originAccountComboBox.getSelectedItem();
+		        String totalAmount = txtEnterAmount.getText();
 				
 				if(Account.withdrawal(originAccount, totalAmount)) {
 					//TODO: on success
@@ -133,6 +143,8 @@ public class Atm {
 		
 		btnPurchase.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				String originAccount = (String)originAccountComboBox.getSelectedItem();
+		        String totalAmount = txtEnterAmount.getText();
 				
 				if(Account.purchase(originAccount, totalAmount)) {
 					//TODO: on success
@@ -150,6 +162,9 @@ public class Atm {
 		
 		btnTransfer.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				String originAccount = (String)originAccountComboBox.getSelectedItem();
+		        String totalAmount = txtEnterAmount.getText();
+		        String targetAccount = txtAccountId.getText();
 				
 				if(Account.transfer(originAccount, targetAccount, totalAmount)) {
 					//TODO: on success
@@ -167,7 +182,9 @@ public class Atm {
 		
 		btnCollect.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				
+				String originAccount = (String)originAccountComboBox.getSelectedItem();
+		        String totalAmount = txtEnterAmount.getText();
+
 				if(Account.collect(originAccount, totalAmount)) {
 					//TODO: on success
 				} else {
@@ -184,7 +201,10 @@ public class Atm {
 	
 		btnWire.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				
+				String originAccount = (String)originAccountComboBox.getSelectedItem();
+		        String totalAmount = txtEnterAmount.getText();
+		        String targetAccount = txtAccountId.getText();
+		        
 				if(Account.wire(originAccount, targetAccount, totalAmount)) {
 					//TODO: on success
 				} else {
@@ -201,7 +221,10 @@ public class Atm {
 		
 		btnPayFriend.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				
+				String originAccount = (String)originAccountComboBox.getSelectedItem();
+		        String totalAmount = txtEnterAmount.getText();
+		        String friendId = txtFriendId.getText();
+		        
 				if(Account.payFriend(originAccount, friendId, totalAmount)) {
 					//TODO: on success
 				} else {

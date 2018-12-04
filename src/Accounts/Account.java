@@ -81,7 +81,7 @@ abstract public class Account {
 		      //Handle errors for JDBC
 		      se.printStackTrace();
 		}catch(Exception e){
-X		      //Handle errors for Class.forName
+		      //Handle errors for Class.forName
 		      e.printStackTrace();
 		}
 	} 
@@ -106,4 +106,54 @@ X		      //Handle errors for Class.forName
 	public int calculateFinalBalance(ArrayList<Transaction> transactions) {
 		return 0;
 	}
+    
+    public static boolean addInterest() {
+    	if(interestAlreadyAddedThisMonth()) {
+    		return false;
+    	}
+    	
+    	ArrayList<Account> accounts = getAllOpenAccounts();
+    	for(Account account : accounts) {
+    		account.accrueInterest();
+    	}
+    	
+    	return true;
+    }
+    
+    
+	// ====================================================================
+	// Private Functions
+	// ====================================================================
+    private static boolean interestAlreadyAddedThisMonth() {
+    	return false;
+    }
+    
+    private static ArrayList<Account> getAllOpenAccounts() {
+    	ArrayList<Account> accounts = new ArrayList<Account>();
+    	
+    	return accounts;
+    }
+    
+    private boolean accrueInterest() {
+    	float interestRate = getMonthlyInterestRate();
+    	float averageDailyBalance = this.getAvarageDailyBalance();
+    	float interest = interestRate*averageDailyBalance;
+    	this.addToBalance(interest);
+    }
+    
+    private void addToBalance(float interest) {
+    	// Add to Account Balance
+    	// Add Transaction To DB
+    }
+    
+	private static float getMonthlyInterstRate(String type) {
+		if(type == "Savings") {
+			
+		} else if (type == "Checking") {
+			
+		}
+		
+		return 0;
+    }
+    
 }
