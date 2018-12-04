@@ -127,4 +127,30 @@ public class Verification {
 		}
 		return false; 
 	}
+	
+	public boolean isPocketAccount (String accountID) {
+		try {
+			  String existsStmt = "SELECT aid FROM Pkt_accounts WHERE aid = '" + accountID + "'";
+			  
+			  System.out.println(existsStmt);
+			  
+		      ResultSet existRs = mStmt.executeQuery(existsStmt);
+		      		      	     		      
+		      while(existRs.next()){
+                  return true; 
+		      }
+		      
+		      existRs.close();
+		      
+		}catch(SQLException se){
+		    //Handle errors for JDBC
+		    se.printStackTrace();
+		    return false; 
+		}catch(Exception e){
+		    //Handle errors for Class.forName
+		    e.printStackTrace();
+		    return false; 
+		}
+		return false; 
+	}
 }

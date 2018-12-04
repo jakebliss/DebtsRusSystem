@@ -8,8 +8,8 @@ import java.util.Date;
 public class PocketAccount extends Account{
 	DateFormat mDateFormat = new SimpleDateFormat("yyyy/MM/dd");
 	
-	public PocketAccount(Connection conn, Statement stmt, double balance) {
-		super(conn, stmt, balance);
+	public PocketAccount(Connection conn, Statement stmt, String accountID) {
+		super(conn, stmt, accountID);
 	}
 
 	// Move a specified amount of money from the linked checking/savings account to the pocket account.
@@ -21,23 +21,27 @@ public class PocketAccount extends Account{
 
 		String sAmount = Double.toString(amount); 
 		try{
-			  String transactionID = "testid20"; 
+			  String transactionID = "testid84"; 
 			  Date date = new Date();
 			  
-			  String selLinked = "SELECT lid FROM Linked_To WHERE aid = '" + this.getID() + "'"; 
+			  String selLinked = "SELECT lid FROM Linked_To WHERE pid = '" + this.getID() + "'"; 
+		      //System.out.println(selLinked);
 		      ResultSet linkedRs = mStmt.executeQuery(selLinked);
+		 
 		      
 		      while(linkedRs.next()) {
-		    	  linkedID = linkedRs.getString("lid"); 
+		    	  //linkedID = linkedRs.getString("lid"); 
+		    	  linkedID = "werwer"; 
 		      }
 		      
 		      linkedRs.close();
 		      
 		      String selLinkedBal = "SELECT balance FROM Accounts WHERE aid = '" + linkedID + "'"; 
+		      //System.out.println(selLinkedBal);
 		      ResultSet linkedBalRs = mStmt.executeQuery(selLinkedBal);
 		      
 		      while(linkedBalRs.next()) {
-		    	  linkedBal = Double.parseDouble(linkedBalRs.getString("balance")); 
+		    	  linkedBal = linkedBalRs.getDouble("balance"); 
 		      }
 		      
 		      linkedBalRs.close(); 
@@ -48,15 +52,15 @@ public class PocketAccount extends Account{
 			  			  
 
 		      String dsql = "UPDATE Accounts A SET A.balance = A.balance + " + sAmount + " WHERE A.aid = '" + this.getID() + "'";
-		      String wsql = "UPDATE Accounts B SET B.balance = B.balance - " + sAmount + " WHERE B.aid = " + linkedID; 
+		      String wsql = "UPDATE Accounts B SET B.balance = B.balance - " + sAmount + " WHERE B.aid = '" + linkedID + "'"; 
 		      String insertTrans = "INSERT INTO transactions " + "(tid, amount, tdate, type, sourceid, destid) VALUES (" 
 			    		 + "'" + transactionID + "'," + amount + ","+ "TO_DATE('" + mDateFormat.format(date)
-			    		 + "', 'YYYY/MM/DD')" + "," + "'O'" + "," + linkedID + ",'" + this.getID() + "')";
+			    		 + "', 'YYYY/MM/DD')" + "," + "'O'" + ",'" + linkedID + "','" + this.getID() + "')";
 		      
-//		      System.out.println(srcOG); 
-//		      System.out.println(dsql);
-//		      System.out.println(wsql);
-//		      System.out.println(insertTrans); 
+
+		      System.out.println(dsql);
+		      System.out.println(wsql);
+		      System.out.println(insertTrans); 
 		      
 
 		      
@@ -91,18 +95,19 @@ public class PocketAccount extends Account{
 		
 		String sAmount = Double.toString(amount); 
 		try{
-			 String transactionID = "testid"; 
+			 String transactionID = "testid100"; 
 			 Date date = new Date();
 			 
 		     String updateBal = "UPDATE Accounts A SET A.balance = A.balance - " + sAmount + 
-		    		 " WHERE A.aid = " + this.getID();
+		    		 " WHERE A.aid = '" + this.getID() + "'";
 		     String insertTrans = "INSERT INTO transactions " + "(tid, amount, tdate, type, sourceid) VALUES (" 
 		    		 + "'" + transactionID + "'," + amount + ","+ "TO_DATE('" + mDateFormat.format(date)
-		    		 + "', 'YYYY/MM/DD')" + "," + "'P'" + "," + this.getID() + ")";
+		    		 + "', 'YYYY/MM/DD')" + "," + "'P'" + ",'" + this.getID() + "')";
 		     
 		     ResultSet updateRs = mStmt.executeQuery(updateBal);
-		     ResultSet insertRs = mStmt.executeQuery(insertTrans); 
 		     updateRs.close();
+		     
+		     ResultSet insertRs = mStmt.executeQuery(insertTrans); 
 		     insertRs.close(); 
 		     
 		     this.setBalance(this.getBalance() - amount); 
@@ -132,7 +137,7 @@ public class PocketAccount extends Account{
 		String sAmount = Double.toString(amount); 
 		
 		try{
-			  String selLinked = "SELECT lid FROM Linked_To WHERE aid = '" + this.getID() + "'"; 
+			  String selLinked = "SELECT lid FROM Linked_To WHERE pid = '" + this.getID() + "'"; 
 		      ResultSet linkedRs = mStmt.executeQuery(selLinked);
 		      
 		      while(linkedRs.next()) {
@@ -142,22 +147,19 @@ public class PocketAccount extends Account{
 		      linkedRs.close();
 		     
 		      
-			String transactionID = "testid20"; 
+			String transactionID = "testid103"; 
 			Date date = new Date();
-					  
-			// TODO: Verify the accounts belong to same customer. 
-					  
+			Double adjustedAmount = amount + fee; 					 		  
 
 			String dsql = "UPDATE Accounts A SET A.balance = A.balance + " + sAmount + " WHERE A.aid = '" + linkedID + "'";
-			String wsql = "UPDATE Accounts B SET B.balance = B.balance - " + (sAmount + fee) + " WHERE B.aid = " + this.getID(); 
+			String wsql = "UPDATE Accounts B SET B.balance = B.balance - " + adjustedAmount + " WHERE B.aid = '" + this.getID() + "'"; 
 			String insertTrans = "INSERT INTO transactions " + "(tid, amount, tdate, type, sourceid, destid) VALUES (" 
 				+ "'" + transactionID + "'," + amount + ","+ "TO_DATE('" + mDateFormat.format(date)
-				+ "', 'YYYY/MM/DD')" + "," + "'L'" + "," + this.getID() + ",'" + linkedID + "')";
+				+ "', 'YYYY/MM/DD')" + "," + "'L'" + ",'" + this.getID() + "','" + linkedID + "')";
 				      
-//			System.out.println(srcOG); 
-//			System.out.println(dsql);
-//			System.out.println(wsql);
-//			System.out.println(insertTrans); 
+			System.out.println(dsql);
+			System.out.println(wsql);
+			System.out.println(insertTrans); 
 				      
 
 				      
@@ -184,29 +186,26 @@ public class PocketAccount extends Account{
 	
 	// Move a speciﬁed amount of money from the pocket account to a speciﬁed customer’s pocket account.
 	// Precondition: Accounts are open, both are pocket accounts
-	public boolean payFriend(double amount, int friendID) {
-		if (amount < 0 || this.getBalance() - amount < 0) {
+	public boolean payFriend(double amount, String friendID) {
+		if (amount < 0 || this.getBalance() - amount < 0 || this.getID().equals(friendID)) {
 			return false; 
 		}
+		
 		String sAmount = Double.toString(amount); 
 		try{
 			  String transactionID = "testid20"; 
 			  Date date = new Date();
 			  
-			  // TODO: Verify the accounts belong to same customer. 
-			  
 
 		      String dsql = "UPDATE Accounts A SET A.balance = A.balance + " + sAmount + " WHERE A.aid = '" + friendID + "'";
-		      String wsql = "UPDATE Accounts B SET B.balance = B.balance - " + sAmount + " WHERE B.aid = " + this.getID(); 
+		      String wsql = "UPDATE Accounts B SET B.balance = B.balance - " + sAmount + " WHERE B.aid = '" + this.getID() + "'"; 
 		      String insertTrans = "INSERT INTO transactions " + "(tid, amount, tdate, type, sourceid, destid) VALUES (" 
 			    		 + "'" + transactionID + "'," + amount + ","+ "TO_DATE('" + mDateFormat.format(date)
-			    		 + "', 'YYYY/MM/DD')" + "," + "'P'" + "," + this.getID() + ",'" + friendID + "')";
-		      
-//		      System.out.println(srcOG); 
-//		      System.out.println(dsql);
-//		      System.out.println(wsql);
-//		      System.out.println(insertTrans); 
-		      
+			    		 + "', 'YYYY/MM/DD')" + "," + "'P'" + ",'" + this.getID() + "','" + friendID + "')";
+	     
+		      System.out.println(dsql);
+		      System.out.println(wsql);
+		      System.out.println(insertTrans); 
 
 		      
 		      ResultSet wrs = mStmt.executeQuery(wsql);

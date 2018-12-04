@@ -34,29 +34,19 @@ public class TestDriver {
 		      
 		      Customer customer = new Customer("GE325DESIEN", "jake", "123 Jane Street", "1234");
 		      Verification ver = new Verification(customer, stmt, conn); 
-		      NonPocketAccount npAccount = new NonPocketAccount(conn, stmt, 100); 
-		      if(ver.verifyTransfer(npAccount, "werwer"))
-		    	  System.out.println("verification successful");
-		    
-//		      if(npAccount.transfer(500, "werwer")); 
-//		      	System.out.println("update successful");
+//		      NonPocketAccount npAccount = new NonPocketAccount(conn, stmt, "werwer"); 
+//		      if(npAccount.deposit(2000))
+//			      	System.out.println("deposit successful");	
 		      
+		      PocketAccount pAccount = new PocketAccount(conn, stmt, "jkjkjkjk"); 
+		      if(ver.isPocketAccount("ejwkdbd"))
+		    	  System.out.println("verification successful");
+		      else 
+		    	  System.out.println("not a pocket account");
+		      		    
+//		      if(pAccount.payFriend(100, "catcat"))
+//		      	System.out.println("update successful");		   
 		      	
-//		      //STEP 5: Extract data from result set
-//		      while(rs.next()){
-//		         //Retrieve by column name
-//		         String cid  = rs.getString("cid");
-//		         String cname = rs.getString("cname");
-//		         String city = rs.getString("city");
-//		         double discount = rs.getDouble("discount");
-//
-//		         //Display values
-//		         System.out.print("cid: " + cid);
-//		         System.out.print(", cname: " + cname);
-//		         System.out.print(", city: " + city);
-//		         System.out.println(", discount: " + discount);
-//		      }
-//		      rs.close();
 		   }catch(SQLException se){
 		      //Handle errors for JDBC
 		      se.printStackTrace();

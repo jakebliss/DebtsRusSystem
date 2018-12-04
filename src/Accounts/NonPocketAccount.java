@@ -1,7 +1,5 @@
 package Accounts;
 
-import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -14,8 +12,25 @@ public class NonPocketAccount extends Account{
 	private String mType;
 	DateFormat mDateFormat = new SimpleDateFormat("yyyy/MM/dd");
 	
-	public NonPocketAccount(Connection conn, Statement stmt, double balance) {
-		super(conn, stmt, balance);
+	public NonPocketAccount(Connection conn, Statement stmt, String accountID) {
+		super(conn, stmt, accountID);
+		
+		try {
+			String selType = "SELECT type FROM Non_pkt_accounts WHERE aid = '" + this.getID() + "'"; 
+			ResultSet typeRs = mStmt.executeQuery(selType); 
+			
+		    while (typeRs.next()) {
+		    	mType = typeRs.getString("type");
+			}
+		    	
+		    typeRs.close();
+		} catch(SQLException se){
+		      //Handle errors for JDBC
+		      se.printStackTrace();
+		}catch(Exception e){
+		      //Handle errors for Class.forName
+		      e.printStackTrace();
+		}
 	}
 
 	// Add money to the checking or savings account balance.
@@ -26,21 +41,28 @@ public class NonPocketAccount extends Account{
 		}
 		String sAmount = Double.toString(amount); 
 		try{
-			 String transactionID = "testid15"; 
+			 String transactionID = "testid34"; 
 			 Date date = new Date();
 			 
-		     String updateBal = "UPDATE Accounts A SET A.balance = A.balance + " + sAmount + " WHERE A.aid = " + this.getID();
+		     String updateBal = "UPDATE Accounts A SET A.balance = A.balance + " + sAmount + " WHERE A.aid = '" + this.getID() + "'";
 		     String insertTrans = "INSERT INTO transactions " + "(tid, amount, tdate, type, sourceid) VALUES (" 
 		    		 + "'" + transactionID + "'," + amount + ","+ "TO_DATE('" + mDateFormat.format(date)
-		    		 + "', 'YYYY/MM/DD')" + "," + "'D'" + "," + this.getID() + ")";
+		    		 + "', 'YYYY/MM/DD')" + "," + "'D'" + ",'" + this.getID() + "')";
 		     
 		     System.out.println(updateBal);
+		     System.out.println(insertTrans);
+		     
 		     ResultSet updateRs = mStmt.executeQuery(updateBal);
-		     ResultSet insertRs = mStmt.executeQuery(insertTrans);
 		     updateRs.close();
+		     
+		     mStmt = mConn.createStatement();
+		     
+		     ResultSet insertRs = mStmt.executeQuery(insertTrans);
+		     System.out.println("inside try");
 		     insertRs.close(); 
+		    
 		     this.setBalance(this.getBalance() + amount);
-		  	return true; 
+		  	 return true; 
 		   }catch(SQLException se){
 		      //Handle errors for JDBC
 		      se.printStackTrace();
@@ -65,17 +87,23 @@ public class NonPocketAccount extends Account{
 			 Date date = new Date();
 			 
 		     String updateBal = "UPDATE Accounts A SET A.balance = A.balance - " + sAmount + 
-		    		 " WHERE A.aid = " + this.getID();
+		    		 " WHERE A.aid = '" + this.getID() + "'";
 		     String insertTrans = "INSERT INTO transactions " + "(tid, amount, tdate, type, sourceid) VALUES (" 
 		    		 + "'" + transactionID + "'," + amount + ","+ "TO_DATE('" + mDateFormat.format(date)
-		    		 + "', 'YYYY/MM/DD')" + "," + "'W'" + "," + this.getID() + ")";
+		    		 + "', 'YYYY/MM/DD')" + "," + "'W'" + ",'" + this.getID() + "')";
+		     
+		     System.out.println(updateBal);
+		     System.out.println(insertTrans);
 		     
 		     ResultSet updateRs = mStmt.executeQuery(updateBal);
-		     ResultSet insertRs = mStmt.executeQuery(insertTrans); 
 		     updateRs.close();
+		     
+		     ResultSet insertRs = mStmt.executeQuery(insertTrans); 
 		     insertRs.close(); 
+		     
 		     this.setBalance(this.getBalance() - amount); 
-		  	 return true; 
+		     
+		  	 return true;
 		   }catch(SQLException se){
 		      //Handle errors for JDBC
 		      se.printStackTrace();
@@ -103,17 +131,14 @@ public class NonPocketAccount extends Account{
 			  
 
 		      String dsql = "UPDATE Accounts A SET A.balance = A.balance + " + sAmount + " WHERE A.aid = '" + destID + "'";
-		      String wsql = "UPDATE Accounts B SET B.balance = B.balance - " + sAmount + " WHERE B.aid = " + this.getID(); 
+		      String wsql = "UPDATE Accounts B SET B.balance = B.balance - " + sAmount + " WHERE B.aid = '" + this.getID() + "'"; 
 		      String insertTrans = "INSERT INTO transactions " + "(tid, amount, tdate, type, sourceid, destid) VALUES (" 
 			    		 + "'" + transactionID + "'," + amount + ","+ "TO_DATE('" + mDateFormat.format(date)
-			    		 + "', 'YYYY/MM/DD')" + "," + "'T'" + "," + this.getID() + ",'" + destID + "')";
+			    		 + "', 'YYYY/MM/DD')" + "," + "'T'" + ",'" + this.getID() + "','" + destID + "')";
 		      
-//		      System.out.println(srcOG); 
-//		      System.out.println(dsql);
-//		      System.out.println(wsql);
-//		      System.out.println(insertTrans); 
-		      
-
+		      System.out.println(dsql);
+		      System.out.println(wsql);
+		      System.out.println(insertTrans); 
 		      
 		      ResultSet wrs = mStmt.executeQuery(wsql);
 		      wrs.close();
@@ -150,21 +175,20 @@ public class NonPocketAccount extends Account{
 		String sAmount = Double.toString(amount); 
 		String sAdjustedAmount = Double.toString(amount + fee); 
 		try{
-			  String transactionID = "testid20"; 
+			  String transactionID = "testid21"; 
 			  Date date = new Date();
 			  
 			  // TODO: Verify the accounts belong to same customer. 			  
 
 		      String dsql = "UPDATE Accounts A SET A.balance = A.balance + " + sAmount + " WHERE A.aid = '" + destID + "'";
-		      String wsql = "UPDATE Accounts B SET B.balance = B.balance - " + sAdjustedAmount + " WHERE B.aid = " + this.getID(); 
+		      String wsql = "UPDATE Accounts B SET B.balance = B.balance - " + sAdjustedAmount + " WHERE B.aid = '" + this.getID() + "'"; 
 		      String insertTrans = "INSERT INTO transactions " + "(tid, amount, tdate, type, sourceid, destid) VALUES (" 
 			    		 + "'" + transactionID + "'," + amount + ","+ "TO_DATE('" + mDateFormat.format(date)
-			    		 + "', 'YYYY/MM/DD')" + "," + "'R'" + "," + this.getID() + ",'" + destID + "')";
+			    		 + "', 'YYYY/MM/DD')" + "," + "'R'" + ",'" + this.getID() + "','" + destID + "')";
 		      
-//		      System.out.println(srcOG); 
 //		      System.out.println(dsql);
-//		      System.out.println(wsql);
-//		      System.out.println(insertTrans); 	
+		      System.out.println(wsql);
+		      System.out.println(insertTrans); 	
 		      
 		      ResultSet wrs = mStmt.executeQuery(wsql);
 		      wrs.close();
@@ -199,8 +223,8 @@ public class NonPocketAccount extends Account{
 	
 	// Subtract money from the checking account. Associated with a check transaction is a check number.
 	// Preconditions: Account is open
-	public boolean writeCheck(double amount) {
-		if(amount < 0 || this.mType != "C" || this.getBalance() - amount < 0) {
+	public boolean writeCheck(double amount, String checkNum) {
+		if(amount < 0 || !this.mType.equals("C") || this.getBalance() - amount < 0) {
 			return false; 
 		}
 		
@@ -212,15 +236,19 @@ public class NonPocketAccount extends Account{
 			 // TODO: associate check number with transaction
 			 
 		     String updateBal = "UPDATE Accounts A SET A.balance = A.balance - " + sAmount + 
-		    		 " WHERE A.aid = " + this.getID();
-		     String insertTrans = "INSERT INTO transactions " + "(tid, amount, tdate, type, sourceid) VALUES (" 
+		    		 " WHERE A.aid = '" + this.getID() + "'";
+		     String insertTrans = "INSERT INTO transactions " + "(tid, amount, tdate, type, sourceid, destid) VALUES (" 
 		    		 + "'" + transactionID + "'," + amount + ","+ "TO_DATE('" + mDateFormat.format(date)
-		    		 + "', 'YYYY/MM/DD')" + "," + "'H'" + "," + this.getID() + ")";
+		    		 + "', 'YYYY/MM/DD')" + "," + "'H'" + ",'" + this.getID() + "','" + checkNum + "')";
+		     
 		     ResultSet updateRs = mStmt.executeQuery(updateBal);
-		     ResultSet insertRs = mStmt.executeQuery(insertTrans); 
 		     updateRs.close();
+		     
+		     ResultSet insertRs = mStmt.executeQuery(insertTrans); 		     
 		     insertRs.close(); 
+		     
 		     this.setBalance(this.getBalance() - amount); 
+		     
 		  	return true; 
 		   }catch(SQLException se){
 		      //Handle errors for JDBC
