@@ -316,7 +316,7 @@ public class BankTeller {
 		// ====================================================================
 		// Change Interest
 		// ====================================================================
-		String[] BankAccountTypes = {"Interest Checking", "Student Checking", "Savings", "PocketAccounts"};
+		String[] BankAccountTypes = {"Interest Checking", "Student Checking", "Saving", "Pocket"};
 		JComboBox comboBoxBankAccountType = new JComboBox(BankAccountTypes);
 		comboBoxBankAccountType.setBounds(165, 477, 52, 27);
 		frame.getContentPane().add(comboBoxBankAccountType);
@@ -334,7 +334,7 @@ public class BankTeller {
 				String bankAccountType = (String) comboBoxBankAccountType.getSelectedItem();
 				String interestRate = txtNewInterestRate.getText();
 				
-				if(Account.changeInterestRate(bankAccountType, interestRate)) {
+				if(Bank.setInterestRate(bankAccountType, interestRate)) {
 					// on success
 				} else {
 					// on fail
