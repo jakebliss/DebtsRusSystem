@@ -5,6 +5,9 @@ import java.awt.event.ActionListener;
 import javax.swing.JFrame;
 import javax.swing.JButton;
 import javax.swing.JTextField;
+
+import Customers.Customer;
+
 import javax.swing.JList;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
@@ -32,18 +35,18 @@ public class BankTeller {
 	// ====================================================================
 	// Launch Application
 	// ====================================================================
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					BankTeller window = new BankTeller();
-					window.frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
+//	public static void main(String[] args) {
+//		EventQueue.invokeLater(new Runnable() {
+//			public void run() {
+//				try {
+//					BankTeller window = new BankTeller();
+//					window.frame.setVisible(true);
+//				} catch (Exception e) {
+//					e.printStackTrace();
+//				}
+//			}
+//		});
+//	}
 
 	// ====================================================================
 	// Create Application

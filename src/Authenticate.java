@@ -7,6 +7,9 @@ import javax.swing.JOptionPane;
 
 import java.awt.BorderLayout;
 import javax.swing.JTextField;
+
+import Customers.Customer;
+
 import javax.swing.JButton;
 
 public class Authenticate extends JFrame {
@@ -17,18 +20,18 @@ public class Authenticate extends JFrame {
 	/**
 	 * Launch the application.
 	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					Authenticate window = new Authenticate();
-					window.frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
+//	public static void main(String[] args) {
+//		EventQueue.invokeLater(new Runnable() {
+//			public void run() {
+//				try {
+//					Authenticate window = new Authenticate();
+//					window.frame.setVisible(true);
+//				} catch (Exception e) {
+//					e.printStackTrace();
+//				}
+//			}
+//		});
+//	}
 
 	/**
 	 * Create the application.

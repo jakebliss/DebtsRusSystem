@@ -6,6 +6,9 @@ import javax.swing.JComboBox;
 import javax.swing.JButton;
 import javax.swing.JTextField;
 
+import Accounts.Account;
+import Customers.Customer; 
+
 public class Atm {
 
 	private JFrame frame;
@@ -16,18 +19,18 @@ public class Atm {
 	// ====================================================================
 	// Launch Application
 	// ====================================================================
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					Atm window = new Atm(Integer.parseInt(args[0]));
-					window.frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
+//	public static void main(String[] args) {
+//		EventQueue.invokeLater(new Runnable() {
+//			public void run() {
+//				try {
+//					Atm window = new Atm(Integer.parseInt(args[0]));
+//					window.frame.setVisible(true);
+//				} catch (Exception e) {
+//					e.printStackTrace();
+//				}
+//			}
+//		});
+//	}
 
 	// ====================================================================
 	// Create Application
