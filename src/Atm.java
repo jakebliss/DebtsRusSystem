@@ -91,8 +91,11 @@ public class Atm {
 		frame.getContentPane().setLayout(null);
 		mCustomer = new Customer(stmt, conn, taxID, String.valueOf(pin)); 
 				
-		ArrayList<Account> originAccounts = mCustomer.getAllAssocPrimAccounts();
-		JComboBox originAccountComboBox = new JComboBox(originAccounts.toArray());
+		ArrayList<String> originAccountIDs = new ArrayList<String>();
+		for(Account a : mCustomer.getAllAssocPrimAccounts()) {
+			originAccountIDs.add(a.getID()); 
+		}
+		JComboBox originAccountComboBox = new JComboBox(originAccountIDs.toArray());
 		//JComboBox destAccountComboBox = new JComboBox(d)
 		originAccountComboBox.setBounds(386, 20, 52, 27);
 		frame.getContentPane().add(originAccountComboBox);

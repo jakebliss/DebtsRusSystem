@@ -131,7 +131,7 @@ public class Customer {
  	           System.out.print(", name: " + name);
  	           System.out.print(", address: " + address);
  	           
- 	           customers.add(new Customer(taxId, name, address, pin));
+ 	           customers.add(new Customer(stmt, conn, taxId, pin));
  	        }
  	        rs.close();
  	        
@@ -175,31 +175,25 @@ public class Customer {
 	    	
 	        stmt = conn.createStatement();
             ArrayList<Account> accounts = new ArrayList<Account>();
- 	        String sql = "SELECT O.aid, O.balance, O.status " +
-	        		     "FROM Prim_Owns PO, Owner_Groups OG, PKT_Accounts PA, Owns O" +
-	        		     "WHERE " + mTaxID + " = PO.taxID" +
-	        		     "AND PO.oid = OG.oid" + 
-	        		     "AND OG.oid = O.oid" +
+ 	        String sql = "SELECT PA.aid " +
+	        		     "FROM Prim_Owns PO, Owner_Groups OG, PKT_Accounts PA, Owns O " +
+	        		     "WHERE '" + mTaxID + "' = PO.taxID " +
+	        		     "AND PO.oid = OG.oid " + 
+	        		     "AND OG.oid = O.oid " +
 	        		     "AND O.aid = PA.aid";
+ 	        
+ 	        System.out.println(sql);
 	        
 	        ResultSet rs = stmt.executeQuery(sql);
 	        
 	        while(rs.next()){
 	           //Retrieve by column name
-	           String oid  = rs.getString("oid");
-	           String strStatus = rs.getString("status");
-	           double balance = rs.getDouble("balance");
+	           String aid  = rs.getString("aid");
 
 	           //Display values
-	           System.out.print("oid: " + oid);
-	           System.out.print(", status: " + strStatus);
-	           System.out.print(", balance: " + balance);
-	           boolean status = true;
-	           if(strStatus == "N") {
-	        	   status = false;
-	           }
+	           System.out.print("aid: " + aid);
 	           
-	           accounts.add(new PocketAccount(conn, stmt, oid));
+	           accounts.add(new PocketAccount(conn, stmt, aid));
 	        }
 	        rs.close();
 	        
@@ -232,31 +226,25 @@ public class Customer {
 	    	
 	        stmt = conn.createStatement();
             ArrayList<Account> accounts = new ArrayList<Account>();
- 	        String sql = "SELECT O.aid, O.balance, O.status" +
-       		             "FROM Prim_Owns PO, Owner_Groups OG, NON_PKT_Accounts NPA, Owns O" +
-       		             "WHERE " + mTaxID + " = PO.taxID" +
-       		             "AND PO.oid = OG.oid" + 
-       		             "AND OG.oid = O.oid" +
-       		             "AND O.aid = NPA.aid";
+ 	        String sql = "SELECT NPA.aid " +
+       		     "FROM Prim_Owns PO, Owner_Groups OG, Non_pkt_accounts NPA, Owns O " +
+       		     "WHERE '" + mTaxID + "' = PO.taxID " +
+       		     "AND PO.oid = OG.oid " + 
+       		     "AND OG.oid = O.oid " +
+       		     "AND O.aid = NPA.aid";
+ 	        
+ 	        System.out.println(sql);
 	        
 	        ResultSet rs = stmt.executeQuery(sql);
 	        
 	        while(rs.next()){
 	           //Retrieve by column name
-	           String oid  = rs.getString("oid");
-	           String strStatus = rs.getString("status");
-	           Double balance = rs.getDouble("balance");
+	           String aid  = rs.getString("aid");
 
 	           //Display values
-	           System.out.print("oid: " + oid);
-	           System.out.print(", status: " + strStatus);
-	           System.out.print(", balance: " + balance);
-	           boolean status = true;
-	           if(strStatus == "N") {
-	        	   status = false;
-	           }
+	           System.out.print("aid: " + aid);
 	           
-	           accounts.add(new NonPocketAccount(oid, status, balance));
+	           accounts.add(new NonPocketAccount(conn, stmt, aid));
 	        }
 	        rs.close();
 	        
