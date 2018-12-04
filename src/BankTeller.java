@@ -31,7 +31,6 @@ public class BankTeller {
 	private JButton btnDeleteTransactions, btnListClosedAccounts;
 	private JTextField txtBankName;
 	private JTextField txtAmount;
-	private JTextField txtInterest;
 	private JTextField txtInitialBalance;
 	private JTextField txtOwners;
 	private JComboBox comboBoxAccountType;
@@ -198,10 +197,10 @@ public class BankTeller {
 		});
 		
 		// ====================================================================
-		// Add Interest
+		// Delete Closed Accounts And Customers
 		// ====================================================================
 		btnAddInterest = new JButton("Add Interest");
-		btnAddInterest.setBounds(63, 291, 117, 29);
+		btnAddInterest.setBounds(82, 312, 117, 29);
 		frame.getContentPane().add(btnAddInterest);
 		
 		btnAddInterest.addActionListener(new ActionListener() {
@@ -214,14 +213,6 @@ public class BankTeller {
 				}
 			}
 		});
-		
-		txtInterest = new JTextField();
-		txtInterest.setText("Interest");
-		txtInterest.setBounds(224, 291, 130, 26);
-		frame.getContentPane().add(txtInterest);
-		txtInterest.setColumns(10);
-	    
-		String interest = txtInterest.getText();
 		btnAddInterest.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				
