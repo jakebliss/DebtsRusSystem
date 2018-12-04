@@ -1,10 +1,15 @@
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+
 import javax.swing.JFrame;
 import javax.swing.JComboBox;
 import javax.swing.JButton;
 import javax.swing.JTextField;
+
+import Accounts.Account;
+import Customers.Customer;
 
 public class Atm {
 
@@ -20,7 +25,7 @@ public class Atm {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					Atm window = new Atm(Integer.parseInt(args[0]));
+					Atm window = new Atm(args[1]);
 					window.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -32,21 +37,21 @@ public class Atm {
 	// ====================================================================
 	// Create Application
 	// ====================================================================
-	public Atm(int pin) {
-		initialize(pin);
+	public Atm(String taxId) {
+		initialize(taxId);
 	}
 
 	// ====================================================================
 	// Initialize Contents of Frame
 	// ====================================================================
-	private void initialize(int pin) {
+	private void initialize(String taxId) {
 		frame = new JFrame();
 		frame.setBounds(100, 100, 492, 321);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 				
-		Account[] originAccounts = Customer.getAssocAccounts(pin);
-		JComboBox originAccountComboBox = new JComboBox(originAccounts);
+		ArrayList<String> originAccounts = Customer.getAllAssocAccounts(taxId);
+		JComboBox originAccountComboBox = new JComboBox(originAccounts.toArray());
 		originAccountComboBox.setBounds(386, 20, 52, 27);
 		frame.getContentPane().add(originAccountComboBox);
 		

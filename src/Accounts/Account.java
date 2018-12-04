@@ -107,8 +107,14 @@ abstract public class Account {
 		return 0;
 	}
 	
-	public static float getAccountInterstRate(String Type) {
-		return 0.0;
+	public static float getMonthlyInterstRate(String type) {
+		if(type == "Savings") {
+			
+		} else if (type == "Checking") {
+			
+		}
+		
+		return 0;
     }
     
     public static boolean addInterest() {
@@ -124,6 +130,10 @@ abstract public class Account {
     	return true;
     }
     
+    
+	// ====================================================================
+	// Private Functions
+	// ====================================================================
     private static boolean interestAlreadyAddedThisMonth() {
     	return false;
     }
@@ -135,8 +145,8 @@ abstract public class Account {
     }
     
     private boolean accrueInterest() {
-    	float interestRate = this.getMonthlyInterestRate();
-    	float averageDailyBalance = thsi.getAvarageDailyBalance();
+    	float interestRate = getMonthlyInterestRate();
+    	float averageDailyBalance = this.getAvarageDailyBalance();
     	float interest = interestRate*averageDailyBalance;
     	this.addToBalance(interest);
     }
