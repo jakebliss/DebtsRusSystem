@@ -106,16 +106,6 @@ abstract public class Account {
 	public int calculateFinalBalance(ArrayList<Transaction> transactions) {
 		return 0;
 	}
-	
-	public static float getMonthlyInterstRate(String type) {
-		if(type == "Savings") {
-			
-		} else if (type == "Checking") {
-			
-		}
-		
-		return 0;
-    }
     
     public static boolean addInterest() {
     	if(interestAlreadyAddedThisMonth()) {
@@ -154,6 +144,16 @@ abstract public class Account {
     private void addToBalance(float interest) {
     	// Add to Account Balance
     	// Add Transaction To DB
+    }
+    
+	private static float getMonthlyInterstRate(String type) {
+		if(type == "Savings") {
+			
+		} else if (type == "Checking") {
+			
+		}
+		
+		return 0;
     }
     
 }
