@@ -9,6 +9,7 @@ import JDBCdriver.JDBCdriver;
 import java.util.*;
 
 public class Customer {
+
     private String mName, mAddress, mTaxID, mPin;
     
     public Customer (String taxID, String name, String address, String pin) {
@@ -24,9 +25,9 @@ public class Customer {
     	//TODO: Update Pin from database for customer with oldPin
     }
     
-    public static boolean verifyPin(int pin) {
+    public static boolean verifyPin(String pin) {
     	//TODO: Query DB to see if pin has a customer linked to it. And return true if it does.
-    	return 1234 == pin;
+    	return pin.equals("1234");
     }
     
     // Given a customer, do the following for each account she owns (including
@@ -258,3 +259,4 @@ public class Customer {
 	    return null;
     }
 }
+

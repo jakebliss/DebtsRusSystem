@@ -11,13 +11,42 @@ abstract public class Account {
 	protected Connection mConn;
 	protected Statement mStmt; 
 	
-	public Account(Connection conn, Statement stmt, double balance) {
-		//Get ID from database 
-		mID = "'123456'"; 
-		mBalance = balance; 
-		mStatus = true; 
+	public Account(Connection conn, Statement stmt, String accountID) {
 		mStmt = stmt; 
 		mConn = conn; 
+		
+		//Get ID from database 
+		mID = accountID; 
+		
+		try {
+		String selBal = "SELECT balance FROM accounts WHERE aid = '" + mID + "'"; 
+		ResultSet balRs = mStmt.executeQuery(selBal); 
+	
+    	while (balRs.next()) {
+	    	  mBalance = balRs.getDouble("balance");
+	    }
+    	
+    	balRs.close();
+    	
+		String selStatus = "SELECT status FROM accounts WHERE aid = '" + mID + "'"; 
+		ResultSet statusRs = mStmt.executeQuery(selStatus); 
+	
+		mStatus = false; 
+		
+    	while (statusRs.next()) {
+	    	 if(statusRs.getString("status").equals("O")) {
+	    		 mStatus = true; 
+	    	 }
+	    }
+    	
+    	balRs.close();
+		} catch(SQLException se){
+		      //Handle errors for JDBC
+		      se.printStackTrace();
+		}catch(Exception e){
+		      //Handle errors for Class.forName
+		      e.printStackTrace();
+		}
 	}
 	
 	public Account(String oid, boolean status, double balance) {
@@ -42,6 +71,21 @@ abstract public class Account {
 		mStatus = status; 
 	}
 	
+	public void closeAccount() {
+		try {
+			String close = "UPDATE Accounts A SET A.status = 'C' WHERE A.aid = '" + this.getID() + "'";
+			ResultSet updateRs = mStmt.executeQuery(close);
+		    updateRs.close(); 
+			this.mStatus = false; 
+		} catch(SQLException se){
+		      //Handle errors for JDBC
+		      se.printStackTrace();
+		}catch(Exception e){
+X		      //Handle errors for Class.forName
+		      e.printStackTrace();
+		}
+	} 
+
 	public ArrayList<Customer> getOwners() {
 		return null;
 	}
