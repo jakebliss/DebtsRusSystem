@@ -1,9 +1,14 @@
 package Accounts;
 
 import java.sql.*;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import java.util.ArrayList;
+
+import Customers.Customer;
 
 public class PocketAccount extends Account{
 	DateFormat mDateFormat = new SimpleDateFormat("yyyy/MM/dd");
@@ -85,7 +90,7 @@ public class PocketAccount extends Account{
 		      e.printStackTrace();
 		      return false; 
 		   }
-	}
+	
 	
 	// Subtract money from the account balance.
 	public boolean purchase(double amount) {

@@ -2,11 +2,14 @@ package Accounts;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
 import Testing.TestDriver;
 import java.sql.*;
+import Customers.Customer;
+import Customers.Transaction;
 
 public class NonPocketAccount extends Account{
 	private String mType;
@@ -31,6 +34,10 @@ public class NonPocketAccount extends Account{
 		      //Handle errors for Class.forName
 		      e.printStackTrace();
 		}
+	}
+	
+	public NonPocketAccount(String oid, boolean status, double balance) {
+		super(oid, status, balance);
 	}
 
 	// Add money to the checking or savings account balance.
@@ -259,5 +266,25 @@ public class NonPocketAccount extends Account{
 		      e.printStackTrace();
 		      return false; 
 		   }
+	}
+	
+	@Override
+	public ArrayList<Customer> getOwners() {
+		return null;
+	}
+	
+	@Override
+	public ArrayList<Transaction> getListOfLastMonthsTransactions() {
+		return null;
+	}
+	
+	@Override
+	public int calculateInitialBalance(ArrayList<Transaction> transactions) {
+		return 0;
+	}
+	
+	@Override
+	public int calculateFinalBalance(ArrayList<Transaction> transactions) {
+		return 0;
 	}
  }

@@ -1,10 +1,17 @@
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Vector;
 
 import javax.swing.JFrame;
 import javax.swing.JButton;
 import javax.swing.JTextField;
+import javax.swing.table.DefaultTableModel;
+
+import Customers.Customer;
+
 import javax.swing.JList;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
@@ -93,6 +100,10 @@ public class BankTeller {
 			}
 		});
 		
+		// Output Table for List Closed Accounts, Generate DTER, and Customer Report
+		table = new JTable();
+		table.setBounds(632, 261, 1, 1);
+		frame.getContentPane().add(table);		
 		// ====================================================================
 		// List Closed Accounts
 		// ====================================================================
@@ -102,7 +113,9 @@ public class BankTeller {
 		
 		btnListClosedAccounts.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				
+				DefaultTableModel model = (DefaultTableModel) table.getModel();
+				model.setRowCount(0);
+		
 				String[] accounts = Account.listClosedAccounts();
 				if(accounts != null){
 					//TODO: populate table with accounts
@@ -121,12 +134,15 @@ public class BankTeller {
 		
 		btnGenerateDTER.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				DefaultTableModel model = (DefaultTableModel) table.getModel();
+				model.setRowCount(0);
 				
-				Customer[] customers = Customer.getDTER();
-				if(customers != null){
-					//TODO: populate table with customers info
+				ArrayList<String> dter = Customer.getDTER();
+				if(dter != null){
+					model.addRow(new Vector<String>(dter));
+					table.setModel(model);
 				} else {
-					//TODO: on failure
+					System.out.println("GetMonthlyStatement is null");
 				}
 			}
 		});
@@ -144,15 +160,18 @@ public class BankTeller {
 		frame.getContentPane().add(txtCustomerId);
 		txtCustomerId.setColumns(10);
 		
-		String customerId = txtCustomerId.getText();
+		String taxId = txtCustomerId.getText();
 		btnGenerateMonthlyStatement.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				DefaultTableModel model = (DefaultTableModel) table.getModel();
+				model.setRowCount(0);
 				
-				Transaction[] transactions = Customer.getMonthlyStatement(customerId);
-				if(transactions != null){
-					//TODO: populate table with transaction info
+				ArrayList<String> monthlyStatement = Customer.getMonthlyStatement(taxId);
+				if(monthlyStatement != null){
+					model.addRow(new Vector<String>(monthlyStatement));
+					table.setModel(model); 
 				} else {
-					//TODO: on failure
+					System.out.println("GetMonthlyStatement is null");
 				}
 			}
 		});
@@ -166,6 +185,8 @@ public class BankTeller {
 		
 		btnCustomerReport.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				DefaultTableModel model = (DefaultTableModel) table.getModel();
+				model.setRowCount(0);
 				
 				String[] accounts = Account.getCustomerReport(customerId);
 				if(accounts != null){
@@ -175,11 +196,6 @@ public class BankTeller {
 				}
 			}
 		});
-		
-		// Output Table for List Closed Accounts, Generate DTER, and Customer Report
-		table = new JTable();
-		table.setBounds(632, 261, 1, 1);
-		frame.getContentPane().add(table);
 		
 		// ====================================================================
 		// Add Interest
