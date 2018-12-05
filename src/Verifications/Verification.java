@@ -13,9 +13,18 @@ public class Verification {
 	protected Connection mConn;
 	protected Statement mStmt; 
 	
-	public Verification ( Statement stmt, Connection conn) { 
-		mStmt = stmt; 
+	public Verification (Connection conn) { 
 		mConn = conn; 
+		try {
+			mStmt = conn.createStatement();
+			System.out.println("Connected database successfully..."); 
+		} catch(SQLException se){
+		      //Handle errors for JDBC
+		      se.printStackTrace();
+		}catch(Exception e){
+		      //Handle errors for Class.forName
+		      e.printStackTrace();
+		}
 	}
 	
 	public boolean accountOpen (String accountID) {
@@ -23,13 +32,18 @@ public class Verification {
 			String selStatus = "SELECT status FROM Accounts WHERE aid = '" + accountID + "'";
 			ResultSet statusRs = mStmt.executeQuery(selStatus);
 			
+			System.out.println(selStatus);
+			
 			String status = ""; 
+			
 			
 	    	while (statusRs.next()) {
 	    	  status = statusRs.getString("status");
 	    	}
+	    	  
+	    	statusRs.close(); 
 	    	
-	    	if(status.equals("O")) {
+	    	if(status.equals("Y")) {
 	    		return true; 
 	    	}
 	    	
@@ -47,7 +61,7 @@ public class Verification {
 	
 	public boolean verifyTransfer(Account srcAccount, String destAccountID, String taxID) {
 		try {
-			  String srcOG = "SELECT oid FROM Owns WHERE aid = " + srcAccount.getID();
+			  String srcOG = "SELECT oid FROM Owns WHERE aid = '" + srcAccount.getID() + "'";
 			  String destOG = "SELECT oid FROM Owns WHERE aid = '" + destAccountID + "'";
 			  
 			  System.out.println(srcOG);

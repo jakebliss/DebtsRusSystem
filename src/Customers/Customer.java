@@ -154,6 +154,17 @@ public class Customer {
 	    return null;
     }
     
+    public ArrayList<Account> getAllAssocAccounts() {
+    	ArrayList<Account> primAccounts = getAllAssocPrimAccounts();
+    	ArrayList<Account> secAccounts = getAllAssocSecAccounts();
+    	ArrayList<Account> allAccounts = new ArrayList<Account>();
+    	
+    	allAccounts.addAll(primAccounts);
+    	allAccounts.addAll(secAccounts);
+    	
+    	return allAccounts;
+    }
+    
     public ArrayList<Account> getAllAssocPrimAccounts() {
     	ArrayList<Account> primPocketAccounts = getAssocPrimPocketAccounts();
     	ArrayList<Account> primNonPocketAccounts = getAssocPrimNonPocketAccounts();
@@ -193,7 +204,7 @@ public class Customer {
 	           //Display values
 	           System.out.print("aid: " + aid);
 	           
-	           accounts.add(new PocketAccount(conn, stmt, aid));
+	           accounts.add(new PocketAccount(conn, aid));
 	        }
 	        rs.close();
 	        
@@ -244,7 +255,120 @@ public class Customer {
 	           //Display values
 	           System.out.print("aid: " + aid);
 	           
-	           accounts.add(new NonPocketAccount(conn, stmt, aid));
+	           accounts.add(new NonPocketAccount(conn, aid));
+	        }
+	        rs.close();
+	        
+	        return accounts;
+	        
+	     }catch(SQLException se){
+	        //Handle errors for JDBC
+	        se.printStackTrace();
+	     }catch(Exception e){
+	        //Handle errors for Class.forName
+	        e.printStackTrace();
+	     }finally{
+	        try{
+	           if(conn!=null)
+	              conn.close();
+	        }catch(SQLException se){
+	           se.printStackTrace();
+	        }//end finally try
+	     }//end try
+	    return null;
+    }
+    
+    public ArrayList<Account> getAllAssocSecAccounts() {
+    	ArrayList<Account> secPocketAccounts = getAssocSecPocketAccounts();
+    	ArrayList<Account> secNonPocketAccounts = getAssocSecNonPocketAccounts();
+    	ArrayList<Account> secAccounts = new ArrayList<Account>();
+    	
+    	secAccounts.addAll(secPocketAccounts);
+    	secAccounts.addAll(secNonPocketAccounts);
+    	
+    	return secAccounts;
+    }
+    
+    public ArrayList<Account> getAssocSecPocketAccounts() {
+    	Statement stmt = null;
+    	Connection conn = null;
+	    try {
+	    	Class.forName(JDBCdriver.JDBC_DRIVER);
+	    	
+	    	conn = DriverManager.getConnection(JDBCdriver.DB_URL, JDBCdriver.USERNAME, JDBCdriver.PASSWORD);
+	    	
+	        stmt = conn.createStatement();
+            ArrayList<Account> accounts = new ArrayList<Account>();
+ 	        String sql = "SELECT PA.aid " +
+	        		     "FROM Sec_Owns SO, Owner_Groups OG, PKT_Accounts PA, Owns O " +
+	        		     "WHERE '" + mTaxID + "' = SO.taxID " +
+	        		     "AND SO.oid = OG.oid " + 
+	        		     "AND OG.oid = O.oid " +
+	        		     "AND O.aid = PA.aid";
+ 	        
+ 	        System.out.println(sql);
+	        
+	        ResultSet rs = stmt.executeQuery(sql);
+	        
+	        while(rs.next()){
+	           //Retrieve by column name
+	           String aid  = rs.getString("aid");
+
+	           //Display values
+	           System.out.print("aid: " + aid);
+	           
+	           accounts.add(new PocketAccount(conn, aid));
+	        }
+	        rs.close();
+	        
+	        return accounts;
+	        
+	     }catch(SQLException se){
+	        //Handle errors for JDBC
+	        se.printStackTrace();
+	     }catch(Exception e){
+	        //Handle errors for Class.forName
+	        e.printStackTrace();
+	     }finally{
+	        try{
+	           if(conn!=null)
+	              conn.close();
+	        }catch(SQLException se){
+	           se.printStackTrace();
+	        }//end finally try
+	     }//end try
+	    return null;
+    }
+    
+    public ArrayList<Account> getAssocSecNonPocketAccounts() {
+    	Statement stmt = null;
+    	Connection conn = null;
+	    try {
+	    	Class.forName(JDBCdriver.JDBC_DRIVER);
+	    	
+	    	conn = DriverManager.getConnection(JDBCdriver.DB_URL, JDBCdriver.USERNAME, JDBCdriver.PASSWORD);
+	    	
+	        stmt = conn.createStatement();
+            ArrayList<Account> accounts = new ArrayList<Account>();
+ 	        String sql = "SELECT NPA.aid " +
+       		     "FROM Sec_Owns SO, Owner_Groups OG, Non_pkt_accounts NPA, Owns O " +
+       		     "WHERE '" + mTaxID + "' = SO.taxID " +
+       		     "AND SO.oid = OG.oid " + 
+       		     "AND OG.oid = O.oid " +
+       		     "AND O.aid = NPA.aid";
+ 	        
+ 	        System.out.println(sql);
+	        
+	        ResultSet rs = stmt.executeQuery(sql);
+	        
+	        while(rs.next()){
+	           //Retrieve by column name
+	           String aid  = rs.getString("aid");
+
+	           //Display values
+	           System.out.print("aid: " + aid);
+	           
+	           accounts.add(new NonPocketAccount(conn, aid));
 	        }
 	        rs.close();
 	        
@@ -267,4 +391,5 @@ public class Customer {
 	    return null;
     }
 }
+
 

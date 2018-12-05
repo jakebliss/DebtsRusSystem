@@ -32,17 +32,20 @@ public class TestDriver {
 		      //STEP 4: Execute a query
 		      System.out.println("Creating statement...");
 		      
-		      Customer customer = new Customer("GE325DESIEN", "jake", "123 Jane Street", "1234");
-		      Verification ver = new Verification(customer, stmt, conn); 
-//		      NonPocketAccount npAccount = new NonPocketAccount(conn, stmt, "werwer"); 
-//		      if(npAccount.deposit(2000))
-//			      	System.out.println("deposit successful");	
+//		      Customer customer = new Customer("GE325DESIEN", "jake", "123 Jane Street", "1234");
+//		      Verification ver = new Verification(customer, stmt, conn); 
+		      Verification verification = new Verification(conn);
+		      NonPocketAccount npAccount = new NonPocketAccount(conn, "werwer"); 
+		      if(verification.isNonPocketAccount(npAccount.getID()))
+		    	  System.out.println("verified");
+		      if(npAccount.deposit(2000))
+			      	System.out.println("deposit successful");	
 		      
-		      PocketAccount pAccount = new PocketAccount(conn, stmt, "jkjkjkjk"); 
-		      if(ver.isPocketAccount("ejwkdbd"))
-		    	  System.out.println("verification successful");
-		      else 
-		    	  System.out.println("not a pocket account");
+//		      PocketAccount pAccount = new PocketAccount(conn, stmt, "jkjkjkjk"); 
+//		      if(ver.isPocketAccount("ejwkdbd"))
+//		    	  System.out.println("verification successful");
+//		      else 
+//		    	  System.out.println("not a pocket account");
 		      		    
 //		      if(pAccount.payFriend(100, "catcat"))
 //		      	System.out.println("update successful");		   
@@ -69,4 +72,5 @@ public class TestDriver {
 		   }//end try
 		   System.out.println("Goodbye!");
 		}//end main
+
 }

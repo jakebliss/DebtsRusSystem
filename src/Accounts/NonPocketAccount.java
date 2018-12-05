@@ -15,8 +15,8 @@ public class NonPocketAccount extends Account{
 	private String mType;
 	DateFormat mDateFormat = new SimpleDateFormat("yyyy/MM/dd");
 	
-	public NonPocketAccount(Connection conn, Statement stmt, String accountID) {
-		super(conn, stmt, accountID);
+	public NonPocketAccount(Connection conn, String accountID) {
+		super(conn, accountID); 
 		
 		try {
 			String selType = "SELECT type FROM Non_pkt_accounts WHERE aid = '" + this.getID() + "'"; 
@@ -108,7 +108,8 @@ public class NonPocketAccount extends Account{
 		     ResultSet insertRs = mStmt.executeQuery(insertTrans); 
 		     insertRs.close(); 
 		     
-		     this.setBalance(this.getBalance() - amount); 
+		     this.setBalance(this.getBalance() - amount);
+		     System.out.println(this.getBalance());
 		     
 		  	 return true;
 		   }catch(SQLException se){

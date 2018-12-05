@@ -11,14 +11,15 @@ abstract public class Account {
 	protected Connection mConn;
 	protected Statement mStmt; 
 	
-	public Account(Connection conn, Statement stmt, String accountID) {
-		mStmt = stmt; 
+	public Account(Connection conn, String accountID) {
 		mConn = conn; 
 		
 		//Get ID from database 
 		mID = accountID; 
 		
 		try {
+		mStmt = conn.createStatement();
+		System.out.println("Connected database successfully..."); 
 		String selBal = "SELECT balance FROM accounts WHERE aid = '" + mID + "'"; 
 		ResultSet balRs = mStmt.executeQuery(selBal); 
 	
