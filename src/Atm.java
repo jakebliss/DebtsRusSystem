@@ -17,6 +17,7 @@ import Accounts.NonPocketAccount;
 import Accounts.PocketAccount;
 import Customers.Customer;
 import Verifications.Verification;
+import Customers.Customer;
 
 public class Atm {
 
@@ -58,7 +59,7 @@ public class Atm {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					Atm window = new Atm(1234, "GE325DESIEN");
+					Atm window = new Atm(args[1]);
 					window.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -113,6 +114,7 @@ public class Atm {
 		}
 		JComboBox originAccountComboBox = new JComboBox(originAccountIDs.toArray());
 		//JComboBox destAccountComboBox = new JComboBox(d)
+
 		originAccountComboBox.setBounds(386, 20, 52, 27);
 		frame.getContentPane().add(originAccountComboBox);
 		
@@ -134,11 +136,6 @@ public class Atm {
 		frame.getContentPane().add(txtAccountId);
 		txtAccountId.setColumns(10);
 		
-		
-        String totalAmount = txtEnterAmount.getText();
-        String friendId = txtFriendId.getText();
-        String targetAccount = txtAccountId.getText();
-        
 		// ====================================================================
 		// Deposit
 		// ====================================================================
@@ -246,7 +243,7 @@ public class Atm {
 		        Verification verification = new Verification(conn);
 				String accountID = (String) originAccountComboBox.getSelectedItem(); 
 				PocketAccount pAccount = new PocketAccount(conn, accountID); 	
-				
+        
 				if (verification.isPocketAccount(accountID) &&
 						verification.accountOpen(accountID)) {
 					
@@ -276,7 +273,6 @@ public class Atm {
 		        Verification verification = new Verification(conn);
 				String accountID = (String) originAccountComboBox.getSelectedItem(); 
 				String destAccountID = txtAccountId.getText();
-				
 				NonPocketAccount npAccount = new NonPocketAccount(conn, accountID); 	
 				if (verification.isNonPocketAccount(accountID) &&
 						verification.isNonPocketAccount(destAccountID) && 
@@ -382,7 +378,7 @@ public class Atm {
 		
 		btnPayFriend.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-		        Verification verification = new Verification(conn);
+		    Verification verification = new Verification(conn);
 				String accountID = (String)originAccountComboBox.getSelectedItem(); 
 				String destAccountID = txtFriendId.getText();
 				PocketAccount pAccount = new PocketAccount(conn, accountID); 	
@@ -391,7 +387,7 @@ public class Atm {
 						verification.accountOpen(accountID) && 
 						verification.accountOpen(destAccountID)) {
 					
-					System.out.println("verified");
+			    System.out.println("verified");
 					String amount = txtEnterAmount.getText();
 					
 					if(pAccount.payFriend(Double.parseDouble(amount), destAccountID)){

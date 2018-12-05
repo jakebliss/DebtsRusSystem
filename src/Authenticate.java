@@ -7,12 +7,16 @@ import javax.swing.JOptionPane;
 
 import java.awt.BorderLayout;
 import javax.swing.JTextField;
+
+import Customers.Customer;
+
 import javax.swing.JButton;
 
 public class Authenticate extends JFrame {
 
 	private JFrame frame;
-	private JTextField textField;
+	private JTextField textFieldPin;
+	private JTextField textFieldTaxID;
 
 	/**
 	 * Launch the application.
@@ -50,21 +54,31 @@ public class Authenticate extends JFrame {
 		lblPin.setBounds(128, 102, 61, 16);
 		frame.getContentPane().add(lblPin);
 		
-		textField = new JTextField();
-		textField.setBounds(171, 97, 130, 26);
-		frame.getContentPane().add(textField);
-		textField.setColumns(10);
+		textFieldPin = new JTextField();
+		textFieldPin.setBounds(171, 97, 130, 26);
+		frame.getContentPane().add(textFieldPin);
+		textFieldPin.setColumns(10);
+		
+		JLabel lblTaxId = new JLabel("Tax ID:");
+		lblTaxId.setBounds(110, 69, 61, 16);
+		frame.getContentPane().add(lblTaxId);
+		
+		textFieldTaxID = new JTextField();
+		textFieldTaxID.setBounds(171, 64, 130, 26);
+		frame.getContentPane().add(textFieldTaxID);
+		textFieldTaxID.setColumns(10);
 		
 		JButton authenticateButton = new JButton("Authenticate");
 		authenticateButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				String pin = textField.getText();
+				String pin = textFieldPin.getText();
+				String taxId = textFieldTaxID.getText();
 				
-				boolean authenticated = authenticatePin(Integer.parseInt(pin));
+				boolean authenticated = Customer.verifyUser(pin, taxId);
 				
 			    if(authenticated) {
 			    	JOptionPane.showMessageDialog(frame, "Authentication was successful.");
-			    	String[] args = {pin};
+			    	String[] args = {pin, taxId};
 			    	Atm.main(args);
 			    	close();
 			    } else {
@@ -74,16 +88,10 @@ public class Authenticate extends JFrame {
 		});
 		authenticateButton.setBounds(159, 135, 117, 29);
 		frame.getContentPane().add(authenticateButton);
-
-		
 	}
 	
 	private void close() {
 		this.setVisible(false);
 		this.dispose();
-	}
-	
-	private boolean authenticatePin(int pin) {
-		return Customer.verifyPin(pin);
 	}
 }

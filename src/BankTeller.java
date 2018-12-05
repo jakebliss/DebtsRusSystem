@@ -10,6 +10,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
 import java.util.Vector;
 
 import javax.swing.JFrame;
@@ -22,11 +25,19 @@ import Accounts.NonPocketAccount;
 import Accounts.PocketAccount;
 import Customers.Customer;
 import Verifications.Verification;
+import CurrDate.CurrDate;
+import Customers.Customer;
+import Customers.Transaction;
+import InterestRates.InterestRates;
 
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import java.awt.Button;
+import com.toedter.calendar.JDateChooser;
 
 public class BankTeller {
 
@@ -42,11 +53,16 @@ public class BankTeller {
 	private JButton btnDeleteTransactions, btnListClosedAccounts;
 	private JTextField txtBankName;
 	private JTextField txtAmount;
-	private JTextField txtInterest;
 	private JTextField txtInitialBalance;
 	private JTextField txtOwners;
 	private JTextField txtLinked; 
 	private JComboBox comboBoxAccountType;
+  private JLabel label;
+	private JTextField txtNewInterestRate;
+	private JTextField txtTaxid;
+	private JTextField txtName;
+	private JTextField txtAddress;
+	private JButton btnSetDate;
 	
 	// ====================================================================
 	// Initialize DB
@@ -122,7 +138,7 @@ public class BankTeller {
 	// ====================================================================
 	private void initialize() {
 		frame = new JFrame();
-		frame.setBounds(100, 100, 879, 451);
+		frame.setBounds(100, 100, 879, 865);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 		
@@ -147,6 +163,8 @@ public class BankTeller {
 		
 		btnSubmitCheckTransaction.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				String originAccount = txtAccountId.getText();
+				String totalAmount = txtAmount.getText();
 				
 				 Verification verification = new Verification(conn);
 					String accountID = txtAccountId.getText(); 
@@ -189,7 +207,6 @@ public class BankTeller {
 			public void actionPerformed(ActionEvent arg0) {
 				DefaultTableModel model = (DefaultTableModel) table.getModel();
 				model.setRowCount(0);
-				
 				Vector<String> closedAccounts = new Vector<String>(); 
 				try {
 					String selClosed = "SELECT aid FROM accounts WHERE status = 'N'"; 
@@ -256,29 +273,23 @@ public class BankTeller {
 		txtCustomerId.setBounds(743, 22, 130, 26);
 		frame.getContentPane().add(txtCustomerId);
 		txtCustomerId.setColumns(10);
-//		
-//		String taxId = txtCustomerId.getText();
-//		
-//		btnGenerateMonthlyStatement.addActionListener(new ActionListener() {
-//			public void actionPerformed(ActionEvent arg0) {
-//				DefaultTableModel model = (DefaultTableModel) table.getModel();
-//				model.setRowCount(0);
-//				
-//				Customer customer = new Customer(stmt, conn, taxId); 
-//				ArrayList<String> monthlyStatement = customer.getMonthlyStatement();
-//				
-//				if(monthlyStatement != null) {
-//					for(String s : monthlyStatement) {
-//						System.out.println(s);
-//					}
-//					
-////					model.addRow(new Vector<String>(monthlyStatement));
-////					table.setModel(model); 
-//				} else {
-//					System.out.println("GetMonthlyStatement is null");
-//				}
-//			}
-//		});
+		
+// 		btnGenerateMonthlyStatement.addActionListener(new ActionListener() {
+// 			public void actionPerformed(ActionEvent arg0) {
+// 				String taxId = txtCustomerId.getText();
+
+// 				DefaultTableModel model = (DefaultTableModel) table.getModel();
+// 				model.setRowCount(0);
+				
+// 				ArrayList<String> monthlyStatement = Customer.getMonthlyStatement(taxId);
+// 				if(monthlyStatement != null){
+// 					model.addRow(new Vector<String>(monthlyStatement));
+// 					table.setModel(model); 
+// 				} else {
+// 					System.out.println("GetMonthlyStatement is null");
+// 				}
+// 			}
+// 		});
 		
 		// ====================================================================
 		// Customer Report
@@ -289,58 +300,38 @@ public class BankTeller {
 		
 		btnCustomerReport.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				String taxId = txtCustomerId.getText();
+
 				DefaultTableModel model = (DefaultTableModel) table.getModel();
 				model.setRowCount(0);
 				
-				String taxId = txtCustomerId.getText();
-				Customer customer = new Customer(stmt, conn, taxId); 
-				ArrayList<Account> accounts = customer.getAllAssocAccounts();
-				
+				ArrayList<String> accounts = Customer.getCustomerReport(taxId);
 				if(accounts != null){
-					System.out.println("accounts found");
-					//TODO: populate table with accounts with accounts and status 
+					//TODO: populate table with accounts
 				} else {
 					//TODO: on failure
 				}
 			}
 		});
-//		
-//		// ====================================================================
-//		// Add Interest
-//		// ====================================================================
-//		btnAddInterest = new JButton("Add Interest");
-//		btnAddInterest.setBounds(63, 291, 117, 29);
-//		frame.getContentPane().add(btnAddInterest);
-//		
-//		btnAddInterest.addActionListener(new ActionListener() {
-//			public void actionPerformed(ActionEvent arg0) {
-//				
-//				if(Account.deleteClosedAccountsAndCustomers()) {
-//					//TODO: on success
-//				} else {
-//					//TODO: on failure
-//				}
-//			}
-//		});
-//		
-//		txtInterest = new JTextField();
-//		txtInterest.setText("Interest");
-//		txtInterest.setBounds(224, 291, 130, 26);
-//		frame.getContentPane().add(txtInterest);
-//		txtInterest.setColumns(10);
-//	    
-//		String interest = txtInterest.getText();
-//		btnAddInterest.addActionListener(new ActionListener() {
-//			public void actionPerformed(ActionEvent arg0) {
-//				
-//				if(Account.addInterest(interest)) {
-//					//TODO: on success
-//				} else {
-//					//TODO: on failure
-//				}
-//			}
-//		});
-//		
+		
+		// ====================================================================
+		// Add Interest
+		// ====================================================================
+		btnAddInterest = new JButton("Add Interest");
+		btnAddInterest.setBounds(82, 312, 117, 29);
+		frame.getContentPane().add(btnAddInterest);
+		
+		btnAddInterest.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				
+				if(Account.addInterest()) {
+					// on success
+				} else {
+			    	JOptionPane.showMessageDialog(frame, "[Warning] Add interest only allowed Once a month.");
+				}
+			}
+		});
+    
 		// ====================================================================
 		// Create Account
 		// ====================================================================
@@ -376,9 +367,6 @@ public class BankTeller {
 //		txtLinked.setBounds(224, 273, 130, 26);
 //		frame.getContentPane().add(txtLinked);
 //		txtLinked.setColumns(10);
-		
-
-		
 //		btnCreateAccount.addActionListener(new ActionListener() {
 //			public void actionPerformed(ActionEvent arg0) {
 //				String accountType = (String)comboBoxAccountType.getSelectedItem();
@@ -491,23 +479,86 @@ public class BankTeller {
 				}
 			}
 		});
-//		
-//		// ====================================================================
-//		// Delete Transactions
-//		// ====================================================================
-//		btnDeleteTransactions = new JButton("Delete Transactions");
-//		btnDeleteTransactions.setBounds(39, 353, 202, 29);
-//		frame.getContentPane().add(btnDeleteTransactions);
-//
-//		btnDeleteTransactions.addActionListener(new ActionListener() {
-//			public void actionPerformed(ActionEvent arg0) {
-//				
-//				if(Transaction.deleteTransactions()) {
-//					//TODO: on success
-//				} else {
-//					//TODO: on failure
-//				}
-//			}
-//		});
+    
+		// ====================================================================
+		// Delete Transactions
+		// ====================================================================
+		btnDeleteTransactions = new JButton("Delete Transactions");
+		btnDeleteTransactions.setBounds(39, 353, 202, 29);
+		frame.getContentPane().add(btnDeleteTransactions);
+		
+		label = new JLabel("");
+		label.setBounds(331, 477, 61, 16);
+		frame.getContentPane().add(label);
+		
+		btnDeleteTransactions.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				
+				if(Transaction.deleteTransactions()) {
+					//TODO: on success
+				} else {
+					//TODO: on failure
+				}
+			}
+		});
+    
+		// ====================================================================
+		// Change Interest
+		// ====================================================================
+		String[] BankAccountTypes = {"Interest Checking", "Student Checking", "Saving", "Pocket"};
+		JComboBox comboBoxBankAccountType = new JComboBox(BankAccountTypes);
+		comboBoxBankAccountType.setBounds(165, 477, 52, 27);
+		frame.getContentPane().add(comboBoxBankAccountType);
+		
+		txtNewInterestRate = new JTextField();
+		txtNewInterestRate.setText("New Interest Rate");
+		txtNewInterestRate.setBounds(23, 477, 130, 26);
+		frame.getContentPane().add(txtNewInterestRate);
+		txtNewInterestRate.setColumns(10);
+		
+		JButton btnChangeInterestRate = new JButton("Change Interest Rate");
+		btnChangeInterestRate.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				String bankAccountType = (String) comboBoxBankAccountType.getSelectedItem();
+				String interestRate = txtNewInterestRate.getText();
+				
+				if(InterestRates.setInterestRate(bankAccountType, interestRate)) {
+					// on success
+				} else {
+					// on fail
+				}
+				
+			}
+		});
+		btnChangeInterestRate.setBounds(227, 477, 165, 29);
+		frame.getContentPane().add(btnChangeInterestRate);
+		
+		// ====================================================================
+		// Set Date
+		// ====================================================================
+		Date currDate = CurrDate.getCurrentDate();
+		CurrDate.checkIfLastDayOfMonth(currDate);
+
+		JDateChooser dateChooser = new JDateChooser(currDate);
+		dateChooser.setBounds(17, 799, 119, 26);
+		frame.getContentPane().add(dateChooser);
+		
+		btnSetDate = new JButton("Set Date");
+		btnSetDate.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				Date newDate = dateChooser.getDate();
+				
+				if(CurrDate.setCurrentDate(newDate)) {
+					CurrDate.checkIfLastDayOfMonth(newDate);
+				} else {
+					// on fail
+				}
+				
+			}
+		});
+		btnSetDate.setBounds(148, 799, 117, 29);
+		frame.getContentPane().add(btnSetDate);		
 	}
 }

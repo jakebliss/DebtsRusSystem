@@ -70,9 +70,11 @@ public class Customer {
     	//TODO: Update Pin from database for customer with oldPin
     }
     
-    public static boolean verifyPin(String pin) {
+    public static boolean verifyUser(String pin, String taxId) {
     	//TODO: Query DB to see if pin has a customer linked to it. And return true if it does.
-    	return pin.equals("1234");
+    	int enteredPin = Integer.parseInt(pin);
+    	
+    	return enteredPin == 1234 & taxId.equals("3920sdfadf");
     }
     
     // Given a customer, do the following for each account she owns (including
@@ -87,13 +89,13 @@ public class Customer {
     public ArrayList<String> getMonthlyStatement() {
     	ArrayList<Account> accounts = getAllAssocPrimAccounts();
     	ArrayList<String> monthlyStatement = new ArrayList<String>();
-    	int sumOfBalances = 0;
+    	double sumOfBalances = 0;
     	
-    	for(Account a : this.getAllAssocPrimAccounts()) {
-	    	ArrayList<Customer> customers = a.getOwners();
-	    	ArrayList<Transaction> transactions = a.getListOfLastMonthsTransactions();
-	    	int initialBalance = a.calculateInitialBalance(transactions);
-	    	int finalBalance = a.calculateFinalBalance(transactions);
+    	for(Account account : accounts) {
+	    	ArrayList<Customer> customers = Account.getOwners(account.getID());
+	    	ArrayList<Transaction> transactions = Account.getListOfCurrentMonthsTransactions(account.getID());
+	    	float initialBalance = Account.calculateInitialBalance(transactions);
+	    	double finalBalance = account.getBalance();
 	    	sumOfBalances += finalBalance;
     	}
     	System.out.println("after for");
@@ -126,6 +128,17 @@ public class Customer {
         }
         
     	return flaggedCustomers;
+    }
+    
+    public static ArrayList<String> getCustomerReport(String taxId) {
+        ArrayList<Account> accounts = Customer.getAllAssocAccountsArrayList(taxId);
+        ArrayList<String> lines = new ArrayList<String>();
+        
+        for(Account account : accounts) {
+        	String line = "Account: " + account.getID() + " Status: " + account.getStatus();
+        }
+        
+        return lines;
     }
     
     public static ArrayList<Customer> getAllCustomers() {
@@ -178,21 +191,36 @@ public class Customer {
 	     }//end try
 	    return null;
     }
-    
-    public ArrayList<Account> getAllAssocAccounts() {
-    	ArrayList<Account> primAccounts = getAllAssocPrimAccounts();
-    	ArrayList<Account> secAccounts = getAllAssocSecAccounts();
+    public static ArrayList<String> getAllAssocAccounts(String taxId) {
+    	ArrayList<Account> primAccounts = getAllAssocPrimAccounts(taxId);
+    	ArrayList<Account> coOwnAccounts = getAllAssocCoOwnAccounts(taxId);
     	ArrayList<Account> allAccounts = new ArrayList<Account>();
     	
     	allAccounts.addAll(primAccounts);
-    	allAccounts.addAll(secAccounts);
+    	allAccounts.addAll(coOwnAccounts);
     	
-    	return allAccounts;
+    	ArrayList<String> accounts = new ArrayList<String>();
+    	for(Account account : allAccounts) {
+    		accounts.add(account.getID());
+    	}
+    	
+    	return accounts;
     }
     
-    public ArrayList<Account> getAllAssocPrimAccounts() {
-    	ArrayList<Account> primPocketAccounts = getAssocPrimPocketAccounts();
-    	ArrayList<Account> primNonPocketAccounts = getAssocPrimNonPocketAccounts();
+    public static ArrayList<Account> getAllAssocAccountsArrayList(String taxId) {
+    	ArrayList<Account> primAccounts = getAllAssocPrimAccounts(taxId);
+    	ArrayList<Account> coOwnAccounts = getAllAssocCoOwnAccounts(taxId);
+    	ArrayList<Account> allAccounts = new ArrayList<Account>();
+    	
+    	allAccounts.addAll(primAccounts);
+    	allAccounts.addAll(coOwnAccounts);
+
+    	return allAccounts;
+    }
+
+    public static ArrayList<Account> getAllAssocPrimAccounts(String taxId) {
+    	ArrayList<Account> primPocketAccounts = getAssocPrimPocketAccounts(taxId);
+    	ArrayList<Account> primNonPocketAccounts = getAssocPrimNonPocketAccounts(taxId);
     	ArrayList<Account> primAccounts = new ArrayList<Account>();
     	
     	primAccounts.addAll(primPocketAccounts);
@@ -415,6 +443,130 @@ public class Customer {
 	     }//end try
 	    return null;
     }
+    
+    public static ArrayList<Account> getAllAssocCoOwnAccounts(String taxId){
+    	ArrayList<Account> coOwnPocketAccounts = getAssocCoOwnPocketAccounts(taxId);
+    	ArrayList<Account> coOwnNonPocketAccounts = getAssocCoOwnNonPocketAccounts(taxId);
+    	ArrayList<Account> coOwnAccounts = new ArrayList<Account>();
+    	
+    	coOwnAccounts.addAll(coOwnPocketAccounts);
+    	coOwnAccounts.addAll(coOwnNonPocketAccounts);
+    	
+    	return coOwnAccounts;
+    }
+    public static ArrayList<Account> getAssocCoOwnPocketAccounts(String taxId) {
+    	Statement stmt = null;
+    	Connection conn = null;
+	    try {
+	    	Class.forName(JDBCdriver.JDBC_DRIVER);
+	    	
+	    	conn = DriverManager.getConnection(JDBCdriver.DB_URL, JDBCdriver.USERNAME, JDBCdriver.PASSWORD);
+	    	
+	        stmt = conn.createStatement();
+            ArrayList<Account> accounts = new ArrayList<Account>();
+ 	        String sql = "SELECT O.aid, O.balance, O.status" +
+	        		     "FROM CO_Owns CO, Owner_Groups OG, PKT_Accounts PA, Owns O" +
+	        		     "WHERE " + taxId + " = CO.taxID" +
+	        		     "AND CO.oid = OG.oid" + 
+	        		     "AND OG.oid = O.oid" +
+	        		     "AND O.aid = PA.aid";
+	        
+	        ResultSet rs = stmt.executeQuery(sql);
+	        
+	        while(rs.next()){
+	           //Retrieve by column name
+	           String oid  = rs.getString("oid");
+	           String strStatus = rs.getString("status");
+	           double balance = rs.getDouble("balance");
+
+	           //Display values
+	           System.out.print("oid: " + oid);
+	           System.out.print(", status: " + strStatus);
+	           System.out.print(", balance: " + balance);
+	           boolean status = true;
+	           if(strStatus == "N") {
+	        	   status = false;
+	           }
+	           
+	           accounts.add(new PocketAccount(oid, status, balance));
+	        }
+	        rs.close();
+	        
+	        return accounts;
+	        
+	     }catch(SQLException se){
+	        //Handle errors for JDBC
+	        se.printStackTrace();
+	     }catch(Exception e){
+	        //Handle errors for Class.forName
+	        e.printStackTrace();
+	     }finally{
+	        try{
+	           if(conn!=null)
+	              conn.close();
+	        }catch(SQLException se){
+	           se.printStackTrace();
+	        }//end finally try
+	     }//end try
+	    return null;
+    }
+    public static ArrayList<Account> getAssocCoOwnNonPocketAccounts(String taxId) {
+    	Statement stmt = null;
+    	Connection conn = null;
+	    try {
+	    	Class.forName(JDBCdriver.JDBC_DRIVER);
+	    	
+	    	conn = DriverManager.getConnection(JDBCdriver.DB_URL, JDBCdriver.USERNAME, JDBCdriver.PASSWORD);
+	    	
+	        stmt = conn.createStatement();
+            ArrayList<Account> accounts = new ArrayList<Account>();
+ 	        String sql = "SELECT O.aid, O.balance, O.status" +
+       		             "FROM CO_Owns CO, Owner_Groups OG, NON_PKT_Accounts NPA, Owns O" +
+       		             "WHERE " + taxId + " = CO.taxID" +
+       		             "AND CO.oid = OG.oid" + 
+       		             "AND OG.oid = O.oid" +
+       		             "AND O.aid = NPA.aid";
+	        
+	        ResultSet rs = stmt.executeQuery(sql);
+	        
+	        while(rs.next()){
+	           //Retrieve by column name
+	           String oid  = rs.getString("oid");
+	           String strStatus = rs.getString("status");
+	           Double balance = rs.getDouble("balance");
+
+	           //Display values
+	           System.out.print("oid: " + oid);
+	           System.out.print(", status: " + strStatus);
+	           System.out.print(", balance: " + balance);
+	           boolean status = true;
+	           if(strStatus == "N") {
+	        	   status = false;
+	           }
+	           
+	           accounts.add(new NonPocketAccount(oid, status, balance));
+	        }
+	        rs.close();
+	        
+	        return accounts;
+	        
+	     }catch(SQLException se){
+	        //Handle errors for JDBC
+	        se.printStackTrace();
+	     }catch(Exception e){
+	        //Handle errors for Class.forName
+	        e.printStackTrace();
+	     }finally{
+	        try{
+	           if(conn!=null)
+	              conn.close();
+	        }catch(SQLException se){
+	           se.printStackTrace();
+	        }//end finally try
+	     }//end try
+	    return null;
+    }
+    
 }
 
 
