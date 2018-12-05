@@ -43,9 +43,14 @@ public class Customer {
     	//Get ID from database 
     	mTaxID = taxID; 
     	mPin  = null; 
-    			
+        	
     	try {
+	    	    conn = DriverManager.getConnection(JDBCdriver.DB_URL, JDBCdriver.USERNAME, JDBCdriver.PASSWORD);
+
+	            stmt = conn.createStatement();
+
     			String selName = "SELECT name address FROM customers WHERE taxid = '" + mTaxID + "'"; 
+    			System.out.println(selName);
     			ResultSet selRs = stmt.executeQuery(selName); 
     		
     	    	while (selRs.next()) {

@@ -108,11 +108,10 @@ public class Atm {
 				
 		ArrayList<String> originAccountIDs = new ArrayList<String>();
 		for(Account a : mCustomer.getAllAssocAccounts()) {
-			originAccountIDs.add(a.getID());  wi
+			originAccountIDs.add(a.getID());
 			System.out.println(a.getID());
 		}
 		JComboBox originAccountComboBox = new JComboBox(originAccountIDs.toArray());
-		//JComboBox destAccountComboBox = new JComboBox(d)
 
 		originAccountComboBox.setBounds(386, 20, 52, 27);
 		frame.getContentPane().add(originAccountComboBox);
