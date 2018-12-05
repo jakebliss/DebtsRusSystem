@@ -44,13 +44,13 @@ public class Customer {
     public static ArrayList<String> getMonthlyStatement(String taxId) {
     	ArrayList<Account> accounts = getAllAssocPrimAccounts(taxId);
     	ArrayList<String> monthlyStatement = new ArrayList<String>();
-    	int sumOfBalances = 0;
+    	double sumOfBalances = 0;
     	
     	for(Account account : accounts) {
-	    	ArrayList<Customer> customers = account.getOwners();
-	    	ArrayList<Transaction> transactions = account.getListOfLastMonthsTransactions();
-	    	int initialBalance = account.calculateInitialBalance(transactions);
-	    	int finalBalance = account.calculateFinalBalance(transactions);
+	    	ArrayList<Customer> customers = Account.getOwners(account.getID());
+	    	ArrayList<Transaction> transactions = Account.getListOfCurrentMonthsTransactions(account.getID());
+	    	float initialBalance = Account.calculateInitialBalance(transactions);
+	    	double finalBalance = account.getBalance();
 	    	sumOfBalances += finalBalance;
     	}
     	
@@ -85,6 +85,16 @@ public class Customer {
     	return flaggedCustomers;
     }
     
+    public static ArrayList<String> getCustomerReport(String taxId) {
+        ArrayList<Account> accounts = Customer.getAllAssocAccountsArrayList(taxId);
+        ArrayList<String> lines = new ArrayList<String>();
+        
+        for(Account account : accounts) {
+        	String line = "Account: " + account.getID() + " Status: " + account.getStatus();
+        }
+        
+        return lines;
+    }
     
     public static ArrayList<Customer> getAllCustomers() {
     	Statement stmt = null;
@@ -150,6 +160,17 @@ public class Customer {
     	}
     	
     	return accounts;
+    }
+    
+    public static ArrayList<Account> getAllAssocAccountsArrayList(String taxId) {
+    	ArrayList<Account> primAccounts = getAllAssocPrimAccounts(taxId);
+    	ArrayList<Account> coOwnAccounts = getAllAssocCoOwnAccounts(taxId);
+    	ArrayList<Account> allAccounts = new ArrayList<Account>();
+    	
+    	allAccounts.addAll(primAccounts);
+    	allAccounts.addAll(coOwnAccounts);
+
+    	return allAccounts;
     }
 
     public static ArrayList<Account> getAllAssocPrimAccounts(String taxId) {

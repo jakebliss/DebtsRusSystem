@@ -15,17 +15,18 @@ import java.util.Date;
 import Accounts.Account;
 import Accounts.NonPocketAccount;
 import Bank.Bank;
+import CurrDate.CurrDate;
 import JDBCdriver.JDBCdriver;
 
 public class Transaction {
 	private String mTid;
 	public Date mDate;
-	public int mAmount;
+	public float mAmount;
 	public String mType;
 	public String mOrgActId;
 	public String mTargetActId;
 	
-	public Transaction(String tid, Date date, int amount, String type, String orgActId, String targetActId) {
+	public Transaction(String tid, Date date, float amount, String type, String orgActId, String targetActId) {
 		mTid = tid;
 		mDate = date;
 		mAmount = amount;
@@ -46,7 +47,7 @@ public class Transaction {
             
     		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
     		Calendar cal = Calendar.getInstance();
-    		cal.setTime(Bank.getCurrentDate());
+    		cal.setTime(CurrDate.getCurrentDate());
     		int month = cal.get(Calendar.MONTH);
     		int year = cal.get(Calendar.YEAR);
             Date boundDate = sdf.parse("01/" + month + "/" + year);

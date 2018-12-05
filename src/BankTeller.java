@@ -13,9 +13,10 @@ import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
 import Accounts.Account;
-import Bank.Bank;
 import CurrDate.CurrDate;
 import Customers.Customer;
+import Customers.Transaction;
+import InterestRates.InterestRates;
 
 import javax.swing.JList;
 import javax.swing.JOptionPane;
@@ -130,7 +131,7 @@ public class BankTeller {
 				DefaultTableModel model = (DefaultTableModel) table.getModel();
 				model.setRowCount(0);
 		
-				String[] accounts = Account.listClosedAccounts();
+				ArrayList<String> accounts = Account.listClosedAccounts();
 				if(accounts != null){
 					//TODO: populate table with accounts
 				} else {
@@ -205,7 +206,7 @@ public class BankTeller {
 				DefaultTableModel model = (DefaultTableModel) table.getModel();
 				model.setRowCount(0);
 				
-				String[] accounts = Account.getCustomerReport(taxId);
+				ArrayList<String> accounts = Customer.getCustomerReport(taxId);
 				if(accounts != null){
 					//TODO: populate table with accounts
 				} else {
@@ -224,7 +225,7 @@ public class BankTeller {
 		btnAddInterest.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				
-				if(Bank.addInterest()) {
+				if(Account.addInterest()) {
 					// on success
 				} else {
 			    	JOptionPane.showMessageDialog(frame, "[Warning] Add interest only allowed Once a month.");
@@ -336,7 +337,7 @@ public class BankTeller {
 				String bankAccountType = (String) comboBoxBankAccountType.getSelectedItem();
 				String interestRate = txtNewInterestRate.getText();
 				
-				if(Bank.setInterestRate(bankAccountType, interestRate)) {
+				if(InterestRates.setInterestRate(bankAccountType, interestRate)) {
 					// on success
 				} else {
 					// on fail
@@ -397,7 +398,7 @@ public class BankTeller {
 		// Set Date
 		// ====================================================================
 		Date currDate = CurrDate.getCurrentDate();
-		Bank.checkIfLastDayOfMonth(currDate);
+		CurrDate.checkIfLastDayOfMonth(currDate);
 
 		JDateChooser dateChooser = new JDateChooser(currDate);
 		dateChooser.setBounds(17, 799, 119, 26);
@@ -410,7 +411,7 @@ public class BankTeller {
 				Date newDate = dateChooser.getDate();
 				
 				if(CurrDate.setCurrentDate(newDate)) {
-					Bank.checkIfLastDayOfMonth(newDate);
+					CurrDate.checkIfLastDayOfMonth(newDate);
 				} else {
 					// on fail
 				}

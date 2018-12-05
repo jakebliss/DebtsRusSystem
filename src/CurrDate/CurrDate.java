@@ -5,8 +5,10 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Calendar;
 import java.util.Date;
 
+import Accounts.Account;
 import JDBCdriver.JDBCdriver;
 
 public class CurrDate {
@@ -90,4 +92,14 @@ public class CurrDate {
 	     }//end try
 		return false;
 	}
+
+	public static void checkIfLastDayOfMonth(Date currDate) {
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(currDate);
+		int currDay = cal.get(Calendar.DAY_OF_MONTH);
+		int lastDay = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
+		if(currDay == lastDay) {
+			Account.addInterest();
+		}
+    }
 }

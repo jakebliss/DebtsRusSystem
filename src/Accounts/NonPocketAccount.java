@@ -220,14 +220,6 @@ public class NonPocketAccount extends Account{
 			   } 
 	}
 	
-	// Add money to the checking or savings account. 
-	// The amount added is the monthly interest rate times the average daily balance for the month 
-	// (e.g., an account with balance $30 for 10 days and $60 for 20 days in a 30-day month has an 
-	// average daily balance of $50, not $45!). Interest is added at the end of each month.
-	public boolean accureIntrest() {
-		return true; 
-	}
-	
 	// Subtract money from the checking account. Associated with a check transaction is a check number.
 	// Preconditions: Account is open
 	public boolean writeCheck(double amount, String checkNum) {
@@ -266,25 +258,5 @@ public class NonPocketAccount extends Account{
 		      e.printStackTrace();
 		      return false; 
 		   }
-	}
-	
-	@Override
-	public ArrayList<Customer> getOwners() {
-		return null;
-	}
-	
-	@Override
-	public ArrayList<Transaction> getListOfLastMonthsTransactions() {
-		return null;
-	}
-	
-	@Override
-	public int calculateInitialBalance(ArrayList<Transaction> transactions) {
-		return 0;
-	}
-	
-	@Override
-	public int calculateFinalBalance(ArrayList<Transaction> transactions) {
-		return 0;
 	}
  }
