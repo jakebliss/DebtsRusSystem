@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
+import org.apache.commons.lang3.RandomStringUtils;
+
 import Testing.TestDriver;
 import java.sql.*;
 import Customers.Customer;
@@ -48,8 +50,8 @@ public class NonPocketAccount extends Account{
 		}
 		String sAmount = Double.toString(amount); 
 		try{
-			 String transactionID = "testid34"; 
 			 Date date = new Date();
+			 String transactionID = RandomStringUtils.randomAlphanumeric(16);
 			 
 		     String updateBal = "UPDATE Accounts A SET A.balance = A.balance + " + sAmount + " WHERE A.aid = '" + this.getID() + "'";
 		     String insertTrans = "INSERT INTO transactions " + "(tid, amount, tdate, type, sourceid) VALUES (" 
@@ -90,7 +92,7 @@ public class NonPocketAccount extends Account{
 		
 		String sAmount = Double.toString(amount); 
 		try{
-			 String transactionID = "testid"; 
+			 String transactionID = RandomStringUtils.randomAlphanumeric(16);
 			 Date date = new Date();
 			 
 		     String updateBal = "UPDATE Accounts A SET A.balance = A.balance - " + sAmount + 
@@ -134,7 +136,7 @@ public class NonPocketAccount extends Account{
 		}
 		String sAmount = Double.toString(amount); 
 		try{
-			  String transactionID = "testid20"; 
+			  String transactionID = RandomStringUtils.randomAlphanumeric(16);
 			  Date date = new Date();
 			  
 
@@ -183,7 +185,7 @@ public class NonPocketAccount extends Account{
 		String sAmount = Double.toString(amount); 
 		String sAdjustedAmount = Double.toString(amount + fee); 
 		try{
-			  String transactionID = "testid21"; 
+			  String transactionID = RandomStringUtils.randomAlphanumeric(16); 
 			  Date date = new Date();
 			  
 			  // TODO: Verify the accounts belong to same customer. 			  
@@ -228,14 +230,12 @@ public class NonPocketAccount extends Account{
 			return false; 
 		}
 		
-		String checkNum = "test"; 
+		String checkNum = RandomStringUtils.randomAlphanumeric(16); 
 		
 		String sAmount = Double.toString(amount); 
 		try{
-			 String transactionID = "testid"; 
+			 String transactionID = RandomStringUtils.randomAlphanumeric(16);
 			 Date date = new Date();
-			 
-			 // TODO: associate check number with transaction
 			 
 		     String updateBal = "UPDATE Accounts A SET A.balance = A.balance - " + sAmount + 
 		    		 " WHERE A.aid = '" + this.getID() + "'";
