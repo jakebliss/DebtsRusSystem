@@ -59,7 +59,7 @@ public class Atm {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					Atm window = new Atm(args[1]);
+					Atm window = new Atm(Integer.parseInt(args[0]), args[1]);
 					window.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();

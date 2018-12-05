@@ -86,8 +86,8 @@ public class Customer {
     // accounts of which the customer is the primary owner exceeds $100,000, a message should be included
     // in the statement to warn the customer that the limit of the insurance has been reached.
     
-    public ArrayList<String> getMonthlyStatement() {
-    	ArrayList<Account> accounts = getAllAssocPrimAccounts();
+    public ArrayList<String> getMonthlyStatement(String taxId) {
+    	ArrayList<Account> accounts = Customer.getAllAssocPrimAccounts(taxId);
     	ArrayList<String> monthlyStatement = new ArrayList<String>();
     	double sumOfBalances = 0;
     	
@@ -115,7 +115,7 @@ public class Customer {
         ArrayList<Customer> customers = getAllCustomers();
         
         for(Customer customer : customers) {
-            ArrayList<Account> accounts = customer.getAllAssocPrimAccounts(); 
+            ArrayList<Account> accounts = Customer.getAllAssocPrimAccounts(customer.mTaxID); 
             int sum = 0;
             
             for(Account account : accounts) {
@@ -191,7 +191,20 @@ public class Customer {
 	     }//end try
 	    return null;
     }
-    public static ArrayList<String> getAllAssocAccounts(String taxId) {
+    
+    public ArrayList<Account> getAllAssocAccounts() {
+    	ArrayList<Account> primAccounts = getAllAssocPrimAccounts(this.mTaxID);
+    	ArrayList<Account> coOwnAccounts = getAllAssocCoOwnAccounts(this.mTaxID);
+    	ArrayList<Account> allAccounts = new ArrayList<Account>();
+    	
+    	allAccounts.addAll(primAccounts);
+    	allAccounts.addAll(coOwnAccounts);
+    	
+    	
+    	return allAccounts;
+    }
+    
+    public static ArrayList<String> getSAllAssocAccounts(String taxId) {
     	ArrayList<Account> primAccounts = getAllAssocPrimAccounts(taxId);
     	ArrayList<Account> coOwnAccounts = getAllAssocCoOwnAccounts(taxId);
     	ArrayList<Account> allAccounts = new ArrayList<Account>();
@@ -219,8 +232,12 @@ public class Customer {
     }
 
     public static ArrayList<Account> getAllAssocPrimAccounts(String taxId) {
-    	ArrayList<Account> primPocketAccounts = getAssocPrimPocketAccounts(taxId);
-    	ArrayList<Account> primNonPocketAccounts = getAssocPrimNonPocketAccounts(taxId);
+    	Statement stmt = null;
+    	Connection conn = null;
+    	
+    	Customer customer = new Customer(stmt, conn, taxId);
+    	ArrayList<Account> primPocketAccounts = customer.getAssocPrimPocketAccounts();
+    	ArrayList<Account> primNonPocketAccounts = customer.getAssocPrimNonPocketAccounts();
     	ArrayList<Account> primAccounts = new ArrayList<Account>();
     	
     	primAccounts.addAll(primPocketAccounts);

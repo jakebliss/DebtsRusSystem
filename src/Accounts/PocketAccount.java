@@ -16,6 +16,9 @@ public class PocketAccount extends Account{
 	public PocketAccount(Connection conn, String accountID) {
 		super(conn, accountID);
 	}
+	public PocketAccount(String oid, boolean status, double balance) {
+		super(oid, status, balance);
+	}
 
 	// Move a specified amount of money from the linked checking/savings account to the pocket account.
 	// Precondition: Account is open
