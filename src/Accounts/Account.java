@@ -107,53 +107,7 @@ abstract public class Account {
 		return 0;
 	}
     
-    public static boolean addInterest() {
-    	if(interestAlreadyAddedThisMonth()) {
-    		return false;
-    	}
-    	
-    	ArrayList<Account> accounts = getAllOpenAccounts();
-    	for(Account account : accounts) {
-    		account.accrueInterest();
-    	}
-    	
+    public boolean accrueInterest() {
     	return true;
     }
-    
-    
-	// ====================================================================
-	// Private Functions
-	// ====================================================================
-    private static boolean interestAlreadyAddedThisMonth() {
-    	return false;
-    }
-    
-    private static ArrayList<Account> getAllOpenAccounts() {
-    	ArrayList<Account> accounts = new ArrayList<Account>();
-    	
-    	return accounts;
-    }
-    
-    private boolean accrueInterest() {
-    	float interestRate = getMonthlyInterestRate();
-    	float averageDailyBalance = this.getAvarageDailyBalance();
-    	float interest = interestRate*averageDailyBalance;
-    	this.addToBalance(interest);
-    }
-    
-    private void addToBalance(float interest) {
-    	// Add to Account Balance
-    	// Add Transaction To DB
-    }
-    
-	private static float getMonthlyInterstRate(String type) {
-		if(type == "Savings") {
-			
-		} else if (type == "Checking") {
-			
-		}
-		
-		return 0;
-    }
-    
 }

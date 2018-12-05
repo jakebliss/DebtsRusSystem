@@ -2,6 +2,7 @@ import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Vector;
@@ -222,7 +223,7 @@ public class BankTeller {
 		btnAddInterest.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				
-				if(Account.addInterest()) {
+				if(Bank.addInterest()) {
 					// on success
 				} else {
 			    	JOptionPane.showMessageDialog(frame, "[Warning] Add interest only allowed Once a month.");
@@ -394,7 +395,10 @@ public class BankTeller {
 		// ====================================================================
 		// Set Date
 		// ====================================================================
-		JDateChooser dateChooser = new JDateChooser(Bank.getCurrentDate());
+		Date currDate = Bank.getCurrentDate();
+		Bank.checkIfLastDayOfMonth(currDate);
+
+		JDateChooser dateChooser = new JDateChooser(currDate);
 		dateChooser.setBounds(17, 799, 119, 26);
 		frame.getContentPane().add(dateChooser);
 		
@@ -405,7 +409,7 @@ public class BankTeller {
 				Date newDate = dateChooser.getDate();
 				
 				if(Bank.setDate(newDate)) {
-					// on success
+					Bank.checkIfLastDayOfMonth(newDate);
 				} else {
 					// on fail
 				}

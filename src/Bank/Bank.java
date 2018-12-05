@@ -5,8 +5,11 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 
+import Accounts.Account;
 import JDBCdriver.JDBCdriver;
 
 public class Bank {
@@ -138,10 +141,12 @@ public class Bank {
 		return false;
 	}
 
-	public static boolean getInterestRate(String bankAccountType) {
+	public static float getInterestRate(String bankAccountType) {
 		Statement stmt = null;
     	Connection conn = null;
     	String sql = "";
+        Float interestRate = (float) 0;
+
 	    try {
 	    	Class.forName(JDBCdriver.JDBC_DRIVER);
 	    	
@@ -164,9 +169,7 @@ public class Bank {
 	 	 	      "FROM Bank B";
  	        
 	        ResultSet rs = stmt.executeQuery(sql);
-	        
-	        Float interestRate = (float) 0;
-	        
+	       	        
 	        while(rs.next()){
 		           //Retrieve by column name
 		           interestRate  = rs.getFloat(accountType);
@@ -176,7 +179,7 @@ public class Bank {
 		        }
 		    rs.close();
 	        
-	        return true;
+	        return interestRate;
 	     }catch(SQLException se){
 	        //Handle errors for JDBC
 	        se.printStackTrace();
@@ -191,6 +194,59 @@ public class Bank {
 	           se.printStackTrace();
 	        }//end finally try
 	     }//end try
+		return interestRate;
+	}
+
+	public static float getMonthlyInterstRate(String bankAccountType) {
+		return Bank.getInterestRate(bankAccountType)/12;
+    }
+	
+    public static boolean addInterest() {
+    	if(Bank.interestAlreadyAddedThisMonth()) {
+    		return false;
+    	}
+    	
+    	ArrayList<Account> accounts = Bank.getAllOpenAccounts();
+    	for(Account account : accounts) {
+    		account.accrueInterest();
+    	}
+    	
+    	return true;
+    }
+	
+	public static void checkIfLastDayOfMonth(Date currDate) {
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(currDate);
+		int currDay = cal.get(Calendar.DAY_OF_MONTH);
+		int lastDay = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
+		if(currDay == lastDay) {
+			Bank.addInterest();
+		}
+    }
+
+
+	// ====================================================================
+	// Private Functions
+	// ====================================================================
+	private static boolean interestAlreadyAddedThisMonth() {
 		return false;
 	}
+	    
+	private static ArrayList<Account> getAllOpenAccounts() {
+	    ArrayList<Account> accounts = new ArrayList<Account>();
+	    	
+	    return accounts;
+    }
+	
+    public boolean accrueInterest() {
+        float interestRate = Bank.getMonthlyInterestRate();
+    	float averageDailyBalance = this.getAvarageDailyBalance();
+    	float interest = interestRate*averageDailyBalance;
+    	this.addToBalance(interest);
+    }
+
+    private void addToBalance(float interest) {
+    	// Add to Account Balance
+    	// Add Transaction To DB
+    } 
 }
