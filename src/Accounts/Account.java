@@ -20,14 +20,15 @@ abstract public class Account {
 	protected Connection mConn;
 	protected Statement mStmt; 
 	
-	public Account(Connection conn, Statement stmt, String accountID) {
-		mStmt = stmt; 
+	public Account(Connection conn, String accountID) {
 		mConn = conn; 
 		
 		//Get ID from database 
 		mID = accountID; 
 		
 		try {
+		mStmt = conn.createStatement();
+		System.out.println("Connected database successfully..."); 
 		String selBal = "SELECT balance FROM accounts WHERE aid = '" + mID + "'"; 
 		ResultSet balRs = mStmt.executeQuery(selBal); 
 	
@@ -43,7 +44,7 @@ abstract public class Account {
 		mStatus = false; 
 		
     	while (statusRs.next()) {
-	    	 if(statusRs.getString("status").equals("O")) {
+	    	 if(statusRs.getString("status").equals("Y")) {
 	    		 mStatus = true; 
 	    	 }
 	    }
@@ -82,7 +83,7 @@ abstract public class Account {
 	
 	public void closeAccount() {
 		try {
-			String close = "UPDATE Accounts A SET A.status = 'C' WHERE A.aid = '" + this.getID() + "'";
+			String close = "UPDATE Accounts A SET A.status = 'N' WHERE A.aid = '" + this.getID() + "'";
 			ResultSet updateRs = mStmt.executeQuery(close);
 		    updateRs.close(); 
 			this.mStatus = false; 
@@ -94,14 +95,15 @@ abstract public class Account {
 		      e.printStackTrace();
 		}
 	} 
-    public static ArrayList<Customer> getOwners(String aid) { // look at customer.java to see what is needed
+
+  public static ArrayList<Customer> getOwners(String aid) { // look at customer.java to see what is needed
     	ArrayList<Customer> customers = new ArrayList<Customer>();
     	Statement stmt = null;
     	Connection conn = null;
     	String sql = "";
         
 	    return customers;
-    }
+  }
 	public int getSumOfDepositsTransfersAndWires() {
     	ArrayList<Transaction> transactions = Account.getListOfCurrentMonthsTransactions(this.getID());
         int sum = 0;

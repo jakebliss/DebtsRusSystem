@@ -15,8 +15,8 @@ public class NonPocketAccount extends Account{
 	private String mType;
 	DateFormat mDateFormat = new SimpleDateFormat("yyyy/MM/dd");
 	
-	public NonPocketAccount(Connection conn, Statement stmt, String accountID) {
-		super(conn, stmt, accountID);
+	public NonPocketAccount(Connection conn, String accountID) {
+		super(conn, accountID); 
 		
 		try {
 			String selType = "SELECT type FROM Non_pkt_accounts WHERE aid = '" + this.getID() + "'"; 
@@ -25,7 +25,7 @@ public class NonPocketAccount extends Account{
 		    while (typeRs.next()) {
 		    	mType = typeRs.getString("type");
 			}
-		    	
+		    
 		    typeRs.close();
 		} catch(SQLException se){
 		      //Handle errors for JDBC
@@ -33,7 +33,7 @@ public class NonPocketAccount extends Account{
 		}catch(Exception e){
 		      //Handle errors for Class.forName
 		      e.printStackTrace();
-		}
+		} 
 	}
 	
 	public NonPocketAccount(String oid, boolean status, double balance) {
@@ -108,7 +108,8 @@ public class NonPocketAccount extends Account{
 		     ResultSet insertRs = mStmt.executeQuery(insertTrans); 
 		     insertRs.close(); 
 		     
-		     this.setBalance(this.getBalance() - amount); 
+		     this.setBalance(this.getBalance() - amount);
+		     System.out.println(this.getBalance());
 		     
 		  	 return true;
 		   }catch(SQLException se){
@@ -222,10 +223,12 @@ public class NonPocketAccount extends Account{
 	
 	// Subtract money from the checking account. Associated with a check transaction is a check number.
 	// Preconditions: Account is open
-	public boolean writeCheck(double amount, String checkNum) {
+	public boolean writeCheck(double amount) {
 		if(amount < 0 || !this.mType.equals("C") || this.getBalance() - amount < 0) {
 			return false; 
 		}
+		
+		String checkNum = "test"; 
 		
 		String sAmount = Double.toString(amount); 
 		try{

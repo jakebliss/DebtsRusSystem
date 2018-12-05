@@ -13,8 +13,8 @@ import Customers.Customer;
 public class PocketAccount extends Account{
 	DateFormat mDateFormat = new SimpleDateFormat("yyyy/MM/dd");
 	
-	public PocketAccount(Connection conn, Statement stmt, String accountID) {
-		super(conn, stmt, accountID);
+	public PocketAccount(Connection conn, String accountID) {
+		super(conn, accountID);
 	}
 
 	// Move a specified amount of money from the linked checking/savings account to the pocket account.
@@ -90,7 +90,7 @@ public class PocketAccount extends Account{
 		      e.printStackTrace();
 		      return false; 
 		   }
-    }
+	}
 	
 	// Subtract money from the account balance.
 	public boolean purchase(double amount) {

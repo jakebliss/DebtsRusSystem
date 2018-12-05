@@ -1,6 +1,10 @@
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 
 import javax.swing.JFrame;
@@ -9,6 +13,10 @@ import javax.swing.JButton;
 import javax.swing.JTextField;
 
 import Accounts.Account;
+import Accounts.NonPocketAccount;
+import Accounts.PocketAccount;
+import Customers.Customer;
+import Verifications.Verification;
 import Customers.Customer;
 
 public class Atm {
@@ -17,11 +25,37 @@ public class Atm {
 	private JTextField txtEnterAmount;
 	private JTextField txtFriendId;
 	private JTextField txtAccountId;
+	private Customer mCustomer; 
+	
+	// ====================================================================
+	// Initialize DB
+	// ====================================================================
 
+	 // JDBC driver name and database URL
+	   static final String JDBC_DRIVER = "oracle.jdbc.driver.OracleDriver";  
+	   static final String DB_URL = "jdbc:oracle:thin:@cloud-34-133.eci.ucsb.edu:1521:XE";
+
+	   //  Database credentials
+	   static final String USERNAME = "zakarybliss";
+	   static final String PASSWORD = "password";
+	   static Connection conn = null;
+	   static Statement stmt = null; 
+	  
+		     
 	// ====================================================================
 	// Launch Application
 	// ====================================================================
 	public static void main(String[] args) {
+	   try{
+		      //STEP 2: Register JDBC driver
+		      Class.forName(JDBC_DRIVER);
+
+		      //STEP 3: Open a connection
+		      System.out.println("Connecting to a selected database...");
+		      conn = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
+		      stmt = conn.createStatement();
+		      System.out.println("Connected database successfully..."); 
+		      
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
@@ -32,26 +66,55 @@ public class Atm {
 				}
 			}
 		});
+	   } catch(SQLException se){
+		    //Handle errors for JDBC
+		    se.printStackTrace();
+	   }catch(Exception e){
+		    //Handle errors for Class.forName
+		    e.printStackTrace();
+	   } 
+	   //finally{
+//		      //finally block used to close resources
+//		      try{
+//		         if(stmt!=null)
+//		            conn.close();
+//		      }catch(SQLException se){
+//		      }// do nothing
+//		      try{
+//		         if(conn!=null)
+//		            conn.close();
+//		      }catch(SQLException se){
+//		         se.printStackTrace();
+//		      }//end finally try
+//		   }//end try
+//		   System.out.println("Goodbye!");
 	}
 
 	// ====================================================================
 	// Create Application
 	// ====================================================================
-	public Atm(String taxId) {
-		initialize(taxId);
+	public Atm(int pin, String taxID) {
+		initialize(pin, taxID);
 	}
 
 	// ====================================================================
 	// Initialize Contents of Frame
 	// ====================================================================
-	private void initialize(String taxId) {
+	private void initialize(int pin, String taxID) {
 		frame = new JFrame();
 		frame.setBounds(100, 100, 492, 321);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
+		mCustomer = new Customer(stmt, conn, taxID, String.valueOf(pin)); 
 				
-		ArrayList<String> originAccounts = Customer.getAllAssocAccounts(taxId);
-		JComboBox originAccountComboBox = new JComboBox(originAccounts.toArray());
+		ArrayList<String> originAccountIDs = new ArrayList<String>();
+		for(Account a : mCustomer.getAllAssocAccounts()) {
+			originAccountIDs.add(a.getID()); 
+			System.out.println(a.getID());
+		}
+		JComboBox originAccountComboBox = new JComboBox(originAccountIDs.toArray());
+		//JComboBox destAccountComboBox = new JComboBox(d)
+
 		originAccountComboBox.setBounds(386, 20, 52, 27);
 		frame.getContentPane().add(originAccountComboBox);
 		
@@ -82,18 +145,27 @@ public class Atm {
 		
 		btnDeposit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				String originAccount = (String)originAccountComboBox.getSelectedItem();
-		        String totalAmount = txtEnterAmount.getText();
-		        String friendId = txtFriendId.getText();
-		        String targetAccount = txtAccountId.getText();
-				
-				if(Account.deposit(originAccount, totalAmount)) {
-					//TODO: on success
-				} else {
-					//TODO: on failure
+		        Verification verification = new Verification(conn); 
+				String accountID = (String) originAccountComboBox.getSelectedItem(); 
+				NonPocketAccount npAccount = new NonPocketAccount(conn, accountID); 	
+				if (verification.isNonPocketAccount(accountID) && 
+						verification.accountOpen(accountID)) {
+					
+					System.out.println("verified");
+					String amount = txtEnterAmount.getText();
+					
+					if(npAccount.deposit(Double.parseDouble(amount))) {
+						System.out.println("success");
+					} else {
+						System.out.println("failure");
+					}
+				}
+				else {
+					System.out.println("Not allowed");
 				}
 			}
 		});
+		
 		// ====================================================================
 		// Top-Up
 		// ====================================================================
@@ -103,18 +175,27 @@ public class Atm {
 		
 		btnTopup.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				String originAccount = (String)originAccountComboBox.getSelectedItem();
-		        String totalAmount = txtEnterAmount.getText();
-		        String friendId = txtFriendId.getText();
-		        String targetAccount = txtAccountId.getText();
-				
-				if(Account.topUp(originAccount, totalAmount)) {
-					//TODO: on success
-				} else {
-					//TODO: on failure
+		        Verification verification = new Verification(conn);
+				String accountID = (String) originAccountComboBox.getSelectedItem(); 
+				PocketAccount npAccount = new PocketAccount(conn, accountID); 	
+				if (verification.isPocketAccount(accountID) && 
+						verification.accountOpen(accountID)) {
+					
+					System.out.println("verified");
+					String amount = txtEnterAmount.getText();
+					
+					if(npAccount.topUp(Double.parseDouble(amount))) {
+						System.out.println("success");
+					} else {
+						System.out.println("failure");
+					}
+				}
+				else {
+					System.out.println("Not allowed");
 				}
 			}
 		});
+		
 		// ====================================================================
 		// Withdrawal
 		// ====================================================================
@@ -124,13 +205,29 @@ public class Atm {
 		
 		btnWithdrawal.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				String originAccount = (String)originAccountComboBox.getSelectedItem();
-		        String totalAmount = txtEnterAmount.getText();
-				
-				if(Account.withdrawal(originAccount, totalAmount)) {
-					//TODO: on success
-				} else {
-					//TODO: on failure
+				Verification verification = new Verification(conn); 
+				String accountID = (String) originAccountComboBox.getSelectedItem(); 
+				NonPocketAccount npAccount = new NonPocketAccount(conn, accountID); 	
+				if (verification.isNonPocketAccount(accountID) &&
+						verification.accountOpen(accountID)) {
+					
+					System.out.println("verified");
+					String amount = txtEnterAmount.getText();
+					
+					if(npAccount.withdraw(Double.parseDouble(amount))) {
+						System.out.println("success");
+						System.out.println(npAccount.getBalance());
+						
+						if(npAccount.getBalance() <= .019) {
+							npAccount.closeAccount();
+							System.out.println("Account Closed");
+						}
+					} else {
+						System.out.println("failure");
+					}
+				}
+				else {
+					System.out.println("Not allowed");
 				}
 			}
 		});
@@ -143,13 +240,24 @@ public class Atm {
 		
 		btnPurchase.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				String originAccount = (String)originAccountComboBox.getSelectedItem();
-		        String totalAmount = txtEnterAmount.getText();
-				
-				if(Account.purchase(originAccount, totalAmount)) {
-					//TODO: on success
-				} else {
-					//TODO: on failure
+		        Verification verification = new Verification(conn);
+				String accountID = (String) originAccountComboBox.getSelectedItem(); 
+				PocketAccount pAccount = new PocketAccount(conn, accountID); 	
+        
+				if (verification.isPocketAccount(accountID) &&
+						verification.accountOpen(accountID)) {
+					
+					System.out.println("verified");
+					String amount = txtEnterAmount.getText();
+					
+					if(pAccount.purchase(Double.parseDouble(amount))) {
+						System.out.println("success");
+					} else {
+						System.out.println("failure");
+					}
+				}
+				else {
+					System.out.println("Not allowed");
 				}
 			}
 		});
@@ -162,17 +270,36 @@ public class Atm {
 		
 		btnTransfer.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				String originAccount = (String)originAccountComboBox.getSelectedItem();
-		        String totalAmount = txtEnterAmount.getText();
-		        String targetAccount = txtAccountId.getText();
-				
-				if(Account.transfer(originAccount, targetAccount, totalAmount)) {
-					//TODO: on success
-				} else {
-					//TODO: on failure
+		        Verification verification = new Verification(conn);
+				String accountID = (String) originAccountComboBox.getSelectedItem(); 
+				String destAccountID = txtAccountId.getText();
+				NonPocketAccount npAccount = new NonPocketAccount(conn, accountID); 	
+				if (verification.isNonPocketAccount(accountID) &&
+						verification.isNonPocketAccount(destAccountID) && 
+						verification.accountOpen(accountID) && 
+						verification.accountOpen(destAccountID) && 
+						verification.verifyTransfer(npAccount, destAccountID, taxID)) {
+					
+					System.out.println("verified");
+					String amount = txtEnterAmount.getText();
+					
+					if(npAccount.transfer(Double.parseDouble(amount), destAccountID)) {
+						System.out.println("success");
+						
+						if(npAccount.getBalance() <= .019) {
+							npAccount.closeAccount();
+							System.out.println("Account Closed");
+						}
+					} else {
+						System.out.println("failure");
+					}
+				}
+				else {
+					System.out.println("Not allowed");
 				}
 			}
 		});
+		
 		// ====================================================================
 		// Collect
 		// ====================================================================
@@ -182,13 +309,24 @@ public class Atm {
 		
 		btnCollect.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				String originAccount = (String)originAccountComboBox.getSelectedItem();
-		        String totalAmount = txtEnterAmount.getText();
-
-				if(Account.collect(originAccount, totalAmount)) {
-					//TODO: on success
-				} else {
-					//TODO: on failure
+		        Verification verification = new Verification(conn);
+				String accountID = (String)originAccountComboBox.getSelectedItem(); 
+				PocketAccount npAccount = new PocketAccount(conn, accountID); 	
+				
+				if (verification.isPocketAccount(accountID) &&
+						verification.accountOpen(accountID)) {
+					
+					System.out.println("verified");
+					String amount = txtEnterAmount.getText();
+					
+					if(npAccount.collect(Double.parseDouble(amount))) {
+						System.out.println("success");
+					} else {
+						System.out.println("failure");
+					}
+				}
+				else {
+					System.out.println("Not allowed");
 				}
 			}
 		});
@@ -201,14 +339,33 @@ public class Atm {
 	
 		btnWire.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				String originAccount = (String)originAccountComboBox.getSelectedItem();
-		        String totalAmount = txtEnterAmount.getText();
-		        String targetAccount = txtAccountId.getText();
-		        
-				if(Account.wire(originAccount, targetAccount, totalAmount)) {
-					//TODO: on success
-				} else {
-					//TODO: on failure
+		        Verification verification = new Verification(conn);
+				String accountID = (String) originAccountComboBox.getSelectedItem(); 
+				String destAccountID = txtAccountId.getText();
+
+				
+				NonPocketAccount npAccount = new NonPocketAccount(conn, accountID); 	
+				if (verification.isNonPocketAccount(accountID) &&
+						verification.isNonPocketAccount(destAccountID) &&
+						verification.accountOpen(accountID) &&
+						verification.accountOpen(destAccountID)) {
+					
+					System.out.println("verified");
+					String amount = txtEnterAmount.getText();
+					
+					if(npAccount.wire(Double.parseDouble(amount), destAccountID)) {
+						System.out.println("success");
+						
+						if(npAccount.getBalance() <= .019) {
+							npAccount.closeAccount();
+							System.out.println("Account Closed");
+						}
+					} else {
+						System.out.println("failure");
+					}
+				}
+				else {
+					System.out.println("Not allowed");
 				}
 			}
 		});
@@ -221,14 +378,26 @@ public class Atm {
 		
 		btnPayFriend.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				String originAccount = (String)originAccountComboBox.getSelectedItem();
-		        String totalAmount = txtEnterAmount.getText();
-		        String friendId = txtFriendId.getText();
-		        
-				if(Account.payFriend(originAccount, friendId, totalAmount)) {
-					//TODO: on success
-				} else {
-					//TODO: on failure
+		    Verification verification = new Verification(conn);
+				String accountID = (String)originAccountComboBox.getSelectedItem(); 
+				String destAccountID = txtFriendId.getText();
+				PocketAccount pAccount = new PocketAccount(conn, accountID); 	
+				if (verification.isPocketAccount(accountID) &&
+						verification.isPocketAccount(destAccountID) && 
+						verification.accountOpen(accountID) && 
+						verification.accountOpen(destAccountID)) {
+					
+			    System.out.println("verified");
+					String amount = txtEnterAmount.getText();
+					
+					if(pAccount.payFriend(Double.parseDouble(amount), destAccountID)){
+						System.out.println("success");
+					} else {
+						System.out.println("failure");
+					}
+				}
+				else {
+					System.out.println("Not allowed");
 				}
 			}
 		});
