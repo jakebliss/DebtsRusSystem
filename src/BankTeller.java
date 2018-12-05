@@ -181,17 +181,17 @@ public class BankTeller {
 						String amount = txtAmount.getText();
 						
 						if(npAccount.writeCheck(Double.parseDouble(amount))){
-							System.out.println("success");
+							JOptionPane.showMessageDialog(frame, "Transaction Successful."); 
 							if(npAccount.getBalance() <= .019) {
 								npAccount.closeAccount();
-								System.out.println("Account Closed");
+								JOptionPane.showMessageDialog(frame, "Account Closed."); 
 							}
 						} else {
-							System.out.println("failure");
+							JOptionPane.showMessageDialog(frame, "Transaction Failed.");;
 						}
 					}
 					else {
-						System.out.println("Not allowed");
+						JOptionPane.showMessageDialog(frame, "Action Not Allowed."); 
 					}
 			}
 		});

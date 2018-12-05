@@ -6,6 +6,8 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.apache.commons.lang3.RandomStringUtils;
+
 import java.util.ArrayList;
 
 import Customers.Customer;
@@ -29,7 +31,7 @@ public class PocketAccount extends Account{
 
 		String sAmount = Double.toString(amount); 
 		try{
-			  String transactionID = "testid84"; 
+			  String transactionID = RandomStringUtils.randomAlphanumeric(16); 
 			  Date date = new Date();
 			  
 			  String selLinked = "SELECT lid FROM Linked_To WHERE pid = '" + this.getID() + "'"; 
@@ -103,7 +105,7 @@ public class PocketAccount extends Account{
 		
 		String sAmount = Double.toString(amount); 
 		try{
-			 String transactionID = "testid100"; 
+			 String transactionID = RandomStringUtils.randomAlphanumeric(16);
 			 Date date = new Date();
 			 
 		     String updateBal = "UPDATE Accounts A SET A.balance = A.balance - " + sAmount + 
@@ -155,7 +157,7 @@ public class PocketAccount extends Account{
 		      linkedRs.close();
 		     
 		      
-			String transactionID = "testid103"; 
+		    String transactionID = RandomStringUtils.randomAlphanumeric(16);
 			Date date = new Date();
 			Double adjustedAmount = amount + fee; 					 		  
 
@@ -201,7 +203,7 @@ public class PocketAccount extends Account{
 		
 		String sAmount = Double.toString(amount); 
 		try{
-			  String transactionID = "testid20"; 
+			  String transactionID = RandomStringUtils.randomAlphanumeric(16);
 			  Date date = new Date();
 			  
 
@@ -209,7 +211,7 @@ public class PocketAccount extends Account{
 		      String wsql = "UPDATE Accounts B SET B.balance = B.balance - " + sAmount + " WHERE B.aid = '" + this.getID() + "'"; 
 		      String insertTrans = "INSERT INTO transactions " + "(tid, amount, tdate, type, sourceid, destid) VALUES (" 
 			    		 + "'" + transactionID + "'," + amount + ","+ "TO_DATE('" + mDateFormat.format(date)
-			    		 + "', 'YYYY/MM/DD')" + "," + "'P'" + ",'" + this.getID() + "','" + friendID + "')";
+			    		 + "', 'YYYY/MM/DD')" + "," + "'F'" + ",'" + this.getID() + "','" + friendID + "')";
 	     
 		      System.out.println(dsql);
 		      System.out.println(wsql);

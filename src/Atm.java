@@ -8,6 +8,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JComboBox;
 import javax.swing.JButton;
 import javax.swing.JTextField;
@@ -108,8 +109,10 @@ public class Atm {
 				
 		ArrayList<String> originAccountIDs = new ArrayList<String>();
 		for(Account a : mCustomer.getAllAssocAccounts()) {
-			originAccountIDs.add(a.getID());
-			System.out.println(a.getID());
+			if(!originAccountIDs.contains(a.getID())) {
+				originAccountIDs.add(a.getID());
+				System.out.println(a.getID());
+			}
 		}
 		JComboBox originAccountComboBox = new JComboBox(originAccountIDs.toArray());
 
@@ -153,13 +156,13 @@ public class Atm {
 					String amount = txtEnterAmount.getText();
 					
 					if(npAccount.deposit(Double.parseDouble(amount))) {
-						System.out.println("success");
+						JOptionPane.showMessageDialog(frame, "Transaction Successful."); 
 					} else {
-						System.out.println("failure");
+						JOptionPane.showMessageDialog(frame, "Transaction Failed."); 
 					}
 				}
 				else {
-					System.out.println("Not allowed");
+					JOptionPane.showMessageDialog(frame, "Action Not Allowed."); 
 				}
 			}
 		});
@@ -183,13 +186,13 @@ public class Atm {
 					String amount = txtEnterAmount.getText();
 					
 					if(npAccount.topUp(Double.parseDouble(amount))) {
-						System.out.println("success");
+						JOptionPane.showMessageDialog(frame, "Transaction Successful."); 
 					} else {
-						System.out.println("failure");
+						JOptionPane.showMessageDialog(frame, "Transaction Failed."); 
 					}
 				}
 				else {
-					System.out.println("Not allowed");
+					JOptionPane.showMessageDialog(frame, "Action Not Allowed."); 
 				}
 			}
 		});
@@ -213,19 +216,19 @@ public class Atm {
 					String amount = txtEnterAmount.getText();
 					
 					if(npAccount.withdraw(Double.parseDouble(amount))) {
-						System.out.println("success");
+						JOptionPane.showMessageDialog(frame, "Transaction Successful."); 
 						System.out.println(npAccount.getBalance());
 						
 						if(npAccount.getBalance() <= .019) {
 							npAccount.closeAccount();
-							System.out.println("Account Closed");
+							JOptionPane.showMessageDialog(frame, "Account Closed."); 
 						}
 					} else {
-						System.out.println("failure");
+						JOptionPane.showMessageDialog(frame, "Transaction Failed."); 
 					}
 				}
 				else {
-					System.out.println("Not allowed");
+					JOptionPane.showMessageDialog(frame, "Action Not Allowed."); 
 				}
 			}
 		});
@@ -249,13 +252,13 @@ public class Atm {
 					String amount = txtEnterAmount.getText();
 					
 					if(pAccount.purchase(Double.parseDouble(amount))) {
-						System.out.println("success");
+						JOptionPane.showMessageDialog(frame, "Transaction Successful."); 
 					} else {
-						System.out.println("failure");
+						JOptionPane.showMessageDialog(frame, "Transaction Failed."); 
 					}
 				}
 				else {
-					System.out.println("Not allowed");
+					JOptionPane.showMessageDialog(frame, "Action Not Allowed."); 
 				}
 			}
 		});
@@ -282,18 +285,18 @@ public class Atm {
 					String amount = txtEnterAmount.getText();
 					
 					if(npAccount.transfer(Double.parseDouble(amount), destAccountID)) {
-						System.out.println("success");
+						JOptionPane.showMessageDialog(frame, "Transaction Successful."); 
 						
 						if(npAccount.getBalance() <= .019) {
 							npAccount.closeAccount();
-							System.out.println("Account Closed");
+							JOptionPane.showMessageDialog(frame, "Account Closed."); 
 						}
 					} else {
-						System.out.println("failure");
+						JOptionPane.showMessageDialog(frame, "Transaction Failed."); 
 					}
 				}
 				else {
-					System.out.println("Not allowed");
+					JOptionPane.showMessageDialog(frame, "Action Not Allowed."); 
 				}
 			}
 		});
@@ -318,13 +321,13 @@ public class Atm {
 					String amount = txtEnterAmount.getText();
 					
 					if(npAccount.collect(Double.parseDouble(amount))) {
-						System.out.println("success");
+						JOptionPane.showMessageDialog(frame, "Transaction Successful."); 
 					} else {
-						System.out.println("failure");
+						JOptionPane.showMessageDialog(frame, "Transaction Failed."); 
 					}
 				}
 				else {
-					System.out.println("Not allowed");
+					JOptionPane.showMessageDialog(frame, "Action Not Allowed."); 
 				}
 			}
 		});
@@ -352,18 +355,18 @@ public class Atm {
 					String amount = txtEnterAmount.getText();
 					
 					if(npAccount.wire(Double.parseDouble(amount), destAccountID)) {
-						System.out.println("success");
+						JOptionPane.showMessageDialog(frame, "Transaction Successful."); 
 						
 						if(npAccount.getBalance() <= .019) {
 							npAccount.closeAccount();
-							System.out.println("Account Closed");
+							JOptionPane.showMessageDialog(frame, "Account Closed."); 
 						}
 					} else {
-						System.out.println("failure");
+						JOptionPane.showMessageDialog(frame, "Transaction Failed."); 
 					}
 				}
 				else {
-					System.out.println("Not allowed");
+					JOptionPane.showMessageDialog(frame, "Action Not Allowed."); 
 				}
 			}
 		});
@@ -389,13 +392,13 @@ public class Atm {
 					String amount = txtEnterAmount.getText();
 					
 					if(pAccount.payFriend(Double.parseDouble(amount), destAccountID)){
-						System.out.println("success");
+						JOptionPane.showMessageDialog(frame, "Transaction Successful."); 
 					} else {
-						System.out.println("failure");
+						JOptionPane.showMessageDialog(frame, "Transaction Failed."); 
 					}
 				}
 				else {
-					System.out.println("Not allowed");
+					JOptionPane.showMessageDialog(frame, "Action Not Allowed."); 
 				}
 			}
 		});
