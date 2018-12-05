@@ -50,19 +50,7 @@ public class Transaction {
 	    	
 	        stmt = conn.createStatement();
             
-    		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-    		Calendar cal = Calendar.getInstance();
-    		cal.setTime(CurrDate.getCurrentDate());
-    		int month = cal.get(Calendar.MONTH);
-    		int year = cal.get(Calendar.YEAR);
-            Date boundDate = sdf.parse("01/" + month + "/" + year);
-
- 	        String sql = "DELETE" +
-       		             "FROM Transactions T" +
-       		             "WHERE T.mDate <= " + boundDate +
-       		             "AND PO.oid = OG.oid" + 
-       		             "AND OG.oid = O.oid" +
-       		             "AND O.aid = NPA.aid";
+ 	        String sql = "DELETE FROM Transactions";
 	        
 	        ResultSet rs = stmt.executeQuery(sql);
 	        

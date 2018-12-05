@@ -210,8 +210,14 @@ public class BankTeller {
 		btnListClosedAccounts.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				
-		        String[] columns = {"AID"};	
+				
 				ArrayList<String> closedAccounts = new ArrayList<String>(); 
+ 				
+ 				DefaultTableModel model = new DefaultTableModel(); 
+ 				JTable table = new JTable(model); 
+
+ 				model.addColumn("Closed Accounts"); 
+				
 				try {
 					String selClosed = "SELECT aid FROM accounts WHERE status = 'N'"; 
 					
@@ -222,10 +228,14 @@ public class BankTeller {
 				    }
 			    	
 			    	closedRs.close();
-			    	Object[][] data = {closedAccounts.toArray()};
 			    	
 					if(!closedAccounts.isEmpty()){
-					    JTable table = new JTable(data, columns);
+		 				for(String line : closedAccounts) {
+		 					System.out.println(line);
+		 					Object[] temp = {line};
+		 					model.addRow(temp);
+		 				}
+		 
 						scrollPane.setViewportView(table);
 					} else {
 						System.out.println("No closed accounts");
@@ -250,16 +260,20 @@ public class BankTeller {
 		
 		btnGenerateDTER.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				String[] columns = {"DTER"};				
 				ArrayList<String> dter = Customer.getDTER();
-				if(dter != null){
-			    	Object[][] data = {dter.toArray()};
+ 				
+ 				DefaultTableModel model = new DefaultTableModel(); 
+ 				JTable table = new JTable(model); 
 
-					JTable table = new JTable(data, columns);
-					scrollPane.setViewportView(table);
-				} else {
-					System.out.println("GetMonthlyStatement is null");
-				}
+ 				model.addColumn("DTER"); 
+
+ 				for(String line : dter) {
+ 					System.out.println(line);
+ 					Object[] temp = {line};
+ 					model.addRow(temp);
+ 				}
+ 
+				scrollPane.setViewportView(table);
 			}
 		});
 		
@@ -278,19 +292,21 @@ public class BankTeller {
 		
  		btnGenerateMonthlyStatement.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
- 				String taxId = txtCustomerId.getText();
-                
- 				String[] columns = {"Monthly Statement"};
-				
+ 				String taxId = txtCustomerId.getText();        
  				ArrayList<String> monthlyStatement = Customer.getMonthlyStatement(taxId);
- 				if(monthlyStatement != null){
-			    	Object[][] data = {monthlyStatement.toArray()};
+ 				
+ 				DefaultTableModel model = new DefaultTableModel(); 
+ 				JTable table = new JTable(model); 
 
-					JTable table = new JTable(data, columns);
-					scrollPane.setViewportView(table);
- 				} else {
- 					System.out.println("GetMonthlyStatement is null");
+ 				model.addColumn("Monthly Statement"); 
+ 				
+ 				for(String line : monthlyStatement) {
+ 					System.out.println(line);
+ 					Object[] temp = {line};
+ 					model.addRow(temp);
  				}
+ 
+				scrollPane.setViewportView(table);
  			}
  		});
 		
@@ -304,15 +320,24 @@ public class BankTeller {
 		btnCustomerReport.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				String taxId = txtCustomerId.getText();
-
-				DefaultTableModel model = (DefaultTableModel) table.getModel();
-				model.setRowCount(0);
-				
 				ArrayList<String> accounts = Customer.getCustomerReport(taxId);
+
+ 				DefaultTableModel model = new DefaultTableModel(); 
+ 				JTable table = new JTable(model); 
+
+ 				model.addColumn("Customer Report"); 
+				
 				if(accounts != null){
-					//TODO: populate table with accounts
+					System.out.println("CUSTOMER REPORTING...");
+	 				for(String line : accounts) {
+	 					System.out.println(line);
+	 					Object[] temp = {line};
+	 					model.addRow(temp);
+	 				}
+	 
+					scrollPane.setViewportView(table);
 				} else {
-					//TODO: on failure
+					System.out.println("Customer Report is null");
 				}
 			}
 		});
@@ -454,10 +479,7 @@ public class BankTeller {
 		btnDeleteClosedAccountsAndCustomers.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				try {
-//					String del = "Delete from accounts where status = 'N'";
-//					ResultSet delRs = stmt.executeQuery(del);
-					
-//					System.out.println(del);
+                    
 					
 					ArrayList<Customer> customers = Customer.getAllCustomers(); 
 					
@@ -478,7 +500,6 @@ public class BankTeller {
 				}catch(Exception e){
 				    //Handle errors for Class.forName
 				    e.printStackTrace();
-
 				}
 			}
 		});

@@ -152,10 +152,6 @@ public class Customer {
     	if(sumOfBalances > 100000) {
     		monthlyStatement.add("[Warning] The limit of the insurance has been reached");
     	}
-        
-    	for(String line : monthlyStatement) {
-    		System.out.println(line);
-    	}
     	
         return monthlyStatement;
     }
@@ -552,6 +548,7 @@ public class Customer {
     public static ArrayList<Account> getAssocCoOwnPocketAccounts(String taxId) {
     	Statement stmt = null;
     	Connection conn = null;
+    	
 	    try {
 	    	Class.forName(JDBCdriver.JDBC_DRIVER);
 	    	
@@ -559,31 +556,25 @@ public class Customer {
 	    	
 	        stmt = conn.createStatement();
             ArrayList<Account> accounts = new ArrayList<Account>();
- 	        String sql = "SELECT O.aid, O.balance, O.status" +
-	        		     "FROM CO_Owns CO, Owner_Groups OG, PKT_Accounts PA, Owns O" +
-	        		     "WHERE " + taxId + " = CO.taxID" +
-	        		     "AND CO.oid = OG.oid" + 
-	        		     "AND OG.oid = O.oid" +
+ 	        String sql = "SELECT PA.aid " +
+	        		     "FROM Sec_Owns SO, Owner_Groups OG, PKT_Accounts PA, Owns O " +
+	        		     "WHERE '" + taxId + "' = SO.taxID " +
+	        		     "AND SO.oid = OG.oid " + 
+	        		     "AND OG.oid = O.oid " +
 	        		     "AND O.aid = PA.aid";
+ 	        
+ 	        System.out.println(sql);
 	        
 	        ResultSet rs = stmt.executeQuery(sql);
 	        
 	        while(rs.next()){
 	           //Retrieve by column name
-	           String oid  = rs.getString("oid");
-	           String strStatus = rs.getString("status");
-	           double balance = rs.getDouble("balance");
+	           String aid  = rs.getString("aid");
 
 	           //Display values
-	           System.out.print("oid: " + oid);
-	           System.out.print(", status: " + strStatus);
-	           System.out.print(", balance: " + balance);
-	           boolean status = true;
-	           if(strStatus == "N") {
-	        	   status = false;
-	           }
+	           System.out.print("aid: " + aid);
 	           
-	           accounts.add(new PocketAccount(oid, status, balance));
+	           accounts.add(new PocketAccount(conn, aid));
 	        }
 	        rs.close();
 	        
@@ -605,41 +596,36 @@ public class Customer {
 	     }//end try
 	    return null;
     }
+    
     public static ArrayList<Account> getAssocCoOwnNonPocketAccounts(String taxId) {
     	Statement stmt = null;
     	Connection conn = null;
-	    try {
+    	try {
 	    	Class.forName(JDBCdriver.JDBC_DRIVER);
 	    	
 	    	conn = DriverManager.getConnection(JDBCdriver.DB_URL, JDBCdriver.USERNAME, JDBCdriver.PASSWORD);
 	    	
 	        stmt = conn.createStatement();
             ArrayList<Account> accounts = new ArrayList<Account>();
- 	        String sql = "SELECT O.aid, O.balance, O.status" +
-       		             "FROM CO_Owns CO, Owner_Groups OG, NON_PKT_Accounts NPA, Owns O" +
-       		             "WHERE " + taxId + " = CO.taxID" +
-       		             "AND CO.oid = OG.oid" + 
-       		             "AND OG.oid = O.oid" +
-       		             "AND O.aid = NPA.aid";
+ 	        String sql = "SELECT NPA.aid " +
+       		     "FROM Sec_Owns SO, Owner_Groups OG, Non_pkt_accounts NPA, Owns O " +
+       		     "WHERE '" + taxId + "' = SO.taxID " +
+       		     "AND SO.oid = OG.oid " + 
+       		     "AND OG.oid = O.oid " +
+       		     "AND O.aid = NPA.aid";
+ 	        
+ 	        System.out.println(sql);
 	        
 	        ResultSet rs = stmt.executeQuery(sql);
 	        
 	        while(rs.next()){
 	           //Retrieve by column name
-	           String oid  = rs.getString("oid");
-	           String strStatus = rs.getString("status");
-	           Double balance = rs.getDouble("balance");
+	           String aid  = rs.getString("aid");
 
 	           //Display values
-	           System.out.print("oid: " + oid);
-	           System.out.print(", status: " + strStatus);
-	           System.out.print(", balance: " + balance);
-	           boolean status = true;
-	           if(strStatus == "N") {
-	        	   status = false;
-	           }
+	           System.out.print("aid: " + aid);
 	           
-	           accounts.add(new NonPocketAccount(oid, status, balance));
+	           accounts.add(new NonPocketAccount(conn, aid));
 	        }
 	        rs.close();
 	        

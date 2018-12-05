@@ -218,10 +218,38 @@ abstract public class Account {
 	    return accounts;
 	}
 	
-	public static boolean deleteClosedAccountsAndCustomers() {
-		//TODO: Implement
-		return true;
+	public static void deleteClosedAccounts() {
+		Statement stmt = null;
+    	Connection conn = null;
+        
+	    try {
+	    	Class.forName(JDBCdriver.JDBC_DRIVER);
+	    	
+	    	conn = DriverManager.getConnection(JDBCdriver.DB_URL, JDBCdriver.USERNAME, JDBCdriver.PASSWORD);
+	    	
+	        stmt = conn.createStatement();
+	        	        
+	        String sql = "DELETE FROM ACCOUNTS A WHERE A.STATUS = 'N'";	        
+	        
+            ResultSet rs = stmt.executeQuery(sql);
+ 	        rs.close();
+ 	        return;	        
+	     }catch(SQLException se){
+	        //Handle errors for JDBC
+	        se.printStackTrace();
+	     }catch(Exception e){
+	        //Handle errors for Class.forName
+	        e.printStackTrace();
+	     }finally{
+	        try{
+	           if(conn!=null)
+	              conn.close();
+	        }catch(SQLException se){
+	           se.printStackTrace();
+	        }//end finally try
+	     }//end try
 	}
+	
     public static boolean addInterest() {
     	if(Account.interestAlreadyAddedThisMonth()) {
     		return false;
@@ -445,6 +473,30 @@ abstract public class Account {
 	        	   } else if(type == "C") {
 	        		   return "Student Checking";
 	        	   }
+	        	   
+	        	   switch(type) {
+   				case "P": //purchase / payfriend F?
+   					break;
+   				case "O": // topup
+   					break;
+   				case "L": // Collect
+   					break;
+   				case "D": // Deposit
+   					break;
+   				case "W": // Withdraw
+   					break;
+   				case "T": // Transfer
+   					break;
+   				case "R": // Wire
+   					break;
+   				case "A": // Accrue
+   					break;
+   				case "H": // writeCheck
+   					break;
+   					
+   				default: 
+   					break;
+   			}
 		    }
  	        npaRs.close();
  	        
