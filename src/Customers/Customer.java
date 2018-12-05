@@ -39,6 +39,31 @@ public class Customer {
     			}
     }
     
+    public Customer (Statement stmt, Connection conn, String taxID) {
+    	//Get ID from database 
+    	mTaxID = taxID; 
+    	mPin  = null; 
+    			
+    	try {
+    			String selName = "SELECT name, address FROM customers WHERE taxid = '" + mTaxID + "'"; 
+    			ResultSet selRs = stmt.executeQuery(selName); 
+    		
+    	    	while (selRs.next()) {
+    		    	  mName = selRs.getString("name");
+    		    	  mAddress = selRs.getString("address"); 
+    		    }
+    	    	
+    	    	selRs.close();
+    	    	
+    			} catch(SQLException se){
+    			      //Handle errors for JDBC
+    			      se.printStackTrace();
+    			}catch(Exception e){
+    			      //Handle errors for Class.forName
+    			      e.printStackTrace();
+    			}
+    }
+    
     public String getTaxID() { return mTaxID; } 
     
     public static void setPin(String oldPin, String newPin) {
@@ -64,14 +89,14 @@ public class Customer {
     	ArrayList<String> monthlyStatement = new ArrayList<String>();
     	int sumOfBalances = 0;
     	
-    	for(Account a : primOwnList) {
+    	for(Account a : this.getAllAssocPrimAccounts()) {
 	    	ArrayList<Customer> customers = a.getOwners();
 	    	ArrayList<Transaction> transactions = a.getListOfLastMonthsTransactions();
 	    	int initialBalance = a.calculateInitialBalance(transactions);
 	    	int finalBalance = a.calculateFinalBalance(transactions);
 	    	sumOfBalances += finalBalance;
     	}
-    	
+    	System.out.println("after for");
     	if(sumOfBalances > 100000) {
     		System.out.println("[Warning] The limit of the insurance has been reached");
     	}
@@ -113,7 +138,7 @@ public class Customer {
 	    	
 	        stmt = conn.createStatement();
     	    ArrayList<Customer> customers = new ArrayList<Customer>();
-    	    String sql = "SELECT C.taxId, C.pin, C.name, C.address" +
+    	    String sql = "SELECT C.taxId, C.pin, C.name, C.address " +
     	                 "FROM Customers C";
     	    
     	    ResultSet rs = stmt.executeQuery(sql);

@@ -33,7 +33,7 @@ public class NonPocketAccount extends Account{
 		}catch(Exception e){
 		      //Handle errors for Class.forName
 		      e.printStackTrace();
-		}
+		} 
 	}
 	
 	public NonPocketAccount(String oid, boolean status, double balance) {
@@ -231,10 +231,12 @@ public class NonPocketAccount extends Account{
 	
 	// Subtract money from the checking account. Associated with a check transaction is a check number.
 	// Preconditions: Account is open
-	public boolean writeCheck(double amount, String checkNum) {
+	public boolean writeCheck(double amount) {
 		if(amount < 0 || !this.mType.equals("C") || this.getBalance() - amount < 0) {
 			return false; 
 		}
+		
+		String checkNum = "test"; 
 		
 		String sAmount = Double.toString(amount); 
 		try{

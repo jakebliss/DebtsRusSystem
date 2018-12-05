@@ -71,7 +71,22 @@ public class Atm {
 	   }catch(Exception e){
 		    //Handle errors for Class.forName
 		    e.printStackTrace();
-	   }
+	   } 
+	   //finally{
+//		      //finally block used to close resources
+//		      try{
+//		         if(stmt!=null)
+//		            conn.close();
+//		      }catch(SQLException se){
+//		      }// do nothing
+//		      try{
+//		         if(conn!=null)
+//		            conn.close();
+//		      }catch(SQLException se){
+//		         se.printStackTrace();
+//		      }//end finally try
+//		   }//end try
+//		   System.out.println("Goodbye!");
 	}
 
 	// ====================================================================

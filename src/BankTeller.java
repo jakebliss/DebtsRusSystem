@@ -1,8 +1,15 @@
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Vector;
 
 import javax.swing.JFrame;
@@ -10,7 +17,11 @@ import javax.swing.JButton;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
+import Accounts.Account;
+import Accounts.NonPocketAccount;
+import Accounts.PocketAccount;
 import Customers.Customer;
+import Verifications.Verification;
 
 import javax.swing.JList;
 import javax.swing.JTable;
@@ -34,12 +45,37 @@ public class BankTeller {
 	private JTextField txtInterest;
 	private JTextField txtInitialBalance;
 	private JTextField txtOwners;
+	private JTextField txtLinked; 
 	private JComboBox comboBoxAccountType;
+	
+	// ====================================================================
+	// Initialize DB
+	// ====================================================================
+
+	 // JDBC driver name and database URL
+	   static final String JDBC_DRIVER = "oracle.jdbc.driver.OracleDriver";  
+	   static final String DB_URL = "jdbc:oracle:thin:@cloud-34-133.eci.ucsb.edu:1521:XE";
+
+	   //  Database credentials
+	   static final String USERNAME = "zakarybliss";
+	   static final String PASSWORD = "password";
+	   static Connection conn = null;
+	   static Statement stmt = null; 
 
 	// ====================================================================
 	// Launch Application
 	// ====================================================================
 	public static void main(String[] args) {
+		 try{
+		      //STEP 2: Register JDBC driver
+		      Class.forName(JDBC_DRIVER);
+
+		      //STEP 3: Open a connection
+		      System.out.println("Connecting to a selected database...");
+		      conn = DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
+		      stmt = conn.createStatement();
+		      System.out.println("Connected database successfully..."); 
+		 
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
@@ -50,6 +86,28 @@ public class BankTeller {
 				}
 			}
 		});
+		 } catch(SQLException se){
+			    //Handle errors for JDBC
+			    se.printStackTrace();
+		   }catch(Exception e){
+			    //Handle errors for Class.forName
+
+		   }
+//		   } finally{
+//			      //finally block used to close resources
+//			      try{
+//			         if(stmt!=null)
+//			            conn.close();
+//			      }catch(SQLException se){
+//			      }// do nothing
+//			      try{
+//			         if(conn!=null)
+//			            conn.close();
+//			      }catch(SQLException se){
+//			         se.printStackTrace();
+//			      }//end finally try
+//			   }//end try
+//			   System.out.println("Goodbye!");
 	}
 
 	// ====================================================================
@@ -87,23 +145,39 @@ public class BankTeller {
 		frame.getContentPane().add(txtAmount);
 		txtAmount.setColumns(10);
 		
-		String originAccount = txtAccountId.getText();
-		String totalAmount = txtAmount.getText();
 		btnSubmitCheckTransaction.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				
-				if(Account.checkTransaction(originAccount, totalAmount)) {
-					//TODO: on success
-				} else {
-					//TODO: on failure
-				}
+				 Verification verification = new Verification(conn);
+					String accountID = txtAccountId.getText(); 
+					NonPocketAccount npAccount = new NonPocketAccount(conn, accountID); 	
+					if (verification.isNonPocketAccount(accountID) && 
+							verification.accountOpen(accountID)) {
+						
+						System.out.println("verified");
+						String amount = txtAmount.getText();
+						
+						if(npAccount.writeCheck(Double.parseDouble(amount))){
+							System.out.println("success");
+							if(npAccount.getBalance() <= .019) {
+								npAccount.closeAccount();
+								System.out.println("Account Closed");
+							}
+						} else {
+							System.out.println("failure");
+						}
+					}
+					else {
+						System.out.println("Not allowed");
+					}
 			}
 		});
 		
 		// Output Table for List Closed Accounts, Generate DTER, and Customer Report
 		table = new JTable();
 		table.setBounds(632, 261, 1, 1);
-		frame.getContentPane().add(table);		
+		frame.getContentPane().add(table);	
+		
 		// ====================================================================
 		// List Closed Accounts
 		// ====================================================================
@@ -115,12 +189,35 @@ public class BankTeller {
 			public void actionPerformed(ActionEvent arg0) {
 				DefaultTableModel model = (DefaultTableModel) table.getModel();
 				model.setRowCount(0);
-		
-				String[] accounts = Account.listClosedAccounts();
-				if(accounts != null){
-					//TODO: populate table with accounts
+				
+				Vector<String> closedAccounts = new Vector<String>(); 
+				try {
+					String selClosed = "SELECT aid FROM accounts WHERE status = 'N'"; 
+					
+					System.out.println(selClosed);
+					ResultSet closedRs = stmt.executeQuery(selClosed); 
+					
+			    	while (closedRs.next()) {
+				    	  closedAccounts.add(closedRs.getString("aid"));
+				    }
+			    	
+			    	closedRs.close();
+			    	
+				} catch(SQLException se){
+				      //Handle errors for JDBC
+				      se.printStackTrace();
+				}catch(Exception e){
+				      //Handle errors for Class.forName
+				      e.printStackTrace();
+				}
+				
+				if(!closedAccounts.isEmpty()){
+//					Display Data
+//					model.addRow(closedAccounts);
+//					table.setModel(model);
 				} else {
-					//TODO: on failure
+					System.out.println("No closed accounts");
+					
 				}
 			}
 		});
@@ -147,34 +244,41 @@ public class BankTeller {
 			}
 		});
 		
-		// ====================================================================
-		// Generate Monthly Statement
-		// ====================================================================
-		btnGenerateMonthlyStatement = new JButton("Generate Monthly Statement");
-		btnGenerateMonthlyStatement.setBounds(375, 22, 222, 29);
-		frame.getContentPane().add(btnGenerateMonthlyStatement);
-		
+//		// ====================================================================
+//		// Generate Monthly Statement
+//		// ====================================================================
+//		btnGenerateMonthlyStatement = new JButton("Generate Monthly Statement");
+//		btnGenerateMonthlyStatement.setBounds(375, 22, 222, 29);
+//		frame.getContentPane().add(btnGenerateMonthlyStatement);
+//		
 		txtCustomerId = new JTextField();
 		txtCustomerId.setText("Customer Id");
 		txtCustomerId.setBounds(743, 22, 130, 26);
 		frame.getContentPane().add(txtCustomerId);
 		txtCustomerId.setColumns(10);
-		
-		String taxId = txtCustomerId.getText();
-		btnGenerateMonthlyStatement.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				DefaultTableModel model = (DefaultTableModel) table.getModel();
-				model.setRowCount(0);
-				
-				ArrayList<String> monthlyStatement = Customer.getMonthlyStatement(taxId);
-				if(monthlyStatement != null){
-					model.addRow(new Vector<String>(monthlyStatement));
-					table.setModel(model); 
-				} else {
-					System.out.println("GetMonthlyStatement is null");
-				}
-			}
-		});
+//		
+//		String taxId = txtCustomerId.getText();
+//		
+//		btnGenerateMonthlyStatement.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent arg0) {
+//				DefaultTableModel model = (DefaultTableModel) table.getModel();
+//				model.setRowCount(0);
+//				
+//				Customer customer = new Customer(stmt, conn, taxId); 
+//				ArrayList<String> monthlyStatement = customer.getMonthlyStatement();
+//				
+//				if(monthlyStatement != null) {
+//					for(String s : monthlyStatement) {
+//						System.out.println(s);
+//					}
+//					
+////					model.addRow(new Vector<String>(monthlyStatement));
+////					table.setModel(model); 
+//				} else {
+//					System.out.println("GetMonthlyStatement is null");
+//				}
+//			}
+//		});
 		
 		// ====================================================================
 		// Customer Report
@@ -188,95 +292,167 @@ public class BankTeller {
 				DefaultTableModel model = (DefaultTableModel) table.getModel();
 				model.setRowCount(0);
 				
-				String[] accounts = Account.getCustomerReport(customerId);
+				String taxId = txtCustomerId.getText();
+				Customer customer = new Customer(stmt, conn, taxId); 
+				ArrayList<Account> accounts = customer.getAllAssocAccounts();
+				
 				if(accounts != null){
-					//TODO: populate table with accounts
+					System.out.println("accounts found");
+					//TODO: populate table with accounts with accounts and status 
 				} else {
 					//TODO: on failure
 				}
 			}
 		});
-		
-		// ====================================================================
-		// Add Interest
-		// ====================================================================
-		btnAddInterest = new JButton("Add Interest");
-		btnAddInterest.setBounds(63, 291, 117, 29);
-		frame.getContentPane().add(btnAddInterest);
-		
-		btnAddInterest.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				
-				if(Account.deleteClosedAccountsAndCustomers()) {
-					//TODO: on success
-				} else {
-					//TODO: on failure
-				}
-			}
-		});
-		
-		txtInterest = new JTextField();
-		txtInterest.setText("Interest");
-		txtInterest.setBounds(224, 291, 130, 26);
-		frame.getContentPane().add(txtInterest);
-		txtInterest.setColumns(10);
-	    
-		String interest = txtInterest.getText();
-		btnAddInterest.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				
-				if(Account.addInterest(interest)) {
-					//TODO: on success
-				} else {
-					//TODO: on failure
-				}
-			}
-		});
-		
+//		
+//		// ====================================================================
+//		// Add Interest
+//		// ====================================================================
+//		btnAddInterest = new JButton("Add Interest");
+//		btnAddInterest.setBounds(63, 291, 117, 29);
+//		frame.getContentPane().add(btnAddInterest);
+//		
+//		btnAddInterest.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent arg0) {
+//				
+//				if(Account.deleteClosedAccountsAndCustomers()) {
+//					//TODO: on success
+//				} else {
+//					//TODO: on failure
+//				}
+//			}
+//		});
+//		
+//		txtInterest = new JTextField();
+//		txtInterest.setText("Interest");
+//		txtInterest.setBounds(224, 291, 130, 26);
+//		frame.getContentPane().add(txtInterest);
+//		txtInterest.setColumns(10);
+//	    
+//		String interest = txtInterest.getText();
+//		btnAddInterest.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent arg0) {
+//				
+//				if(Account.addInterest(interest)) {
+//					//TODO: on success
+//				} else {
+//					//TODO: on failure
+//				}
+//			}
+//		});
+//		
 		// ====================================================================
 		// Create Account
 		// ====================================================================
-		btnCreateAccount = new JButton("Create Account");
-		btnCreateAccount.setBounds(39, 116, 148, 29);
-		frame.getContentPane().add(btnCreateAccount);
+//		btnCreateAccount = new JButton("Create Account");
+//		btnCreateAccount.setBounds(39, 116, 148, 29);
+//		frame.getContentPane().add(btnCreateAccount);
+//		
+//		String [] type = {"Checking", "Savings", "Pocket"}; 
+//		comboBoxAccountType = new JComboBox(type);
+//		comboBoxAccountType.setBounds(223, 117, 52, 27);
+//		frame.getContentPane().add(comboBoxAccountType);
+//		
+//		txtBankName = new JTextField();
+//		txtBankName.setText("Bank Name");
+//		txtBankName.setBounds(224, 157, 130, 26);
+//		frame.getContentPane().add(txtBankName);
+//		txtBankName.setColumns(10);
+//		
+//		txtInitialBalance = new JTextField();
+//		txtInitialBalance.setText("Initial Balance");
+//		txtInitialBalance.setBounds(224, 195, 130, 26);
+//		frame.getContentPane().add(txtInitialBalance);
+//		txtInitialBalance.setColumns(10);
+//		
+//		txtOwners = new JTextField();
+//		txtOwners.setText("Owners");
+//		txtOwners.setBounds(224, 233, 130, 26);
+//		frame.getContentPane().add(txtOwners);
+//		txtOwners.setColumns(10);
+//		
+//		txtLinked = new JTextField();
+//		txtLinked.setText("Linked Account");
+//		txtLinked.setBounds(224, 273, 130, 26);
+//		frame.getContentPane().add(txtLinked);
+//		txtLinked.setColumns(10);
 		
-		comboBoxAccountType = new JComboBox();
-		comboBoxAccountType.setBounds(223, 117, 52, 27);
-		frame.getContentPane().add(comboBoxAccountType);
+
 		
-		txtBankName = new JTextField();
-		txtBankName.setText("Bank Name");
-		txtBankName.setBounds(224, 157, 130, 26);
-		frame.getContentPane().add(txtBankName);
-		txtBankName.setColumns(10);
-		
-		txtInitialBalance = new JTextField();
-		txtInitialBalance.setText("Initial Balance");
-		txtInitialBalance.setBounds(224, 195, 130, 26);
-		frame.getContentPane().add(txtInitialBalance);
-		txtInitialBalance.setColumns(10);
-		
-		txtOwners = new JTextField();
-		txtOwners.setText("Owners");
-		txtOwners.setBounds(224, 233, 130, 26);
-		frame.getContentPane().add(txtOwners);
-		txtOwners.setColumns(10);
-		
-		String accountType = (String)comboBoxAccountType.getSelectedItem();
-		String bankName = txtBankName.getText();
-		String initialBalance = txtInitialBalance.getText();
-		String owners = txtOwners.getText();
-		btnCreateAccount.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				
-				if(Account.create(accountType, bankName, initialBalance, owners)) {
-					//TODO: on success
-				} else {
-					//TODO: on failure
-				}
-			}
-		});
-		
+//		btnCreateAccount.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent arg0) {
+//				String accountType = (String)comboBoxAccountType.getSelectedItem();
+//				String bankName = txtBankName.getText();
+//				String initialBalance = txtInitialBalance.getText();
+//				String owners = txtOwners.getText();
+//				String linked = txtLinked.getText(); 
+//				List<String> ownersList = Arrays.asList(owners.split(","));
+//				
+//				if(Integer.parseInt(initialBalance) > 0) {
+//				try {
+//					stmt = conn.createStatement();
+					
+//					String makeAcct = "INSERT INTO accounts(aid,balance,status) values "
+//							+ "('test','" + initialBalance + "','O')"; 
+//					ResultSet acctRs = stmt.executeQuery(makeAcct); 		    	
+//			    	acctRs.close();
+			    	
+//			    	if(!accountType.equals("Pocket")) {
+//			    		String typeChar = ""; 
+//			    		if(accountType.equals("Checking")) {
+//			    			typeChar = "C"; 
+//			    		} else {
+//			    			typeChar = "S"; 
+//			    		}
+//						String setType = "INSERT INTO Non_pkt_accounts(aid,type) values "
+//								+ "('test','" + typeChar + "')"; 
+//						ResultSet typeRs = stmt.executeQuery(setType); 		    	
+//				    	acctRs.close();			    	
+//			    	} else {
+//						String setType = "INSERT INTO Pkt_accounts(aid) values "
+//								+ "('test')"; 
+//						ResultSet typeRs = stmt.executeQuery(setType); 		    	
+//				    	typeRs.close();
+//				    	
+//				    	String linkAcct = "INSERT INTO Linked_to (pid, lid) VALUES"
+//				    			+ " ('test','" + linked + "')"; 
+//						ResultSet linkRs = stmt.executeQuery(linkAcct); 		    	
+//				    	linkRs.close();
+//			    	}
+//			    	
+//		    		//Create Owner Group 
+//		    		String makeOG = "INSERT INTO Owner_groups(oid) values ('replace')";
+//					ResultSet makeRs = stmt.executeQuery(makeOG); 		    	
+//			    	makeRs.close();
+//			    	
+//		    		String setAcct = "INSERT INTO Owns(aid, oid) values ('test', 'replace')"; 
+//					ResultSet acctGroupRs = stmt.executeQuery(setAcct); 		    	
+//			    	acctGroupRs.close(); 
+			    	
+//			    	
+//		    		String setPrimOwner = "INSERT INTO Prim_Owns(taxid, oid) values ('" + ownersList.get(0) +"', 'replace')"; 
+//					ResultSet ownerPrimRs= stmt.executeQuery(setPrimOwner); 
+//			    	ownerPrimRs.close();
+//			    	
+//			    	ownersList.remove(0);
+//			    	
+//			    	for(String o : ownersList) {
+//			    		String secOwner = "INSERT INTO Sec_Owns(taxid, oid) values ('" + o +"', 'replace')"; 
+//						ResultSet ownerRs= stmt.executeQuery(secOwner); 		    	
+//				    	ownerRs.close(); 
+//			    	}
+//					
+//					} catch(SQLException se){
+//					      //Handle errors for JDBC
+//					      se.printStackTrace();
+//					}catch(Exception e){
+//					      //Handle errors for Class.forName
+//					      e.printStackTrace();
+//					}
+//			}
+//			}
+//		});
+//		
 		// ====================================================================
 		// Delete Closed Accounts and Customers
 		// ====================================================================
@@ -286,31 +462,52 @@ public class BankTeller {
 		
 		btnDeleteClosedAccountsAndCustomers.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				
-				if(Account.deleteClosedAccountsAndCustomers()) {
-					//TODO: on success
-				} else {
-					//TODO: on failure
-				}
-			}
-		});
-		
-		// ====================================================================
-		// Delete Transactions
-		// ====================================================================
-		btnDeleteTransactions = new JButton("Delete Transactions");
-		btnDeleteTransactions.setBounds(39, 353, 202, 29);
-		frame.getContentPane().add(btnDeleteTransactions);
+				try {
+//					String del = "Delete from accounts where status = 'N'";
+//					ResultSet delRs = stmt.executeQuery(del);
+					
+//					System.out.println(del);
+					
+					ArrayList<Customer> customers = Customer.getAllCustomers(); 
+					
+					for(Customer c : customers) {
+						String taxID = c.getTaxID(); 
+						if(c.getAllAssocAccounts().isEmpty()) {
+							String delCust = "Delete customers where taxID = '" + taxID + "'";
+							ResultSet delCustRs = stmt.executeQuery(delCust);
+							delCustRs.close();
+						}
+					}
+					
+					System.out.println("customers deleted");
+				} catch(SQLException se){
+				    //Handle errors for JDBC
+				    se.printStackTrace();
+				 
+				}catch(Exception e){
+				    //Handle errors for Class.forName
+				    e.printStackTrace();
 
-		btnDeleteTransactions.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				
-				if(Transaction.deleteTransactions()) {
-					//TODO: on success
-				} else {
-					//TODO: on failure
 				}
 			}
 		});
+//		
+//		// ====================================================================
+//		// Delete Transactions
+//		// ====================================================================
+//		btnDeleteTransactions = new JButton("Delete Transactions");
+//		btnDeleteTransactions.setBounds(39, 353, 202, 29);
+//		frame.getContentPane().add(btnDeleteTransactions);
+//
+//		btnDeleteTransactions.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent arg0) {
+//				
+//				if(Transaction.deleteTransactions()) {
+//					//TODO: on success
+//				} else {
+//					//TODO: on failure
+//				}
+//			}
+//		});
 	}
 }
