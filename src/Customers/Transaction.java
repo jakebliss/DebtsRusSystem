@@ -34,7 +34,13 @@ public class Transaction {
 		mTargetActId = targetActId;
 	}
 	
-    public static boolean deleteTransactions() {
+    @Override
+	public String toString() {
+		return "Transaction [mTid=" + mTid + ", mDate=" + mDate + ", mAmount=" + mAmount + ", mType=" + mType
+				+ ", mOrgActId=" + mOrgActId + ", mTargetActId=" + mTargetActId + "]";
+	}
+
+	public static boolean deleteTransactions() {
     	Statement stmt = null;
     	Connection conn = null;
 	    try {

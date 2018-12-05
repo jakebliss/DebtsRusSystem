@@ -195,11 +195,7 @@ public class BankTeller {
 					}
 			}
 		});
-		
-		// Output Table for List Closed Accounts, Generate DTER, and Customer Report
-//		table = new JTable();
-//		table.setBounds(632, 261, 1, 1);
-//		frame.getContentPane().add(table);	
+			
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setBounds(456, 182, 359, 322);
 		frame.getContentPane().add(scrollPane);
@@ -226,7 +222,7 @@ public class BankTeller {
 				    }
 			    	
 			    	closedRs.close();
-			    	 Object[][] data = {closedAccounts.toArray()};
+			    	Object[][] data = {closedAccounts.toArray()};
 			    	
 					if(!closedAccounts.isEmpty()){
 					    JTable table = new JTable(data, columns);
@@ -254,48 +250,49 @@ public class BankTeller {
 		
 		btnGenerateDTER.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				DefaultTableModel model = (DefaultTableModel) table.getModel();
-				model.setRowCount(0);
-				
+				String[] columns = {"DTER"};				
 				ArrayList<String> dter = Customer.getDTER();
 				if(dter != null){
-					model.addRow(new Vector<String>(dter));
-					table.setModel(model);
+			    	Object[][] data = {dter.toArray()};
+
+					JTable table = new JTable(data, columns);
+					scrollPane.setViewportView(table);
 				} else {
 					System.out.println("GetMonthlyStatement is null");
 				}
 			}
 		});
 		
-//		// ====================================================================
-//		// Generate Monthly Statement
-//		// ====================================================================
-//		btnGenerateMonthlyStatement = new JButton("Generate Monthly Statement");
-//		btnGenerateMonthlyStatement.setBounds(375, 22, 222, 29);
-//		frame.getContentPane().add(btnGenerateMonthlyStatement);
-//		
+		// ====================================================================
+		// Generate Monthly Statement
+		// ====================================================================
+		btnGenerateMonthlyStatement = new JButton("Generate Monthly Statement");
+		btnGenerateMonthlyStatement.setBounds(375, 22, 222, 29);
+		frame.getContentPane().add(btnGenerateMonthlyStatement);
+		
 		txtCustomerId = new JTextField();
 		txtCustomerId.setText("Customer Id");
 		txtCustomerId.setBounds(743, 22, 130, 26);
 		frame.getContentPane().add(txtCustomerId);
 		txtCustomerId.setColumns(10);
 		
-// 		btnGenerateMonthlyStatement.addActionListener(new ActionListener() {
-// 			public void actionPerformed(ActionEvent arg0) {
-// 				String taxId = txtCustomerId.getText();
-
-// 				DefaultTableModel model = (DefaultTableModel) table.getModel();
-// 				model.setRowCount(0);
+ 		btnGenerateMonthlyStatement.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+ 				String taxId = txtCustomerId.getText();
+                
+ 				String[] columns = {"Monthly Statement"};
 				
-// 				ArrayList<String> monthlyStatement = Customer.getMonthlyStatement(taxId);
-// 				if(monthlyStatement != null){
-// 					model.addRow(new Vector<String>(monthlyStatement));
-// 					table.setModel(model); 
-// 				} else {
-// 					System.out.println("GetMonthlyStatement is null");
-// 				}
-// 			}
-// 		});
+ 				ArrayList<String> monthlyStatement = Customer.getMonthlyStatement(taxId);
+ 				if(monthlyStatement != null){
+			    	Object[][] data = {monthlyStatement.toArray()};
+
+					JTable table = new JTable(data, columns);
+					scrollPane.setViewportView(table);
+ 				} else {
+ 					System.out.println("GetMonthlyStatement is null");
+ 				}
+ 			}
+ 		});
 		
 		// ====================================================================
 		// Customer Report

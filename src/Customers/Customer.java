@@ -123,7 +123,7 @@ public class Customer {
     // accounts of which the customer is the primary owner exceeds $100,000, a message should be included
     // in the statement to warn the customer that the limit of the insurance has been reached.
     
-    public ArrayList<String> getMonthlyStatement(String taxId) {
+    public static ArrayList<String> getMonthlyStatement(String taxId) {
     	ArrayList<Account> accounts = Customer.getAllAssocPrimAccounts(taxId);
     	ArrayList<String> monthlyStatement = new ArrayList<String>();
     	double sumOfBalances = 0;
@@ -134,12 +134,29 @@ public class Customer {
 	    	float initialBalance = Account.calculateInitialBalance(transactions);
 	    	double finalBalance = account.getBalance();
 	    	sumOfBalances += finalBalance;
-    	}
-    	System.out.println("after for");
-    	if(sumOfBalances > 100000) {
-    		System.out.println("[Warning] The limit of the insurance has been reached");
+	    	
+	    	monthlyStatement.add("Transactions: \n");
+	    	for(Transaction transaction : transactions) {
+	    		monthlyStatement.add("\t" + transaction.toString());
+	    	}
+
+	    	monthlyStatement.add("Owners: \n");
+	    	for(Customer customer : customers) {
+	    		monthlyStatement.add("\tName: " + customer.mName + " Address: " + customer.mAddress);
+	    	}
+	    	
+	    	monthlyStatement.add("InitialBalance: " + Float.toString(initialBalance));
+	    	monthlyStatement.add("FinalBalance: " + Double.toString(finalBalance));
     	}
 
+    	if(sumOfBalances > 100000) {
+    		monthlyStatement.add("[Warning] The limit of the insurance has been reached");
+    	}
+        
+    	for(String line : monthlyStatement) {
+    		System.out.println(line);
+    	}
+    	
         return monthlyStatement;
     }
     
