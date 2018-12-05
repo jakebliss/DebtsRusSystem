@@ -14,6 +14,7 @@ import javax.swing.table.DefaultTableModel;
 
 import Accounts.Account;
 import Bank.Bank;
+import CurrDate.CurrDate;
 import Customers.Customer;
 
 import javax.swing.JList;
@@ -250,13 +251,13 @@ public class BankTeller {
 		
 		txtInitialBalance = new JTextField();
 		txtInitialBalance.setText("Initial Balance");
-		txtInitialBalance.setBounds(224, 195, 130, 26);
+		txtInitialBalance.setBounds(224, 187, 130, 26);
 		frame.getContentPane().add(txtInitialBalance);
 		txtInitialBalance.setColumns(10);
 		
 		txtOwners = new JTextField();
 		txtOwners.setText("Owners");
-		txtOwners.setBounds(224, 233, 130, 26);
+		txtOwners.setBounds(224, 215, 130, 26);
 		frame.getContentPane().add(txtOwners);
 		txtOwners.setColumns(10);
 		
@@ -395,7 +396,7 @@ public class BankTeller {
 		// ====================================================================
 		// Set Date
 		// ====================================================================
-		Date currDate = Bank.getCurrentDate();
+		Date currDate = CurrDate.getCurrentDate();
 		Bank.checkIfLastDayOfMonth(currDate);
 
 		JDateChooser dateChooser = new JDateChooser(currDate);
@@ -408,7 +409,7 @@ public class BankTeller {
 				
 				Date newDate = dateChooser.getDate();
 				
-				if(Bank.setDate(newDate)) {
+				if(CurrDate.setCurrentDate(newDate)) {
 					Bank.checkIfLastDayOfMonth(newDate);
 				} else {
 					// on fail
