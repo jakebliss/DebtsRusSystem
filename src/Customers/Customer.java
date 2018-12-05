@@ -45,7 +45,7 @@ public class Customer {
     	mPin  = null; 
     			
     	try {
-    			String selName = "SELECT name, address FROM customers WHERE taxid = '" + mTaxID + "'"; 
+    			String selName = "SELECT name address FROM customers WHERE taxid = '" + mTaxID + "'"; 
     			ResultSet selRs = stmt.executeQuery(selName); 
     		
     	    	while (selRs.next()) {
@@ -71,10 +71,42 @@ public class Customer {
     }
     
     public static boolean verifyUser(String pin, String taxId) {
-    	//TODO: Query DB to see if pin has a customer linked to it. And return true if it does.
-    	int enteredPin = Integer.parseInt(pin);
     	
-    	return enteredPin == 1234 & taxId.equals("3920sdfadf");
+    	Statement stmt = null;
+    	Connection conn = null;
+	    try {
+	    	Class.forName(JDBCdriver.JDBC_DRIVER);
+	    	
+	    	conn = DriverManager.getConnection(JDBCdriver.DB_URL, JDBCdriver.USERNAME, JDBCdriver.PASSWORD);
+	    	
+	        stmt = conn.createStatement();
+    	    String sql = "SELECT * FROM CUSTOMERS C WHERE C.PIN = '" + pin + "' AND C.TAXID = '" + taxId + "'";
+    	    ResultSet rs = stmt.executeQuery(sql);
+    	    
+    	    boolean customerExists = false;
+    	    
+    	    while(rs.next()){
+ 	           customerExists = true;
+ 	        }
+ 	        rs.close();
+ 	        
+ 	        return customerExists;
+	    
+	    }catch(SQLException se){
+	        //Handle errors for JDBC
+	        se.printStackTrace();
+	     }catch(Exception e){
+	        //Handle errors for Class.forName
+	        e.printStackTrace();
+	     }finally{
+	        try{
+	           if(conn!=null)
+	              conn.close();
+	        }catch(SQLException se){
+	           se.printStackTrace();
+	        }//end finally try
+	     }//end try
+	    return false;
     }
     
     // Given a customer, do the following for each account she owns (including

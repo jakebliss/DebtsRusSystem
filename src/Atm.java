@@ -17,7 +17,6 @@ import Accounts.NonPocketAccount;
 import Accounts.PocketAccount;
 import Customers.Customer;
 import Verifications.Verification;
-import Customers.Customer;
 
 public class Atm {
 
@@ -109,7 +108,7 @@ public class Atm {
 				
 		ArrayList<String> originAccountIDs = new ArrayList<String>();
 		for(Account a : mCustomer.getAllAssocAccounts()) {
-			originAccountIDs.add(a.getID()); 
+			originAccountIDs.add(a.getID());  wi
 			System.out.println(a.getID());
 		}
 		JComboBox originAccountComboBox = new JComboBox(originAccountIDs.toArray());

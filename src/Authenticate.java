@@ -5,7 +5,6 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
-import java.awt.BorderLayout;
 import javax.swing.JTextField;
 
 import Customers.Customer;
@@ -14,6 +13,10 @@ import javax.swing.JButton;
 
 public class Authenticate extends JFrame {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private JFrame frame;
 	private JTextField textFieldPin;
 	private JTextField textFieldTaxID;
