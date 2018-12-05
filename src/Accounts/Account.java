@@ -35,7 +35,7 @@ abstract public class Account {
 		mStatus = false; 
 		
     	while (statusRs.next()) {
-	    	 if(statusRs.getString("status").equals("O")) {
+	    	 if(statusRs.getString("status").equals("Y")) {
 	    		 mStatus = true; 
 	    	 }
 	    }
@@ -74,7 +74,7 @@ abstract public class Account {
 	
 	public void closeAccount() {
 		try {
-			String close = "UPDATE Accounts A SET A.status = 'C' WHERE A.aid = '" + this.getID() + "'";
+			String close = "UPDATE Accounts A SET A.status = 'N' WHERE A.aid = '" + this.getID() + "'";
 			ResultSet updateRs = mStmt.executeQuery(close);
 		    updateRs.close(); 
 			this.mStatus = false; 
