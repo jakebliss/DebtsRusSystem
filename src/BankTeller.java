@@ -20,6 +20,8 @@ import javax.swing.JButton;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
+import org.apache.commons.lang3.RandomStringUtils;
+
 import Accounts.Account;
 import Accounts.NonPocketAccount;
 import Accounts.PocketAccount;
@@ -32,6 +34,7 @@ import InterestRates.InterestRates;
 
 import javax.swing.JList;
 import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JComboBox;
@@ -57,7 +60,7 @@ public class BankTeller {
 	private JTextField txtOwners;
 	private JTextField txtLinked; 
 	private JComboBox comboBoxAccountType;
-  private JLabel label;
+    private JLabel label;
 	private JTextField txtNewInterestRate;
 	private JTextField txtTaxid;
 	private JTextField txtName;
@@ -77,6 +80,8 @@ public class BankTeller {
 	   static final String PASSWORD = "password";
 	   static Connection conn = null;
 	   static Statement stmt = null; 
+	   private JTable table_1;
+	   private JTable table_2;
 
 	// ====================================================================
 	// Launch Application
@@ -192,9 +197,12 @@ public class BankTeller {
 		});
 		
 		// Output Table for List Closed Accounts, Generate DTER, and Customer Report
-		table = new JTable();
-		table.setBounds(632, 261, 1, 1);
-		frame.getContentPane().add(table);	
+//		table = new JTable();
+//		table.setBounds(632, 261, 1, 1);
+//		frame.getContentPane().add(table);	
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setBounds(456, 182, 359, 322);
+		frame.getContentPane().add(scrollPane);
 		
 		// ====================================================================
 		// List Closed Accounts
@@ -205,13 +213,12 @@ public class BankTeller {
 		
 		btnListClosedAccounts.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				DefaultTableModel model = (DefaultTableModel) table.getModel();
-				model.setRowCount(0);
-				Vector<String> closedAccounts = new Vector<String>(); 
+				
+		        String[] columns = {"AID"};	
+				ArrayList<String> closedAccounts = new ArrayList<String>(); 
 				try {
 					String selClosed = "SELECT aid FROM accounts WHERE status = 'N'"; 
 					
-					System.out.println(selClosed);
 					ResultSet closedRs = stmt.executeQuery(selClosed); 
 					
 			    	while (closedRs.next()) {
@@ -219,6 +226,14 @@ public class BankTeller {
 				    }
 			    	
 			    	closedRs.close();
+			    	 Object[][] data = {closedAccounts.toArray()};
+			    	
+					if(!closedAccounts.isEmpty()){
+					    JTable table = new JTable(data, columns);
+						scrollPane.setViewportView(table);
+					} else {
+						System.out.println("No closed accounts");
+					}
 			    	
 				} catch(SQLException se){
 				      //Handle errors for JDBC
@@ -226,15 +241,6 @@ public class BankTeller {
 				}catch(Exception e){
 				      //Handle errors for Class.forName
 				      e.printStackTrace();
-				}
-				
-				if(!closedAccounts.isEmpty()){
-//					Display Data
-//					model.addRow(closedAccounts);
-//					table.setModel(model);
-				} else {
-					System.out.println("No closed accounts");
-					
 				}
 			}
 		});
@@ -507,7 +513,7 @@ public class BankTeller {
 		// ====================================================================
 		String[] BankAccountTypes = {"Interest Checking", "Student Checking", "Saving", "Pocket"};
 		JComboBox comboBoxBankAccountType = new JComboBox(BankAccountTypes);
-		comboBoxBankAccountType.setBounds(165, 477, 52, 27);
+		comboBoxBankAccountType.setBounds(165, 477, 189, 27);
 		frame.getContentPane().add(comboBoxBankAccountType);
 		
 		txtNewInterestRate = new JTextField();
@@ -531,7 +537,7 @@ public class BankTeller {
 				
 			}
 		});
-		btnChangeInterestRate.setBounds(227, 477, 165, 29);
+		btnChangeInterestRate.setBounds(63, 504, 165, 29);
 		frame.getContentPane().add(btnChangeInterestRate);
 		
 		// ====================================================================
