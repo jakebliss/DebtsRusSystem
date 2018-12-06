@@ -85,6 +85,9 @@ public class PocketAccount extends Account{
 		      
 		      this.setBalance(this.getBalance() + amount); 
 		      
+		      if(Account.getListOfCurrentMonthsTransactions(this.getID()).size() == 1) {
+		          this.purchase(5);
+		      }
 		      return true; 
 		   }catch(SQLException se){
 		      //Handle errors for JDBC
@@ -121,7 +124,10 @@ public class PocketAccount extends Account{
 		     insertRs.close(); 
 		     
 		     this.setBalance(this.getBalance() - amount); 
-		     
+
+		     if(Account.getListOfCurrentMonthsTransactions(this.getID()).size() == 1) {
+		          this.purchase(5);
+		     }
 		  	 return true; 
 		   } catch(SQLException se){
 		      //Handle errors for JDBC
@@ -181,8 +187,12 @@ public class PocketAccount extends Account{
 				      
 			ResultSet insertRs = mStmt.executeQuery(insertTrans); 
 			insertRs.close(); 
-				      
-				return true; 
+
+		    if(Account.getListOfCurrentMonthsTransactions(this.getID()).size() == 1) {
+		        this.purchase(5);
+		    }
+			
+			return true; 
 			}catch(SQLException se){
 				//Handle errors for JDBC
 				se.printStackTrace();
@@ -226,6 +236,10 @@ public class PocketAccount extends Account{
 		      
 		      ResultSet insertRs = mStmt.executeQuery(insertTrans); 
 		      insertRs.close(); 
+		      
+		      if(Account.getListOfCurrentMonthsTransactions(this.getID()).size() == 1) {
+		          this.purchase(5);
+		      }  
 		      
 		      return true; 
 		   }catch(SQLException se){
