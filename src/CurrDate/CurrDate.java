@@ -5,6 +5,8 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -61,7 +63,8 @@ public class CurrDate {
 	public static boolean setCurrentDate(Date newDate) {
 		Statement stmt = null;
     	Connection conn = null;
-
+    	DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
+    	
 	    try {
 	    	Class.forName(JDBCdriver.JDBC_DRIVER);
 	    	
@@ -69,9 +72,11 @@ public class CurrDate {
 	    	
 	        stmt = conn.createStatement();
 
- 	        String sql = "UPDATE CurrentDate" +
- 	                     "SET Today = " + newDate;
+ 	        String sql = "UPDATE CurrentDate " +
+ 	                     "SET Today = TO_DATE('" + dateFormat.format(newDate) + "', 'YYYY/MM/DD')";
 	        
+ 	        System.out.println(sql);
+ 	        
 	        stmt.executeQuery(sql);
 	        
 	        return true;
