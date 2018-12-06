@@ -131,7 +131,7 @@ public class Customer {
     	for(Account account : accounts) {
 	    	ArrayList<Customer> customers = Account.getOwners(account.getID());
 	    	ArrayList<Transaction> transactions = Account.getListOfCurrentMonthsTransactions(account.getID());
-	    	float initialBalance = Account.calculateInitialBalance(transactions);
+	    	float initialBalance = Account.calculateInitialBalance(account.getID(), account.getBalance(), transactions);
 	    	double finalBalance = account.getBalance();
 	    	sumOfBalances += finalBalance;
 	    	
