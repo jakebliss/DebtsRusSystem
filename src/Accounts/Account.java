@@ -17,6 +17,7 @@ abstract public class Account {
 	private String mID; 
 	private double mBalance; 
 	private boolean mStatus; 
+	protected Date mDate; 
 	protected Connection mConn;
 	protected Statement mStmt; 
 	
@@ -25,6 +26,8 @@ abstract public class Account {
 		
 		//Get ID from database 
 		mID = accountID; 
+
+		mDate = CurrDate.getCurrentDate();
 		
 		try {
 		mStmt = conn.createStatement();

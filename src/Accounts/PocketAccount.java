@@ -64,7 +64,7 @@ public class PocketAccount extends Account{
 		      String dsql = "UPDATE Accounts A SET A.balance = A.balance + " + sAmount + " WHERE A.aid = '" + this.getID() + "'";
 		      String wsql = "UPDATE Accounts B SET B.balance = B.balance - " + sAmount + " WHERE B.aid = '" + linkedID + "'"; 
 		      String insertTrans = "INSERT INTO transactions " + "(tid, amount, tdate, type, sourceid, destid) VALUES (" 
-			    		 + "'" + transactionID + "'," + amount + ","+ "TO_DATE('" + mDateFormat.format(date)
+			    		 + "'" + transactionID + "'," + amount + ","+ "TO_DATE('" + mDate
 			    		 + "', 'YYYY/MM/DD')" + "," + "'O'" + ",'" + linkedID + "','" + this.getID() + "')";
 		      
 
@@ -111,7 +111,7 @@ public class PocketAccount extends Account{
 		     String updateBal = "UPDATE Accounts A SET A.balance = A.balance - " + sAmount + 
 		    		 " WHERE A.aid = '" + this.getID() + "'";
 		     String insertTrans = "INSERT INTO transactions " + "(tid, amount, tdate, type, sourceid) VALUES (" 
-		    		 + "'" + transactionID + "'," + amount + ","+ "TO_DATE('" + mDateFormat.format(date)
+		    		 + "'" + transactionID + "'," + amount + ","+ "TO_DATE('" + mDate
 		    		 + "', 'YYYY/MM/DD')" + "," + "'P'" + ",'" + this.getID() + "')";
 		     
 		     ResultSet updateRs = mStmt.executeQuery(updateBal);
@@ -164,7 +164,7 @@ public class PocketAccount extends Account{
 			String dsql = "UPDATE Accounts A SET A.balance = A.balance + " + sAmount + " WHERE A.aid = '" + linkedID + "'";
 			String wsql = "UPDATE Accounts B SET B.balance = B.balance - " + adjustedAmount + " WHERE B.aid = '" + this.getID() + "'"; 
 			String insertTrans = "INSERT INTO transactions " + "(tid, amount, tdate, type, sourceid, destid) VALUES (" 
-				+ "'" + transactionID + "'," + amount + ","+ "TO_DATE('" + mDateFormat.format(date)
+				+ "'" + transactionID + "'," + amount + ","+ "TO_DATE('" + mDate
 				+ "', 'YYYY/MM/DD')" + "," + "'L'" + ",'" + this.getID() + "','" + linkedID + "')";
 				      
 			System.out.println(dsql);
@@ -210,7 +210,7 @@ public class PocketAccount extends Account{
 		      String dsql = "UPDATE Accounts A SET A.balance = A.balance + " + sAmount + " WHERE A.aid = '" + friendID + "'";
 		      String wsql = "UPDATE Accounts B SET B.balance = B.balance - " + sAmount + " WHERE B.aid = '" + this.getID() + "'"; 
 		      String insertTrans = "INSERT INTO transactions " + "(tid, amount, tdate, type, sourceid, destid) VALUES (" 
-			    		 + "'" + transactionID + "'," + amount + ","+ "TO_DATE('" + mDateFormat.format(date)
+			    		 + "'" + transactionID + "'," + amount + ","+ "TO_DATE('" + mDate
 			    		 + "', 'YYYY/MM/DD')" + "," + "'F'" + ",'" + this.getID() + "','" + friendID + "')";
 	     
 		      System.out.println(dsql);
