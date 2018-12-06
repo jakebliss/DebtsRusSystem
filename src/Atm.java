@@ -150,7 +150,7 @@ public class Atm {
 		Date d = new Date(); 
 		d.setYear(2011);
 		d.setMonth(02);
-		d.setDate(2);
+		d.setDate(5);
 		CurrDate.setCurrentDate(d); 
 		// ====================================================================
 		// Deposit
@@ -193,7 +193,7 @@ public class Atm {
 			public void actionPerformed(ActionEvent arg0) {
 		        Verification verification = new Verification(conn);
 				String accountID = (String) originAccountComboBox.getSelectedItem(); 
-				PocketAccount npAccount = new PocketAccount(conn, accountID, date); 	
+				PocketAccount npAccount = new PocketAccount(conn, accountID); 	
 				if (verification.isPocketAccount(accountID) && 
 						verification.accountOpen(accountID)) {
 					
@@ -223,7 +223,7 @@ public class Atm {
 			public void actionPerformed(ActionEvent arg0) {
 				Verification verification = new Verification(conn); 
 				String accountID = (String) originAccountComboBox.getSelectedItem(); 
-				NonPocketAccount npAccount = new NonPocketAccount(conn, accountID, date); 	
+				NonPocketAccount npAccount = new NonPocketAccount(conn, accountID); 	
 				if (verification.isNonPocketAccount(accountID) &&
 						verification.accountOpen(accountID)) {
 					
@@ -258,7 +258,7 @@ public class Atm {
 			public void actionPerformed(ActionEvent arg0) {
 		        Verification verification = new Verification(conn);
 				String accountID = (String) originAccountComboBox.getSelectedItem(); 
-				PocketAccount pAccount = new PocketAccount(conn, accountID, date); 	
+				PocketAccount pAccount = new PocketAccount(conn, accountID); 	
         
 				if (verification.isPocketAccount(accountID) &&
 						verification.accountOpen(accountID)) {
@@ -289,7 +289,7 @@ public class Atm {
 		        Verification verification = new Verification(conn);
 				String accountID = (String) originAccountComboBox.getSelectedItem(); 
 				String destAccountID = txtAccountId.getText();
-				NonPocketAccount npAccount = new NonPocketAccount(conn, accountID, date); 	
+				NonPocketAccount npAccount = new NonPocketAccount(conn, accountID); 	
 				if (verification.isNonPocketAccount(accountID) &&
 						verification.isNonPocketAccount(destAccountID) && 
 						verification.accountOpen(accountID) && 
@@ -327,7 +327,7 @@ public class Atm {
 			public void actionPerformed(ActionEvent arg0) {
 		        Verification verification = new Verification(conn);
 				String accountID = (String)originAccountComboBox.getSelectedItem(); 
-				PocketAccount npAccount = new PocketAccount(conn, accountID, date); 	
+				PocketAccount npAccount = new PocketAccount(conn, accountID); 	
 				
 				if (verification.isPocketAccount(accountID) &&
 						verification.accountOpen(accountID)) {
@@ -360,7 +360,7 @@ public class Atm {
 				String destAccountID = txtAccountId.getText();
 
 				
-				NonPocketAccount npAccount = new NonPocketAccount(conn, accountID, date); 	
+				NonPocketAccount npAccount = new NonPocketAccount(conn, accountID); 	
 				if (verification.isNonPocketAccount(accountID) &&
 						verification.isNonPocketAccount(destAccountID) &&
 						verification.accountOpen(accountID) &&
@@ -397,7 +397,7 @@ public class Atm {
 		    Verification verification = new Verification(conn);
 				String accountID = (String)originAccountComboBox.getSelectedItem(); 
 				String destAccountID = txtFriendId.getText();
-				PocketAccount pAccount = new PocketAccount(conn, accountID, date); 	
+				PocketAccount pAccount = new PocketAccount(conn, accountID); 	
 				if (verification.isPocketAccount(accountID) &&
 						verification.isPocketAccount(destAccountID) && 
 						verification.accountOpen(accountID) && 
