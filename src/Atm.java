@@ -6,8 +6,6 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -18,7 +16,6 @@ import javax.swing.JTextField;
 import Accounts.Account;
 import Accounts.NonPocketAccount;
 import Accounts.PocketAccount;
-import CurrDate.CurrDate;
 import Customers.Customer;
 import Verifications.Verification;
 
@@ -139,19 +136,7 @@ public class Atm {
 		txtAccountId.setBounds(148, 165, 130, 26);
 		frame.getContentPane().add(txtAccountId);
 		txtAccountId.setColumns(10);
-		
-//		CurrDate currDate = new CurrDate();  
-//		Calendar calendar = Calendar.getInstance(); 
-//		calendar.set(2011,03,02); 
-//		currDate.setCurrentDate(calendar); 
-		
-		String date = "2011/03/02"; 
-		
-		Date d = new Date(); 
-		d.setYear(2011);
-		d.setMonth(02);
-		d.setDate(5);
-		CurrDate.setCurrentDate(d); 
+				
 		// ====================================================================
 		// Deposit
 		// ====================================================================

@@ -8,7 +8,7 @@ import java.sql.Statement;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
+import java.sql.Date;
 
 import Accounts.Account;
 import JDBCdriver.JDBCdriver;
@@ -36,7 +36,7 @@ public class CurrDate {
 	           currDate  = rs.getDate("Today");
 
 	           //Display values
-	           System.out.print("Curr Date: " + currDate);
+	           //System.out.println("Curr Date: " + currDate);
 
 	        }
 	        rs.close();

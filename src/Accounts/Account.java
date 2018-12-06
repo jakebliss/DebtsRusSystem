@@ -3,7 +3,7 @@ import java.sql.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.Date;
+import java.sql.Date;
 
 import CurrDate.CurrDate;
 import Customers.Customer;
@@ -276,9 +276,10 @@ abstract public class Account {
     	float averageBalance = 0;
     	
     	for(Transaction transaction : transactions) {
+    		System.out.println("transaction date: " + transaction.mDate);
     		if(transaction.mDate.compareTo(currDate) <= 0) {
     			String type = transaction.mType;
-    			
+    			System.out.println(type);
     			if(transaction.mOrgActId == aid) {
     				switch(type) {
 	    				case "P": //purchase 
@@ -303,6 +304,7 @@ abstract public class Account {
 	        				averageBalance -= transaction.mAmount;
 	    					break;
 	    				case "A": // Accrue
+	        				averageBalance += transaction.mAmount;
 	    					break;
 	    				case "H": // writeCheck
 	        				averageBalance -= transaction.mAmount;
@@ -410,11 +412,7 @@ abstract public class Account {
     	    
     	    while(rs.next()){
  	           //Retrieve by column name
- 	           String aid  = rs.getString("AID");
-
- 	           //Display values
- 	           System.out.print("aid: " + aid);
- 	           
+ 	           String aid  = rs.getString("AID"); 	           
  	           accounts.add(aid);
  	        }
  	        rs.close();
@@ -439,14 +437,18 @@ abstract public class Account {
 	
     private static void accrueInterest(String aid) {
     	String accountType = Account.getAccountType(aid);
+    	System.out.println("AID: " + aid);
+        if(accountType == "") {
+        	return;
+        }
+        
         float interestRate = InterestRates.getMonthlyInterestRate(accountType);
     	float averageDailyBalance = Account.getAverageDailyBalance(aid);
     	float interest = interestRate*averageDailyBalance;
     	
-    	System.out.println("ACCOUNT TYPE: " + accountType);
     	System.out.println("InterestRate: " + Float.toString(interestRate));
     	System.out.println("Average Daily Balance: " + Float.toString(averageDailyBalance));
-    	System.out.println("Interest to be added: " + Float.toString(interest));
+    	System.out.println("-----");
     	// Account.addInterestToBalance(aid, interest);
     }
 
@@ -504,22 +506,23 @@ abstract public class Account {
 	    	
 	        stmt = conn.createStatement();
 	        	        
-		    String paSql = "SELECT * FROM PKT_ACCOUNTS PA WHERE PA.AID = " + aid;
-		    String npaSql = "SELECT * FROM NON_PKT_ACCOUNTS NPA WHERE NPA.AID = " + aid;
+		    String paSql = "SELECT * FROM PKT_ACCOUNTS PA WHERE PA.AID = '" + aid + "'";
+		    String npaSql = "SELECT * FROM NON_PKT_ACCOUNTS NPA WHERE NPA.AID = '" + aid + "'";
 	        
             paRs = stmt.executeQuery(paSql);
 	        while(paRs.next()){
 		           return "Pocket";
 		    }
-
     	    ResultSet npaRs = stmt.executeQuery(npaSql);
 	        while(npaRs.next()){
-	        	   String type = npaRs.getString("Type");
-	        	   if(type == "I" ) {
+	        	   String type = npaRs.getString("TYPE");
+	        	   if(type == null) {
+	        		 return "";  
+	        	   } else if(type.equals("I")) {
 	        		   return "Interest Checking";
-	        	   }else if(type == "S") {
+	        	   }else if(type.equals("S")) {
 	        		   return "Saving";
-	        	   } else if(type == "C") {
+	        	   } else if(type.equals("C")){
 	        		   return "Student Checking";
 	        	   }
 		    }

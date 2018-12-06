@@ -75,13 +75,13 @@ public class InterestRates {
 	        stmt = conn.createStatement();
 
 	        if(accountType.equals("Interest Checking") ) {
-	 	        accountType = "ICINTEREST";
+	 	        accountType = "INTEREST_CHECKING";
 	        }else if(accountType.equals("Student Checking") ) {
-	 	        accountType = "SCINTEREST";
+	 	        accountType = "STUDENT_CHECKING";
 	        }else if(accountType.equals("Saving") ) {
-	 	        accountType = "SINTEREST";
+	 	        accountType = "SAVINGS";
 	        }else if(accountType.equals("Pocket") ) {
-	 	        accountType = "PINTEREST";
+	 	        accountType = "POCKET";
 	        }
 	        
  	        sql = "SELECT * FROM INTERESTRATES";
@@ -93,7 +93,7 @@ public class InterestRates {
 		           interestRate  = rs.getFloat(accountType);
 
 		           //Display values
-		           System.out.print("Interest Rate for " + accountType + ": " + interestRate);
+		           //System.out.println("Interest Rate for " + accountType + ": " + interestRate);
 		    }
 		    rs.close();
 	        

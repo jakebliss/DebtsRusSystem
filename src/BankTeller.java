@@ -346,7 +346,7 @@ public class BankTeller {
 		// Add Interest
 		// ====================================================================
 		btnAddInterest = new JButton("Add Interest");
-		btnAddInterest.setBounds(82, 312, 117, 29);
+		btnAddInterest.setBounds(22, 121, 117, 29);
 		frame.getContentPane().add(btnAddInterest);
 		
 		btnAddInterest.addActionListener(new ActionListener() {
@@ -473,7 +473,7 @@ public class BankTeller {
 		// Delete Closed Accounts and Customers
 		// ====================================================================
 		btnDeleteClosedAccountsAndCustomers = new JButton("Delete Closed Accounts and Customers");
-		btnDeleteClosedAccountsAndCustomers.setBounds(0, 394, 302, 29);
+		btnDeleteClosedAccountsAndCustomers.setBounds(17, 203, 302, 29);
 		frame.getContentPane().add(btnDeleteClosedAccountsAndCustomers);
 		
 		btnDeleteClosedAccountsAndCustomers.addActionListener(new ActionListener() {
@@ -508,7 +508,7 @@ public class BankTeller {
 		// Delete Transactions
 		// ====================================================================
 		btnDeleteTransactions = new JButton("Delete Transactions");
-		btnDeleteTransactions.setBounds(39, 353, 202, 29);
+		btnDeleteTransactions.setBounds(17, 162, 202, 29);
 		frame.getContentPane().add(btnDeleteTransactions);
 		
 		label = new JLabel("");
@@ -531,12 +531,12 @@ public class BankTeller {
 		// ====================================================================
 		String[] BankAccountTypes = {"Interest Checking", "Student Checking", "Saving", "Pocket"};
 		JComboBox comboBoxBankAccountType = new JComboBox(BankAccountTypes);
-		comboBoxBankAccountType.setBounds(165, 477, 189, 27);
+		comboBoxBankAccountType.setBounds(165, 285, 189, 27);
 		frame.getContentPane().add(comboBoxBankAccountType);
 		
 		txtNewInterestRate = new JTextField();
 		txtNewInterestRate.setText("New Interest Rate");
-		txtNewInterestRate.setBounds(23, 477, 130, 26);
+		txtNewInterestRate.setBounds(23, 284, 130, 26);
 		frame.getContentPane().add(txtNewInterestRate);
 		txtNewInterestRate.setColumns(10);
 		
@@ -555,17 +555,17 @@ public class BankTeller {
 				
 			}
 		});
-		btnChangeInterestRate.setBounds(63, 504, 165, 29);
+		btnChangeInterestRate.setBounds(83, 322, 165, 29);
 		frame.getContentPane().add(btnChangeInterestRate);
 		
 		// ====================================================================
 		// Set Date
 		// ====================================================================
-		Date currDate = CurrDate.getCurrentDate();
-		CurrDate.checkIfLastDayOfMonth(currDate);
+		
+		CurrDate.checkIfLastDayOfMonth(CurrDate.getCurrentDate());
 
-		JDateChooser dateChooser = new JDateChooser(currDate);
-		dateChooser.setBounds(17, 799, 119, 26);
+		JDateChooser dateChooser = new JDateChooser(CurrDate.getCurrentDate());
+		dateChooser.setBounds(34, 640, 119, 26);
 		frame.getContentPane().add(dateChooser);
 		
 		btnSetDate = new JButton("Set Date");
@@ -574,15 +574,20 @@ public class BankTeller {
 				
 				Date newDate = dateChooser.getDate();
 				
-				if(CurrDate.setCurrentDate(newDate)) {
-					CurrDate.checkIfLastDayOfMonth(newDate);
+				if(CurrDate.setCurrentDate(convertUtilToSql(newDate))) {
+					CurrDate.checkIfLastDayOfMonth(convertUtilToSql(newDate));
 				} else {
 					// on fail
 				}
 				
 			}
 		});
-		btnSetDate.setBounds(148, 799, 117, 29);
+		btnSetDate.setBounds(165, 640, 117, 29);
 		frame.getContentPane().add(btnSetDate);		
+	}
+	
+	private java.sql.Date convertUtilToSql(java.util.Date uDate) {
+		java.sql.Date sDate = new java.sql.Date(uDate.getTime());
+		return sDate;
 	}
 }
