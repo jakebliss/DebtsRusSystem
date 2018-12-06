@@ -169,7 +169,7 @@ abstract public class Account {
 	}
 	
 	public static float calculateInitialBalance(ArrayList<Transaction> transactions) {
-		return 0;
+		return transactions.get(0).mAmount;
 	}
     
 	public static ArrayList<String> listClosedAccounts() {
@@ -269,35 +269,77 @@ abstract public class Account {
     public static float getAverageDailyBalance(String aid) {
     	ArrayList<Transaction> transactions = Account.getListOfCurrentMonthsTransactions(aid);
     	Date currDate = CurrDate.getCurrentDate();
+    	Calendar cal = Calendar.getInstance();
+    	cal.setTime(currDate);
+    	int day = cal.get(Calendar.DAY_OF_MONTH);
+    	if(day == 0) {return 0;}
+    	float averageBalance = 0;
     	
     	for(Transaction transaction : transactions) {
     		if(transaction.mDate.compareTo(currDate) <= 0) {
-    			switch(transaction.mType) {
-    				case "P": //purchase / payfriend?
-    					break;
-    				case "O": // topup
-    					break;
-    				case "L": // Collect
-    					break;
-    				case "D": // Deposit
-    					break;
-    				case "W": // Withdraw
-    					break;
-    				case "T": // Transfer
-    					break;
-    				case "R": // Wire
-    					break;
-    				case "A": // Accrue
-    					break;
-    				case "H": // writeCheck
-    					break;
-    					
-    				default: 
-    					break;
+    			String type = transaction.mType;
+    			
+    			if(transaction.mOrgActId == aid) {
+    				switch(type) {
+	    				case "P": //purchase 
+	        				averageBalance -= transaction.mAmount;
+	    					break;
+	    				case "O": // top up
+	        				averageBalance += transaction.mAmount;
+	    					break;
+	    				case "L": // Collect
+	        				averageBalance -= transaction.mAmount;
+	    					break;
+	    				case "D": // Deposit
+	        				averageBalance += transaction.mAmount;
+	    					break;
+	    				case "W": // Withdraw
+	        				averageBalance -= transaction.mAmount;
+	    					break;
+	    				case "T": // Transfer
+	        				averageBalance -= transaction.mAmount;
+	    					break;
+	    				case "R": // Wire
+	        				averageBalance -= transaction.mAmount;
+	    					break;
+	    				case "A": // Accrue
+	    					break;
+	    				case "H": // writeCheck
+	        				averageBalance -= transaction.mAmount;
+	    					break;
+	    				case "F": // payFriend
+	        				averageBalance -= transaction.mAmount;
+	    					break;
+	
+	    				default: 
+	    					break;
+    				}
+    			} else if(transaction.mTargetActId == aid){
+    				switch(type) {
+	    				case "O": // top up
+	        				averageBalance -= transaction.mAmount;
+	    					break;
+	    				case "L": // Collect
+	        				averageBalance += transaction.mAmount;
+	    					break;
+	    				case "T": // Transfer
+	        				averageBalance += transaction.mAmount;
+	    					break;
+	    				case "R": // Wire
+	        				averageBalance += transaction.mAmount;
+	    					break;
+	    				case "F": // payFriend
+	        				averageBalance += transaction.mAmount;
+	    					break;
+	
+	    				default: 
+	    					break;
+					}
     			}
     		}
     	}
-    	return (float) 0.0;
+    	
+    	return averageBalance/(float)day;
     }
     
 	// ====================================================================
@@ -400,7 +442,12 @@ abstract public class Account {
         float interestRate = InterestRates.getMonthlyInterestRate(accountType);
     	float averageDailyBalance = Account.getAverageDailyBalance(aid);
     	float interest = interestRate*averageDailyBalance;
-    	Account.addInterestToBalance(aid, interest);
+    	
+    	System.out.println("ACCOUNT TYPE: " + accountType);
+    	System.out.println("InterestRate: " + Float.toString(interestRate));
+    	System.out.println("Average Daily Balance: " + Float.toString(averageDailyBalance));
+    	System.out.println("Interest to be added: " + Float.toString(interest));
+    	// Account.addInterestToBalance(aid, interest);
     }
 
     private static void addInterestToBalance(String aid, float interest) {
@@ -449,7 +496,7 @@ abstract public class Account {
     private static String getAccountType(String aid) {
 		Statement stmt = null;
     	Connection conn = null;
-        
+    	ResultSet paRs = null;
 	    try {
 	    	Class.forName(JDBCdriver.JDBC_DRIVER);
 	    	
@@ -458,13 +505,12 @@ abstract public class Account {
 	        stmt = conn.createStatement();
 	        	        
 		    String paSql = "SELECT * FROM PKT_ACCOUNTS PA WHERE PA.AID = " + aid;
-		    String npaSql = "SELECT * FROM NON_PKT_ACCOUNTS NPA WHER NPA.AID = " + aid;
+		    String npaSql = "SELECT * FROM NON_PKT_ACCOUNTS NPA WHERE NPA.AID = " + aid;
 	        
-            ResultSet paRs = stmt.executeQuery(paSql);
+            paRs = stmt.executeQuery(paSql);
 	        while(paRs.next()){
 		           return "Pocket";
 		    }
- 	        paRs.close();
 
     	    ResultSet npaRs = stmt.executeQuery(npaSql);
 	        while(npaRs.next()){
@@ -476,30 +522,6 @@ abstract public class Account {
 	        	   } else if(type == "C") {
 	        		   return "Student Checking";
 	        	   }
-	        	   
-	        	   switch(type) {
-   				case "P": //purchase / payfriend F?
-   					break;
-   				case "O": // topup
-   					break;
-   				case "L": // Collect
-   					break;
-   				case "D": // Deposit
-   					break;
-   				case "W": // Withdraw
-   					break;
-   				case "T": // Transfer
-   					break;
-   				case "R": // Wire
-   					break;
-   				case "A": // Accrue
-   					break;
-   				case "H": // writeCheck
-   					break;
-   					
-   				default: 
-   					break;
-   			}
 		    }
  	        npaRs.close();
  	        
@@ -514,6 +536,8 @@ abstract public class Account {
 	        try{
 	           if(conn!=null)
 	              conn.close();
+	           if(paRs != null)
+	    	        paRs.close();
 	        }catch(SQLException se){
 	           se.printStackTrace();
 	        }//end finally try
@@ -521,5 +545,4 @@ abstract public class Account {
     	return "";
     }
     
-
 }

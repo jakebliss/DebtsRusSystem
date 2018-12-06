@@ -84,8 +84,7 @@ public class InterestRates {
 	 	        accountType = "PINTEREST";
 	        }
 	        
- 	        sql = "SELECT *" +
-	 	 	      " FROM INTERESTRATES";
+ 	        sql = "SELECT * FROM INTERESTRATES";
  	        
 	        ResultSet rs = stmt.executeQuery(sql);
 	       	        
@@ -117,7 +116,7 @@ public class InterestRates {
 	}
 	
 	public static float getMonthlyInterestRate(String accountType) {
-		return InterestRates.getInterestRate(accountType)/12;
+		return (float) (InterestRates.getInterestRate(accountType)/((float) 12*1.0));
     }
 
 }
