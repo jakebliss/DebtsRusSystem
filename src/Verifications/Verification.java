@@ -189,4 +189,31 @@ public class Verification {
 		}
 		return false; 
 	}
+	
+	public boolean customerExists (String taxID) {
+		try {
+			  String existsStmt = "SELECT taxid FROM customers WHERE taxid = '" + taxID + "'";
+			  
+			  System.out.println(existsStmt);
+			  
+		      ResultSet existRs = mStmt.executeQuery(existsStmt);
+		      		      	     		      
+		      while(existRs.next()){
+                  return true; 
+		      }
+		      
+		      existRs.close();
+		      
+		}catch(SQLException se){
+		    //Handle errors for JDBC
+		    se.printStackTrace();
+		    return false; 
+		}catch(Exception e){
+		    //Handle errors for Class.forName
+		    e.printStackTrace();
+		    return false; 
+		}
+		return false; 
+	}
 }
+
