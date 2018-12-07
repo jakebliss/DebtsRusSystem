@@ -96,18 +96,44 @@ public class Verification {
 		    		  boolean valSrc = false; 
 		    		  boolean valDest = false; 
 		    		  
-		    		  String existSrc = "SELECT oid FROM Sec_Owns WHERE taxid = '" + taxID
+		    		  String existPrimSrc = "SELECT oid FROM Prim_Owns WHERE taxid = '" + taxID
 		    		  	+ "' AND oid = '" + sourceOid + "'"; 
 		    		  
-		    		  System.out.println(existSrc);
+		    		  System.out.println(existPrimSrc);
 		    		  
-				      ResultSet sExistRs = mStmt.executeQuery(existSrc); 
+				      ResultSet sExistPrimRs = mStmt.executeQuery(existPrimSrc); 
 				      
-				      while(sExistRs.next()){
+				      while(sExistPrimRs.next()){
 		                  valSrc = true; 
 				      }
 				      
+				      sExistPrimRs.close(); 
+				      
+		    		  String existSrc = "SELECT oid FROM Sec_Owns WHERE taxid = '" + taxID
+				    		  	+ "' AND oid = '" + sourceOid + "'"; 
+				    		  
+				    		  System.out.println(existSrc);
+				    		  
+						      ResultSet sExistRs = mStmt.executeQuery(existSrc); 
+						      
+						      while(sExistRs.next()){
+				                  valSrc = true; 
+						      }
+				      
 				      sExistRs.close(); 
+				      
+		    		  String existPrimDest = "SELECT oid FROM Prim_Owns WHERE taxid = '" + taxID
+				    		  	+ "' AND oid = '" + destOid + "'"; 
+				    		  
+				    		  System.out.println(existPrimDest);
+				    		  
+						      ResultSet dExistPrimRs = mStmt.executeQuery(existPrimDest); 
+						      
+						      while(dExistPrimRs.next()){
+				                  valDest = true; 
+						      }
+						      
+						      dExistPrimRs.close(); 
 		    		  
 		    		  String existDest = "SELECT oid FROM Sec_Owns WHERE taxid = '" + taxID
 		    		  	+ "' AND oid = '" + destOid + "'"; 
@@ -119,7 +145,7 @@ public class Verification {
 				      while(dExistRs.next()){
 		                  valDest = true; 
 				      }
-				      
+						      
 				      dExistRs.close(); 
 				      
 				      if(valSrc && valDest) {
@@ -189,4 +215,31 @@ public class Verification {
 		}
 		return false; 
 	}
+	
+	public boolean customerExists (String taxID) {
+		try {
+			  String existsStmt = "SELECT taxid FROM customers WHERE taxid = '" + taxID + "'";
+			  
+			  System.out.println(existsStmt);
+			  
+		      ResultSet existRs = mStmt.executeQuery(existsStmt);
+		      		      	     		      
+		      while(existRs.next()){
+                  return true; 
+		      }
+		      
+		      existRs.close();
+		      
+		}catch(SQLException se){
+		    //Handle errors for JDBC
+		    se.printStackTrace();
+		    return false; 
+		}catch(Exception e){
+		    //Handle errors for Class.forName
+		    e.printStackTrace();
+		    return false; 
+		}
+		return false; 
+	}
 }
+

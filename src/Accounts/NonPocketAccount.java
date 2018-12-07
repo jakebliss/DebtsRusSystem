@@ -195,7 +195,7 @@ public class NonPocketAccount extends Account{
 			    		 + "'" + transactionID + "'," + amount + ","+ "TO_DATE('" + mDate
 			    		 + "', 'YYYY/MM/DD')" + "," + "'R'" + ",'" + this.getID() + "','" + destID + "')";
 		      
-//		      System.out.println(dsql);
+
 		      System.out.println(wsql);
 		      System.out.println(insertTrans); 	
 		      
@@ -225,9 +225,10 @@ public class NonPocketAccount extends Account{
 	// Subtract money from the checking account. Associated with a check transaction is a check number.
 	// Preconditions: Account is open
 	public boolean writeCheck(double amount) {
-		if(amount < 0 || !this.mType.equals("C") || this.getBalance() - amount < 0) {
+		if(amount < 0 || this.getBalance() - amount < 0) {
 			return false; 
 		}
+		if (this.mType.equals("C") || this.mType.equals("I")) {
 		
 		String checkNum = RandomStringUtils.randomAlphanumeric(16); 
 		
@@ -260,5 +261,8 @@ public class NonPocketAccount extends Account{
 		      e.printStackTrace();
 		      return false; 
 		   }
+	} else  {
+		return false; 
+	}	
 	}
  }
