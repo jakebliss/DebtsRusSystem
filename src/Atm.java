@@ -116,7 +116,7 @@ public class Atm {
 		}
 		JComboBox originAccountComboBox = new JComboBox(originAccountIDs.toArray());
 
-		originAccountComboBox.setBounds(386, 20, 52, 27);
+		originAccountComboBox.setBounds(290, 20, 148, 27);
 		frame.getContentPane().add(originAccountComboBox);
 		
 		txtEnterAmount = new JTextField();
