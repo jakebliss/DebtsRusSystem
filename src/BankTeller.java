@@ -407,50 +407,50 @@ public class BankTeller {
 				if(Integer.parseInt(initialBalance) > 0) {
 				try {
 					stmt = conn.createStatement();
-//					String accountID = RandomStringUtils.randomAlphanumeric(16);
-//					 
-//					String makeAcct = "INSERT INTO accounts(aid,balance,status) values "
-//							+ "('" + accountID + "','" + initialBalance + "','Y')"; 
-//					ResultSet acctRs = stmt.executeQuery(makeAcct); 		    	
-//			    	acctRs.close();
-//			    	
-//			    	if(!accountType.equals("Pocket")) {
-//			    		String typeChar = ""; 
-//			    		if(accountType.equals("Intrest-Checking")) {
-//			    			typeChar = "I"; 
-//			    		} else if (accountType.equals("Student-Checking")) {
-//			    			typeChar = "C"; 
-//			    		}
-//			    		else {
-//			    			typeChar = "S"; 
-//			    		}
-//						String setType = "INSERT INTO Non_pkt_accounts(aid,type) values "
-//								+ "('" + accountID + "','" + typeChar + "')"; 
-//						ResultSet typeRs = stmt.executeQuery(setType); 		    	
-//				    	acctRs.close();			    	
-//			    	} else {
-//						String setType = "INSERT INTO Pkt_accounts(aid) values "
-//								+ "('" + accountID + "')"; 
-//						ResultSet typeRs = stmt.executeQuery(setType); 		    	
-//				    	typeRs.close();
-//				    	
-//				    	String linkAcct = "INSERT INTO Linked_to (pid, lid) VALUES"
-//				    			+ "('" + accountID + "','" + linked + "')"; 
-//						ResultSet linkRs = stmt.executeQuery(linkAcct); 		    	
-//				    	linkRs.close();
-//			    	}
-//			    	
-//		    		//Create Owner Group 
-//			    	String ownerGroupID = RandomStringUtils.randomAlphanumeric(16);
-//		    		String makeOG = "INSERT INTO Owner_groups(oid) values ('" + ownerGroupID + "')";
-//					ResultSet makeRs = stmt.executeQuery(makeOG); 		    	
-//			    	makeRs.close();
-//			    	
-//		    		String setAcct = "INSERT INTO Owns(aid, oid) values ('" + accountID + "','" + ownerGroupID + "')"; 
-//					ResultSet acctGroupRs = stmt.executeQuery(setAcct); 		    	
-//			    	acctGroupRs.close(); 
-//			    	
-//			    	
+					String accountID = RandomStringUtils.randomAlphanumeric(16);
+					 
+					String makeAcct = "INSERT INTO accounts(aid,balance,status) values "
+							+ "('" + accountID + "','" + initialBalance + "','Y')"; 
+					ResultSet acctRs = stmt.executeQuery(makeAcct); 		    	
+			    	acctRs.close();
+			    	
+			    	if(!accountType.equals("Pocket")) {
+			    		String typeChar = ""; 
+			    		if(accountType.equals("Intrest-Checking")) {
+			    			typeChar = "I"; 
+			    		} else if (accountType.equals("Student-Checking")) {
+			    			typeChar = "C"; 
+			    		}
+			    		else {
+			    			typeChar = "S"; 
+			    		}
+						String setType = "INSERT INTO Non_pkt_accounts(aid,type) values "
+								+ "('" + accountID + "','" + typeChar + "')"; 
+						ResultSet typeRs = stmt.executeQuery(setType); 		    	
+				    	acctRs.close();			    	
+			    	} else {
+						String setType = "INSERT INTO Pkt_accounts(aid) values "
+								+ "('" + accountID + "')"; 
+						ResultSet typeRs = stmt.executeQuery(setType); 		    	
+				    	typeRs.close();
+				    	
+				    	String linkAcct = "INSERT INTO Linked_to (pid, lid) VALUES"
+				    			+ "('" + accountID + "','" + linked + "')"; 
+						ResultSet linkRs = stmt.executeQuery(linkAcct); 		    	
+				    	linkRs.close();
+			    	}
+			    	
+		    		//Create Owner Group 
+			    	String ownerGroupID = RandomStringUtils.randomAlphanumeric(16);
+		    		String makeOG = "INSERT INTO Owner_groups(oid) values ('" + ownerGroupID + "')";
+					ResultSet makeRs = stmt.executeQuery(makeOG); 		    	
+			    	makeRs.close();
+			    	
+		    		String setAcct = "INSERT INTO Owns(aid, oid) values ('" + accountID + "','" + ownerGroupID + "')"; 
+					ResultSet acctGroupRs = stmt.executeQuery(setAcct); 		    	
+			    	acctGroupRs.close(); 
+			    	
+			    	
 			    	Verification verify = new Verification(conn); 
 			    
 			    	if(!verify.customerExists(ownersList.get(0))) {
@@ -458,9 +458,9 @@ public class BankTeller {
 			    		CustomerCreation.main(args);  
 			    	}
 			    	
-//		    		String setPrimOwner = "INSERT INTO Prim_Owns(taxid, oid) values ('" + ownersList.get(0) + "','" + ownerGroupID + "')";  
-//					ResultSet ownerPrimRs= stmt.executeQuery(setPrimOwner); 
-//			    	ownerPrimRs.close();
+		    		String setPrimOwner = "INSERT INTO Prim_Owns(taxid, oid) values ('" + ownersList.get(0) + "','" + ownerGroupID + "')";  
+					ResultSet ownerPrimRs= stmt.executeQuery(setPrimOwner); 
+			    	ownerPrimRs.close();
 			    	
 			    	System.out.println(ownersList.size());
 		
@@ -471,9 +471,9 @@ public class BankTeller {
 				    		String[] arg = {o}; 
 				    		CustomerCreation.main(arg);  
 				    	}    		
-//			    		String secOwner = "INSERT INTO Sec_Owns(taxid, oid) values ('" + o + "','" + ownerGroupID + "')";
-//						ResultSet ownerRs= stmt.executeQuery(secOwner); 		    	
-//				    	ownerRs.close(); 
+			    		String secOwner = "INSERT INTO Sec_Owns(taxid, oid) values ('" + o + "','" + ownerGroupID + "')";
+						ResultSet ownerRs= stmt.executeQuery(secOwner); 		    	
+				    	ownerRs.close(); 
 			    	}					
 					} catch(SQLException se){
 					      //Handle errors for JDBC
