@@ -363,112 +363,129 @@ public class BankTeller {
 		// ====================================================================
 		// Create Account
 		// ====================================================================
-//		btnCreateAccount = new JButton("Create Account");
-//		btnCreateAccount.setBounds(39, 116, 148, 29);
-//		frame.getContentPane().add(btnCreateAccount);
-//		
-//		String [] type = {"Checking", "Savings", "Pocket"}; 
-//		comboBoxAccountType = new JComboBox(type);
-//		comboBoxAccountType.setBounds(223, 117, 52, 27);
-//		frame.getContentPane().add(comboBoxAccountType);
-//		
-//		txtBankName = new JTextField();
-//		txtBankName.setText("Bank Name");
-//		txtBankName.setBounds(224, 157, 130, 26);
-//		frame.getContentPane().add(txtBankName);
-//		txtBankName.setColumns(10);
-//		
-//		txtInitialBalance = new JTextField();
-//		txtInitialBalance.setText("Initial Balance");
-//		txtInitialBalance.setBounds(224, 195, 130, 26);
-//		frame.getContentPane().add(txtInitialBalance);
-//		txtInitialBalance.setColumns(10);
-//		
-//		txtOwners = new JTextField();
-//		txtOwners.setText("Owners");
-//		txtOwners.setBounds(224, 233, 130, 26);
-//		frame.getContentPane().add(txtOwners);
-//		txtOwners.setColumns(10);
-//		
-//		txtLinked = new JTextField();
-//		txtLinked.setText("Linked Account");
-//		txtLinked.setBounds(224, 273, 130, 26);
-//		frame.getContentPane().add(txtLinked);
-//		txtLinked.setColumns(10);
-//		btnCreateAccount.addActionListener(new ActionListener() {
-//			public void actionPerformed(ActionEvent arg0) {
-//				String accountType = (String)comboBoxAccountType.getSelectedItem();
-//				String bankName = txtBankName.getText();
-//				String initialBalance = txtInitialBalance.getText();
-//				String owners = txtOwners.getText();
-//				String linked = txtLinked.getText(); 
-//				List<String> ownersList = Arrays.asList(owners.split(","));
-//				
-//				if(Integer.parseInt(initialBalance) > 0) {
-//				try {
-//					stmt = conn.createStatement();
-					
+		btnCreateAccount = new JButton("Create Account");
+		btnCreateAccount.setBounds(39, 400, 148, 29);
+		frame.getContentPane().add(btnCreateAccount);
+		
+		String [] type = {"Intrest-Checking", "Student-Checking", "Savings", "Pocket"}; 
+		comboBoxAccountType = new JComboBox(type);
+		comboBoxAccountType.setBounds(223, 400, 52, 27);
+		frame.getContentPane().add(comboBoxAccountType);
+		
+		txtBankName = new JTextField();
+		txtBankName.setText("Bank Name");
+		txtBankName.setBounds(224, 440, 130, 26);
+		frame.getContentPane().add(txtBankName);
+		txtBankName.setColumns(10);
+		
+		txtInitialBalance = new JTextField();
+		txtInitialBalance.setText("Initial Balance");
+		txtInitialBalance.setBounds(224, 480, 130, 26);
+		frame.getContentPane().add(txtInitialBalance);
+		txtInitialBalance.setColumns(10);
+		
+		txtOwners = new JTextField();
+		txtOwners.setText("Owners");
+		txtOwners.setBounds(224, 520, 130, 26);
+		frame.getContentPane().add(txtOwners);
+		txtOwners.setColumns(10);
+		
+		txtLinked = new JTextField();
+		txtLinked.setText("Linked Account");
+		txtLinked.setBounds(224, 560, 130, 26);
+		frame.getContentPane().add(txtLinked);
+		txtLinked.setColumns(10);
+		btnCreateAccount.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				String accountType = (String)comboBoxAccountType.getSelectedItem();
+				String bankName = txtBankName.getText();
+				String initialBalance = txtInitialBalance.getText();
+				String owners = txtOwners.getText();
+				String linked = txtLinked.getText(); 
+				List<String> ownersList = Arrays.asList(owners.split(","));
+				
+				if(Integer.parseInt(initialBalance) > 0) {
+				try {
+					stmt = conn.createStatement();
+//					String accountID = RandomStringUtils.randomAlphanumeric(16);
+//					 
 //					String makeAcct = "INSERT INTO accounts(aid,balance,status) values "
-//							+ "('test','" + initialBalance + "','O')"; 
+//							+ "('" + accountID + "','" + initialBalance + "','Y')"; 
 //					ResultSet acctRs = stmt.executeQuery(makeAcct); 		    	
 //			    	acctRs.close();
-			    	
+//			    	
 //			    	if(!accountType.equals("Pocket")) {
 //			    		String typeChar = ""; 
-//			    		if(accountType.equals("Checking")) {
+//			    		if(accountType.equals("Intrest-Checking")) {
+//			    			typeChar = "I"; 
+//			    		} else if (accountType.equals("Student-Checking")) {
 //			    			typeChar = "C"; 
-//			    		} else {
+//			    		}
+//			    		else {
 //			    			typeChar = "S"; 
 //			    		}
 //						String setType = "INSERT INTO Non_pkt_accounts(aid,type) values "
-//								+ "('test','" + typeChar + "')"; 
+//								+ "('" + accountID + "','" + typeChar + "')"; 
 //						ResultSet typeRs = stmt.executeQuery(setType); 		    	
 //				    	acctRs.close();			    	
 //			    	} else {
 //						String setType = "INSERT INTO Pkt_accounts(aid) values "
-//								+ "('test')"; 
+//								+ "('" + accountID + "')"; 
 //						ResultSet typeRs = stmt.executeQuery(setType); 		    	
 //				    	typeRs.close();
 //				    	
 //				    	String linkAcct = "INSERT INTO Linked_to (pid, lid) VALUES"
-//				    			+ " ('test','" + linked + "')"; 
+//				    			+ "('" + accountID + "','" + linked + "')"; 
 //						ResultSet linkRs = stmt.executeQuery(linkAcct); 		    	
 //				    	linkRs.close();
 //			    	}
 //			    	
 //		    		//Create Owner Group 
-//		    		String makeOG = "INSERT INTO Owner_groups(oid) values ('replace')";
+//			    	String ownerGroupID = RandomStringUtils.randomAlphanumeric(16);
+//		    		String makeOG = "INSERT INTO Owner_groups(oid) values ('" + ownerGroupID + "')";
 //					ResultSet makeRs = stmt.executeQuery(makeOG); 		    	
 //			    	makeRs.close();
 //			    	
-//		    		String setAcct = "INSERT INTO Owns(aid, oid) values ('test', 'replace')"; 
+//		    		String setAcct = "INSERT INTO Owns(aid, oid) values ('" + accountID + "','" + ownerGroupID + "')"; 
 //					ResultSet acctGroupRs = stmt.executeQuery(setAcct); 		    	
 //			    	acctGroupRs.close(); 
-			    	
 //			    	
-//		    		String setPrimOwner = "INSERT INTO Prim_Owns(taxid, oid) values ('" + ownersList.get(0) +"', 'replace')"; 
+//			    	
+			    	Verification verify = new Verification(conn); 
+			    
+			    	if(!verify.customerExists(ownersList.get(0))) {
+			    		String[] args = {ownersList.get(0)}; 
+			    		CustomerCreation.main(args);  
+			    	}
+			    	
+//		    		String setPrimOwner = "INSERT INTO Prim_Owns(taxid, oid) values ('" + ownersList.get(0) + "','" + ownerGroupID + "')";  
 //					ResultSet ownerPrimRs= stmt.executeQuery(setPrimOwner); 
 //			    	ownerPrimRs.close();
-//			    	
-//			    	ownersList.remove(0);
-//			    	
-//			    	for(String o : ownersList) {
-//			    		String secOwner = "INSERT INTO Sec_Owns(taxid, oid) values ('" + o +"', 'replace')"; 
+			    	
+			    	System.out.println(ownersList.size());
+		
+			    	
+			    	for(int i = 1; i < ownersList.size(); i++) {
+			    		String o = ownersList.get(i); 
+				    	if(!verify.customerExists(o)) {
+				    		String[] arg = {o}; 
+				    		CustomerCreation.main(arg);  
+				    	}    		
+//			    		String secOwner = "INSERT INTO Sec_Owns(taxid, oid) values ('" + o + "','" + ownerGroupID + "')";
 //						ResultSet ownerRs= stmt.executeQuery(secOwner); 		    	
 //				    	ownerRs.close(); 
-//			    	}
-//					
-//					} catch(SQLException se){
-//					      //Handle errors for JDBC
-//					      se.printStackTrace();
-//					}catch(Exception e){
-//					      //Handle errors for Class.forName
-//					      e.printStackTrace();
-//					}
-//			}
-//			}
-//		});
-//		
+			    	}					
+					} catch(SQLException se){
+					      //Handle errors for JDBC
+					      se.printStackTrace();
+					}catch(Exception e){
+					      //Handle errors for Class.forName
+					      e.printStackTrace();
+					}
+			}
+			}
+		});
+		
 		// ====================================================================
 		// Delete Closed Accounts and Customers
 		// ====================================================================
