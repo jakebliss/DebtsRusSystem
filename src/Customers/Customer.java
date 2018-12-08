@@ -1,9 +1,12 @@
 package Customers;
 
 import java.sql.*;
+import java.sql.Date;
+
 import Accounts.Account;
 import Accounts.NonPocketAccount;
 import Accounts.PocketAccount;
+import CurrDate.CurrDate;
 import JDBCdriver.JDBCdriver;
 
 import java.util.*;
@@ -69,6 +72,11 @@ public class Customer {
     			}
     }
     
+    public Customer (String taxId, String address, String name) {
+    	this.mName = name;
+    	this.mAddress = address;
+    	this.mTaxID = taxId;
+    }
     public String getTaxID() { return mTaxID; } 
     
     public static void setPin(String oldPin, String newPin) {
@@ -128,6 +136,13 @@ public class Customer {
     	ArrayList<String> monthlyStatement = new ArrayList<String>();
     	double sumOfBalances = 0;
     	
+    	Date currDate = CurrDate.getCurrentDate();
+    	Calendar cal = Calendar.getInstance();
+    	cal.setTime(currDate);
+    	int day = cal.get(Calendar.DAY_OF_MONTH);
+    	int month = cal.get(Calendar.MONTH);
+    	int year = cal.get(Calendar.YEAR);
+    	
     	for(Account account : accounts) {
 	    	ArrayList<Customer> customers = Account.getOwners(account.getID());
 	    	ArrayList<Transaction> transactions = Account.getListOfCurrentMonthsTransactions(account.getID());
@@ -135,9 +150,18 @@ public class Customer {
 	    	double finalBalance = account.getBalance();
 	    	sumOfBalances += finalBalance;
 	    	
+	    	monthlyStatement.add(account.getID());
 	    	monthlyStatement.add("Transactions: \n");
 	    	for(Transaction transaction : transactions) {
-	    		monthlyStatement.add("\t" + transaction.toString());
+	    		Calendar transactionCal = Calendar.getInstance();
+    			transactionCal.setTime(transaction.mDate);
+    	    	int transactionDay = transactionCal.get(Calendar.DAY_OF_MONTH);
+    	    	int transactionMonth = transactionCal.get(Calendar.MONTH);
+    	    	int transactionYear = transactionCal.get(Calendar.YEAR);
+    	    	
+    	    	if(year == transactionYear && month == transactionMonth && day >= transactionDay) {
+	    		    monthlyStatement.add("\t" + transaction.toString());
+    	    	}
 	    	}
 
 	    	monthlyStatement.add("Owners: \n");
@@ -165,18 +189,22 @@ public class Customer {
         ArrayList<Customer> customers = getAllCustomers();
         
         for(Customer customer : customers) {
-            ArrayList<Account> accounts = Customer.getAllAssocPrimAccounts(customer.mTaxID); 
+        	System.out.println("AID MAN:" + customer.getTaxID());
+            ArrayList<Account> accounts = Customer.getAllAssocAccountsArrayList(customer.mTaxID); 
             int sum = 0;
-            
+
             for(Account account : accounts) {
-                sum = account.getSumOfDepositsTransfersAndWires();
+            	System.out.println(account.getID());
+                sum += account.getSumOfDepositsTransfersAndWires();
+                System.out.println("SUM: ");
+                System.out.println(sum);
             }
             
             if(sum > 10000) {
             	flaggedCustomers.add("Customer Name: " + customer.mName + " TaxID: " + customer.getTaxID());
             }
         }
-        
+        System.out.println("done");
     	return flaggedCustomers;
     }
     
@@ -186,6 +214,7 @@ public class Customer {
         
         for(Account account : accounts) {
         	String line = "Account: " + account.getID() + " Status: " + account.getStatus();
+        	lines.add(line);
         }
         
         return lines;
@@ -201,25 +230,18 @@ public class Customer {
 	    	
 	        stmt = conn.createStatement();
     	    ArrayList<Customer> customers = new ArrayList<Customer>();
-    	    String sql = "SELECT C.taxId, C.pin, C.name, C.address " +
-    	                 "FROM Customers C";
+    	    String sql = "SELECT * FROM CUSTOMERS";
     	    
     	    ResultSet rs = stmt.executeQuery(sql);
-    	    
+    	    System.out.println(sql);
     	    while(rs.next()){
  	           //Retrieve by column name
  	           String taxId  = rs.getString("taxId");
  	           String pin = rs.getString("pin");
  	           String name = rs.getString("name");
  	           String address = rs.getString("address");
-
- 	           //Display values
- 	           System.out.print("taxId: " + taxId);
- 	           System.out.print(", pin: " + pin);
- 	           System.out.print(", name: " + name);
- 	           System.out.print(", address: " + address);
- 	           
- 	           customers.add(new Customer(stmt, conn, taxId, pin));
+ 	          
+ 	           customers.add(new Customer(taxId, address, name));
  	        }
  	        rs.close();
  	        

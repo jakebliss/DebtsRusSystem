@@ -197,7 +197,7 @@ public class BankTeller {
 		});
 			
 		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setBounds(456, 182, 359, 322);
+		scrollPane.setBounds(404, 182, 469, 322);
 		frame.getContentPane().add(scrollPane);
 		
 		// ====================================================================

@@ -111,12 +111,30 @@ abstract public class Account {
     	ArrayList<Transaction> transactions = Account.getListOfCurrentMonthsTransactions(this.getID());
         int sum = 0;
         
+    	Date currDate = CurrDate.getCurrentDate();
+    	Calendar cal = Calendar.getInstance();
+    	cal.setTime(currDate);
+    	int day = cal.get(Calendar.DAY_OF_MONTH);
+    	int month = cal.get(Calendar.MONTH);
+    	int year = cal.get(Calendar.YEAR);
+        
         for(Transaction transaction : transactions) {
-        	if(transaction.mType.equals("D") && transaction.mOrgActId == this.getID()) {
-        		sum += transaction.mAmount;
-        	} else if((transaction.mType.equals("R") || transaction.mType.equals("E")) && transaction.mTargetActId == this.getID()) {
-        		sum += transaction.mAmount;
-        	}
+        	
+        	System.out.println(transaction);
+        	
+    		Calendar transactionCal = Calendar.getInstance();
+			transactionCal.setTime(transaction.mDate);
+	    	int transactionDay = transactionCal.get(Calendar.DAY_OF_MONTH);
+	    	int transactionMonth = transactionCal.get(Calendar.MONTH);
+	    	int transactionYear = transactionCal.get(Calendar.YEAR);
+	    	
+	    	if(year == transactionYear && month == transactionMonth && day >= transactionDay) {
+	        	if(transaction.mType.equals("D") && transaction.mOrgActId.equals(this.getID())) {
+	        		sum += transaction.mAmount;
+	        	} else if((transaction.mType.equals("R") || transaction.mType.equals("E")) && transaction.mTargetActId.equals(this.getID())) {
+	        		sum += transaction.mAmount;
+	        	}
+	    	}
         }
         return sum;
 	}
